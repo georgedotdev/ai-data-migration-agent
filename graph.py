@@ -3,6 +3,9 @@ from etl.load import load_to_duckdb
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from etl.validate import validate_migration
+from etl.transform import transform_data
+from validation.run_validations import run_all_validations
+
 
 class AgentState(TypedDict):
     query: str
@@ -13,14 +16,19 @@ class AgentState(TypedDict):
 
 def planner(state: AgentState):
     return {
-        "plan": ["extract", "load"]
+        "plan": ["extract","transform", "load"]
     }
+
+from etl.schema import discover_schema
+
 
 def retriever(state: AgentState):
-    return {
-        "context":"CSV to duckdb migration"
-    }
 
+    schema = discover_schema("data/enterprise.csv")
+
+    return {
+        "context": str(schema)
+    }
 def executor(state: AgentState):
     if not state["plan"]:
         return {}
@@ -34,8 +42,22 @@ def executor(state: AgentState):
 
     elif step == "load":
         df = extract_csv("data/enterprise.csv")
-        load_to_duckdb(df,"migration.duckdb","enterprise")
-        print(f"Loaded data into duckdb")
+
+        transformed_df = transform_data(df)
+
+        load_to_duckdb(
+                        transformed_df,
+                        "migration.duckdb",
+                        "enterprise"
+                        )
+
+    elif step == "transform":
+
+        df = extract_csv("data/enterprise.csv")
+
+        transformed_df = transform_data(df)
+
+        print("Transformation completed.")
 
 
     return {
@@ -49,14 +71,15 @@ def should_continue(state: AgentState):
     return "tester"
 
 def tester(state: AgentState):
-    is_valid = validate_migration(
-        "data/enterprise.csv",
-        "migration.duckdb",
-        "enterprise"
-    )
+
+    print("Running validations...")
+
+    validation_results = run_all_validations()
+
+    print(validation_results)
 
     return {
-        "success": is_valid
+        "success": validation_results["overall_success"]
     }
 def supervisor(state: AgentState):
     return {}
