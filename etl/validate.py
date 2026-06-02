@@ -37,6 +37,10 @@ def validate_migration(
     # Read source data
     source_df = extract_csv(source_csv)
 
+    # Apply same transformations as load step
+    from etl.transform import transform_data
+    source_df = transform_data(source_df)
+
     # Read target data
     conn = duckdb.connect(db_path)
     target_df = conn.execute(

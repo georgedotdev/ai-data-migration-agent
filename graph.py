@@ -5,7 +5,7 @@ from langgraph.graph import StateGraph, END
 from etl.validate import validate_migration
 from etl.transform import transform_data
 from validation.run_validations import run_all_validations
-
+import time
 
 class AgentState(TypedDict):
     query: str
@@ -41,15 +41,42 @@ def executor(state: AgentState):
         print(f"Extracted {len(df)} rows.")
 
     elif step == "load":
+
         df = extract_csv("data/enterprise.csv")
 
         transformed_df = transform_data(df)
 
-        load_to_duckdb(
-                        transformed_df,
-                        "migration.duckdb",
-                        "enterprise"
-                        )
+        max_retries = 3
+
+        for attempt in range(max_retries):
+
+            try:
+
+                load_to_duckdb(
+                    transformed_df,
+                    "migration.duckdb",
+                    "enterprise"
+                )
+
+                print("[LOAD] Migration successful")
+
+                break
+
+            except Exception as e:
+
+                print(f"[LOAD] Attempt {attempt + 1} failed")
+                print(f"[LOAD] Error: {e}")
+
+                if attempt < max_retries - 1:
+
+                    print("[LOAD] Retrying in 2 seconds...")
+                    time.sleep(2)
+
+                else:
+
+                    print("[LOAD] All retries exhausted")
+
+                    raise e
 
     elif step == "transform":
 
@@ -76,7 +103,10 @@ def tester(state: AgentState):
 
     validation_results = run_all_validations()
 
-    print(validation_results)
+    if not validation_results["overall_success"]:
+        rollback_migration("migration.duckdb","enterprise")
+
+    
 
     return {
         "success": validation_results["overall_success"]
