@@ -56,3 +56,27 @@ class DuckDBConnector(BaseConnector):
         conn.close()
 
         return schema
+
+    def drop_table(self):
+        """Drop the table — used for rollback."""
+
+        conn = duckdb.connect(self.db_path)
+        conn.execute(
+            f"DROP TABLE IF EXISTS {self.table_name}"
+        )
+        conn.close()
+
+        print(
+            f"[DuckDB ROLLBACK] Dropped {self.table_name}"
+        )
+
+    def count_rows(self):
+        """Return row count for validation."""
+
+        conn = duckdb.connect(self.db_path)
+        count = conn.execute(
+            f"SELECT COUNT(*) FROM {self.table_name}"
+        ).fetchone()[0]
+        conn.close()
+
+        return count

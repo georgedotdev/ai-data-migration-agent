@@ -28,3 +28,14 @@ class CSVConnector(BaseConnector):
             "columns": list(df.columns),
             "row_count": len(df)
         }
+
+    def drop_table(self):
+        """No-op — CSV source files should not be deleted."""
+        print(
+            f"[CSV] drop_table is a no-op for {self.file_path}"
+        )
+
+    def count_rows(self):
+        """Return row count by reading the CSV."""
+        df = pd.read_csv(self.file_path)
+        return len(df)

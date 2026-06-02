@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-06-02T16:36:24.876333",
+  "source_type": "CSV",
+  "target_type": "duckdb",
+  "source_path": "data\\california_housing_test.csv",
+  "db_path": "migration.duckdb",
+  "table_name": "california_housing_test",
+  "schema": {
+    "table_name": "data\\california_housing_test.csv",
+    "row_count": 3000,
+    "column_count": 9,
+    "columns": [
+      {
+        "name": "longitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "latitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "housing_median_age",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_rooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_bedrooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "population",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "households",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_income",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_house_value",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": []
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.014,
+    "extract": 0.011,
+    "transform": 0.019,
+    "load": 0.0987,
+    "validate": 0.207,
+    "total": 0.3537
+  },
+  "transformations": [
+    "normalize_columns",
+    "handle_nulls",
+    "type_conversion"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ]
+}

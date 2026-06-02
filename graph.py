@@ -1,11 +1,22 @@
+"""
+LangGraph Migration Workflow
+
+Multi-connector migration orchestration via StateGraph.
+
+Topology (unchanged):
+    planner → retriever → executor → tester → supervisor
+
+The executor and tester now use the connector factory to
+instantiate source/target connectors dynamically from
+source_type, target_type, source_config, and target_config
+stored in AgentState.
+"""
+
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
 
-from connectors.csv_connector import CSVConnector
-from connectors.duckdb_connector import DuckDBConnector
-from etl.extract import extract_csv
+from connectors.connector_factory import get_connector
 from etl.transform import transform_data
-from etl.validate import validate_migration
 from etl.rollback import rollback_migration
 from etl.schema import discover_schema
 
@@ -22,11 +33,14 @@ class AgentState(TypedDict):
     success: bool
     source_type: str
     target_type: str
-    source_path: str
-    db_path: str
+    source_config: dict
+    target_config: dict
     table_name: str
     timings: dict
     validation_results: dict
+    transformations: list[str]
+    validations: list[str]
+    output_file_path: str
 
 
 def planner(state: AgentState):
@@ -47,8 +61,16 @@ def planner(state: AgentState):
 def retriever(state: AgentState):
     start = time.time()
 
-    source_path = state.get("source_path", "data/enterprise.csv")
-    schema = discover_schema(source_path)
+    source_type = state.get("source_type", "csv")
+    source_config = state.get("source_config") or {}
+
+    # Backward compatibility: if source_config has file_path
+    if not source_config and source_type.lower() == "csv":
+        source_config = {
+            "file_path": "data/enterprise.csv"
+        }
+
+    schema = discover_schema(source_type, source_config)
 
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
@@ -67,12 +89,15 @@ def executor(state: AgentState):
     start = time.time()
     step = state["plan"][0]
 
-    source_path = state.get("source_path", "data/enterprise.csv")
-    db_path = state.get("db_path", "migration.duckdb")
-    table_name = state.get("table_name", "enterprise")
+    source_type = state.get("source_type", "csv").lower()
+    target_type = state.get("target_type", "duckdb").lower()
+    source_config = state.get("source_config") or {}
+    target_config = state.get("target_config") or {}
+    transformations = state.get("transformations") or None
 
-    source = CSVConnector(source_path)
-    target = DuckDBConnector(db_path, table_name)
+    # Build connectors via factory
+    source = get_connector(source_type, **source_config)
+    target = get_connector(target_type, **target_config)
 
     if step == "extract":
         df = source.read_data()
@@ -80,9 +105,11 @@ def executor(state: AgentState):
 
     elif step == "load":
 
-        df = extract_csv(source_path)
+        df = source.read_data()
 
-        transformed_df = transform_data(df)
+        transformed_df = transform_data(
+            df, transformations=transformations
+        )
 
         max_retries = 3
 
@@ -113,9 +140,11 @@ def executor(state: AgentState):
 
     elif step == "transform":
 
-        df = extract_csv(source_path)
+        df = source.read_data()
 
-        transformed_df = transform_data(df)
+        transformed_df = transform_data(
+            df, transformations=transformations
+        )
 
         print("Transformation completed.")
 
@@ -141,18 +170,29 @@ def tester(state: AgentState):
 
     print("Running validations...")
 
-    source_path = state.get("source_path", "data/enterprise.csv")
-    db_path = state.get("db_path", "migration.duckdb")
-    table_name = state.get("table_name", "enterprise")
+    source_type = state.get("source_type", "csv").lower()
+    target_type = state.get("target_type", "duckdb").lower()
+    source_config = state.get("source_config") or {}
+    target_config = state.get("target_config") or {}
+    validations_list = state.get("validations") or None
+    transformations = state.get("transformations") or None
+
+    # Build connectors for validation
+    source = get_connector(source_type, **source_config)
+    target = get_connector(target_type, **target_config)
 
     validation_results = run_all_validations(
-        source_csv=source_path,
-        db_path=db_path,
-        table_name=table_name
+        source_connector=source,
+        target_connector=target,
+        validations=validations_list,
+        transformations=transformations
     )
 
     if not validation_results["overall_success"]:
-        rollback_migration(db_path, table_name)
+        target_for_rollback = get_connector(
+            target_type, **target_config
+        )
+        rollback_migration(target_for_rollback)
 
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
@@ -197,12 +237,38 @@ graph = builder.compile()
 
 
 def run_migration(
-    source_type="CSV",
-    target_type="DuckDB",
-    source_path="data/enterprise.csv",
-    db_path="migration.duckdb",
-    table_name="enterprise"
+    source_type="csv",
+    target_type="duckdb",
+    source_config=None,
+    target_config=None,
+    table_name="enterprise",
+    transformations=None,
+    validations=None,
+    output_file_path=""
 ):
+    """
+    Run the full migration workflow.
+
+    Args:
+        source_type: Connector type ('csv', 'duckdb', 'postgresql', 'mongodb')
+        target_type: Connector type ('duckdb', 'postgresql', 'mongodb')
+        source_config: Dict of connection params for source connector
+        target_config: Dict of connection params for target connector
+        table_name: Name for the target table/collection
+        transformations: List of transforms to apply (or None for all)
+        validations: List of validations to run (or None for all)
+        output_file_path: Path to generated output file (DuckDB only)
+    """
+
+    # Defaults for backward compatibility
+    if source_config is None:
+        source_config = {"file_path": "data/enterprise.csv"}
+    if target_config is None:
+        target_config = {
+            "db_path": "migration.duckdb",
+            "table_name": table_name
+        }
+
     total_start = time.time()
 
     initial_state = {
@@ -213,11 +279,21 @@ def run_migration(
         "success": False,
         "source_type": source_type,
         "target_type": target_type,
-        "source_path": source_path,
-        "db_path": db_path,
+        "source_config": source_config,
+        "target_config": target_config,
         "table_name": table_name,
         "timings": {},
-        "validation_results": {}
+        "validation_results": {},
+        "transformations": transformations or [
+            "normalize_columns",
+            "handle_nulls",
+            "type_conversion"
+        ],
+        "validations": validations or [
+            "row_count",
+            "checksum"
+        ],
+        "output_file_path": output_file_path
     }
 
     result = graph.invoke(initial_state)

@@ -1,29 +1,24 @@
-import duckdb
+"""
+Row Count Validation
 
-from etl.extract import extract_csv
+Connector-generic row count comparison.
+Uses connector instances instead of hardcoded CSV/DuckDB calls.
+"""
 
 
 def validate_row_count(
-    source_csv: str,
-    db_path: str,
-    table_name: str
+    source_connector,
+    target_connector
 ) -> bool:
+    """
+    Verify source and target row counts match.
 
-    # Read source data
-    source_df = extract_csv(source_csv)
+    Uses count_rows() from connector instances —
+    works for CSV, DuckDB, PostgreSQL, MongoDB.
+    """
 
-    # Count source rows
-    source_count = len(source_df)
-
-    # Connect to DuckDB
-    conn = duckdb.connect(db_path)
-
-    # Count target rows
-    target_count = conn.execute(
-        f"SELECT COUNT(*) FROM {table_name}"
-    ).fetchone()[0]
-
-    conn.close()
+    source_count = source_connector.count_rows()
+    target_count = target_connector.count_rows()
 
     print(f"Source Rows: {source_count}")
     print(f"Target Rows: {target_count}")
