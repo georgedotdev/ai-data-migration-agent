@@ -2,7 +2,11 @@ from validation.row_count import validate_row_count
 from etl.validate import validate_migration
 
 
-def run_all_validations():
+def run_all_validations(
+    source_csv="data/enterprise.csv",
+    db_path="migration.duckdb",
+    table_name="enterprise"
+):
 
     results = {}
 
@@ -10,18 +14,18 @@ def run_all_validations():
     # Row Count Validation
     # -----------------------------
     results["row_count"] = validate_row_count(
-        "data/enterprise.csv",
-        "migration.duckdb",
-        "enterprise"
+        source_csv,
+        db_path,
+        table_name
     )
 
     # -----------------------------
     # Checksum Validation
     # -----------------------------
     results["checksum"] = validate_migration(
-        "data/enterprise.csv",
-        "migration.duckdb",
-        "enterprise"
+        source_csv,
+        db_path,
+        table_name
     )
 
     # -----------------------------

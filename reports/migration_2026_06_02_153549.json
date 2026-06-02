@@ -1,0 +1,131 @@
+{
+  "timestamp": "2026-06-02T15:35:49.266931",
+  "source_type": "CSV",
+  "target_type": "DuckDB",
+  "source_path": "data\\leads-100.csv",
+  "db_path": "migration.duckdb",
+  "table_name": "leads_100",
+  "schema": {
+    "table_name": "data\\leads-100.csv",
+    "row_count": 100,
+    "column_count": 14,
+    "columns": [
+      {
+        "name": "Index",
+        "dtype": "int64",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Account Id",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Lead Owner",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "First Name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Last Name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Company",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Phone 1",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Phone 2",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Email 1",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Email 2",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Website",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Source",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Deal Stage",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Notes",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      }
+    ],
+    "primary_key_candidates": [
+      "Index",
+      "Account Id",
+      "Lead Owner",
+      "Company",
+      "Phone 1",
+      "Phone 2",
+      "Email 1",
+      "Email 2",
+      "Website",
+      "Notes"
+    ]
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.033,
+    "extract": 0.003,
+    "transform": 0.005,
+    "load": 0.075,
+    "validate": 0.1064,
+    "total": 0.2064
+  }
+}
