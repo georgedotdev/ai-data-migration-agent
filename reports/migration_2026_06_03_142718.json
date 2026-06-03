@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-06-03T14:27:18.944179",
+  "source_type": "mongodb",
+  "target_type": "duckdb",
+  "source_config": {
+    "connection_string": "mongodb://localhost:27017",
+    "database": "migration_db",
+    "collection": "customers_mongo"
+  },
+  "target_config": {
+    "db_path": "generated\\customers_mongo.duckdb",
+    "table_name": "customers_mongo"
+  },
+  "table_name": "customers_mongo",
+  "schema": {
+    "table_name": "customers_mongo",
+    "row_count": 100000,
+    "column_count": 12,
+    "columns": [
+      {
+        "name": "index",
+        "dtype": "int64",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "customer id",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "first name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "last name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "company",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "city",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "country",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "phone 1",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "phone 2",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "email",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "subscription date",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "website",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": [
+      "index",
+      "customer id",
+      "phone 1",
+      "phone 2"
+    ]
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.874,
+    "extract": 0.7474,
+    "transform": 0.7641,
+    "load": 1.5674,
+    "validate": 3.2157,
+    "total": 7.1365
+  },
+  "transformations": [
+    "normalize_columns"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": "generated\\customers_mongo.duckdb"
+}

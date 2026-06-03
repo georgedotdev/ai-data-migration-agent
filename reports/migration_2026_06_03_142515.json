@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-06-03T14:25:15.258039",
+  "source_type": "csv",
+  "target_type": "mongodb",
+  "source_config": {
+    "file_path": "data\\customers-100000.csv"
+  },
+  "target_config": {
+    "connection_string": "mongodb://localhost:27017",
+    "database": "migration_db",
+    "collection": "customers_mongo"
+  },
+  "table_name": "customers",
+  "schema": {
+    "table_name": "data\\customers-100000.csv",
+    "row_count": 100000,
+    "column_count": 12,
+    "columns": [
+      {
+        "name": "Index",
+        "dtype": "int64",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Customer Id",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "First Name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Last Name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Company",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "City",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Country",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Phone 1",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Phone 2",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Email",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Subscription Date",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Website",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": [
+      "Index",
+      "Customer Id",
+      "Phone 1",
+      "Phone 2"
+    ]
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.4827,
+    "extract": 0.463,
+    "transform": 0.385,
+    "load": 3.1984,
+    "validate": 3.5403,
+    "total": 8.0412
+  },
+  "transformations": [
+    "normalize_columns",
+    "type_conversion"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": ""
+}
