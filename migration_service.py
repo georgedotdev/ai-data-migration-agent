@@ -33,7 +33,8 @@ def generate_ai_plan(
     source_config=None,
     target_type_hint=None,
     has_target_config=False,
-    api_key=None
+    api_key=None,
+    provider="auto"
 ):
     """
     Generate an AI migration plan for dashboard display.
@@ -75,7 +76,8 @@ def generate_ai_plan(
         api_key=api_key,
         source_type_hint=source_type,
         target_type_hint=target_type_hint,
-        has_target_config=has_target_config
+        has_target_config=has_target_config,
+        provider=provider
     )
 
     return {

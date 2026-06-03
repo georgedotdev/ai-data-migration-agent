@@ -1,0 +1,115 @@
+{
+  "timestamp": "2026-06-03T11:01:27.927526",
+  "source_type": "postgresql",
+  "target_type": "postgresql",
+  "source_config": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "migration_db",
+    "username": "migration",
+    "password": "***",
+    "table_name": "enterprise_migrated"
+  },
+  "target_config": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "migration_db",
+    "username": "migration",
+    "password": "***",
+    "table_name": "enterprise_copy"
+  },
+  "table_name": "enterprise_migrated",
+  "schema": {
+    "table_name": "enterprise_migrated",
+    "row_count": 3000,
+    "column_count": 9,
+    "columns": [
+      {
+        "name": "longitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "latitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "housing_median_age",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_rooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_bedrooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "population",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "households",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_income",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_house_value",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": []
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.033,
+    "extract": 0.0346,
+    "transform": 0.0582,
+    "load": 0.3211,
+    "validate": 0.1548,
+    "total": 0.6122
+  },
+  "transformations": [
+    "normalize_columns",
+    "handle_nulls",
+    "type_conversion"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": ""
+}

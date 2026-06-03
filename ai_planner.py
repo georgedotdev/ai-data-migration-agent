@@ -1,8 +1,13 @@
 """
 AI Planning Layer
 
-Interprets natural language migration requests using an LLM (OpenAI GPT)
+Interprets natural language migration requests using an LLM
 and produces structured migration plans that drive the execution framework.
+
+Supports multiple LLM providers:
+- Google Gemini (recommended for demo)
+- OpenAI GPT (backward compatible)
+- Deterministic fallback (no LLM required)
 
 Supports multi-connector planning:
 - Source types: csv, postgresql, mongodb
@@ -21,6 +26,22 @@ The generated plan directly influences:
 import json
 
 
+# ─────────────────────────────────────────────
+# Valid values for plan validation
+# ─────────────────────────────────────────────
+
+VALID_SOURCE_TYPES = {"csv", "postgresql", "mongodb"}
+VALID_TARGET_TYPES = {"duckdb", "postgresql", "mongodb"}
+VALID_TRANSFORMATIONS = {
+    "normalize_columns", "handle_nulls", "type_conversion"
+}
+VALID_VALIDATIONS = {"row_count", "checksum"}
+
+
+# ─────────────────────────────────────────────
+# Public API
+# ─────────────────────────────────────────────
+
 def generate_plan(
     user_request,
     filename,
@@ -28,7 +49,8 @@ def generate_plan(
     api_key=None,
     source_type_hint=None,
     target_type_hint=None,
-    has_target_config=False
+    has_target_config=False,
+    provider="auto"
 ):
     """
     Generate a structured migration plan from a natural language request.
@@ -37,10 +59,12 @@ def generate_plan(
         user_request: Natural language migration request
         filename: Source filename or identifier
         schema: Discovered schema dict
-        api_key: OpenAI API key (optional)
+        api_key: API key for LLM provider (optional)
         source_type_hint: Pre-selected source type from dashboard
         target_type_hint: Pre-selected target type from dashboard
         has_target_config: Whether target connection details are provided
+        provider: LLM provider — 'gemini', 'openai', 'deterministic',
+                  or 'auto' (default, routes to OpenAI for backward compat)
 
     Returns a dict with:
         source_type, target_type, table_name,
@@ -48,7 +72,25 @@ def generate_plan(
         planning_method, generate_target, requires_connection
     """
 
-    if api_key:
+    # ─── Gemini provider ───
+    if api_key and provider == "gemini":
+        try:
+            return _generate_gemini_plan(
+                user_request, filename, schema, api_key,
+                source_type_hint, target_type_hint,
+                has_target_config
+            )
+        except Exception as e:
+            print(f"[AI PLANNER] Gemini planning failed: {e}")
+            print("[AI PLANNER] Falling back to deterministic")
+            return _generate_deterministic_plan(
+                user_request, filename, schema,
+                source_type_hint, target_type_hint,
+                has_target_config
+            )
+
+    # ─── OpenAI provider (also default for 'auto' with key) ───
+    if api_key and provider in ("openai", "auto"):
         try:
             return _generate_ai_plan(
                 user_request, filename, schema, api_key,
@@ -63,45 +105,44 @@ def generate_plan(
                 source_type_hint, target_type_hint,
                 has_target_config
             )
-    else:
-        print("[AI PLANNER] No API key — deterministic planning")
-        return _generate_deterministic_plan(
-            user_request, filename, schema,
-            source_type_hint, target_type_hint,
-            has_target_config
-        )
 
-
-def _generate_ai_plan(
-    user_request, filename, schema, api_key,
-    source_type_hint, target_type_hint,
-    has_target_config
-):
-    """Generate plan using OpenAI GPT via langchain-openai."""
-
-    from langchain_openai import ChatOpenAI
-
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        temperature=0,
-        api_key=api_key,
-        model_kwargs={
-            "response_format": {"type": "json_object"}
-        }
+    # ─── No API key or deterministic provider ───
+    print("[AI PLANNER] No API key — deterministic planning")
+    return _generate_deterministic_plan(
+        user_request, filename, schema,
+        source_type_hint, target_type_hint,
+        has_target_config
     )
+
+
+# ─────────────────────────────────────────────
+# Shared prompt builder
+# ─────────────────────────────────────────────
+
+def _build_planning_prompt(
+    filename, schema, user_request,
+    target_type_hint, has_target_config
+):
+    """Build the planning prompt used by all LLM planners."""
 
     schema_context = _format_schema(schema)
 
-    # Build context about available targets
     target_context = ""
     if target_type_hint:
-        target_context = f"\nUser has pre-selected target type: {target_type_hint}"
+        target_context = (
+            f"\nUser has pre-selected target type: "
+            f"{target_type_hint}"
+        )
         if has_target_config:
-            target_context += "\nTarget connection details have been provided."
+            target_context += (
+                "\nTarget connection details have been provided."
+            )
         else:
-            target_context += "\nNo target connection details provided yet."
+            target_context += (
+                "\nNo target connection details provided yet."
+            )
 
-    prompt = f"""You are a data migration planning agent. Interpret the user's
+    return f"""You are a data migration planning agent. Interpret the user's
 migration request and produce a structured migration plan.
 
 AVAILABLE SOURCE TYPES:
@@ -157,8 +198,123 @@ Rules:
 - If the user asks for PostgreSQL/MongoDB without providing details, set requires_connection to true
 - Select transformations based on schema analysis and user request
 - Always include both validations unless user asks to skip
-- Provide clear, specific reasoning for every decision
-"""
+- Provide clear, specific reasoning for every decision"""
+
+
+# ─────────────────────────────────────────────
+# Plan response validation
+# ─────────────────────────────────────────────
+
+def _validate_plan_response(plan):
+    """
+    Validate that an LLM-generated plan has all required fields
+    with valid values. Sanitizes transformations and validations
+    to only known values.
+
+    Returns True if the plan is structurally valid.
+    """
+
+    if not isinstance(plan, dict):
+        return False
+
+    required = {
+        "source_type", "target_type", "table_name",
+        "transformations", "validations"
+    }
+    if not required.issubset(plan.keys()):
+        return False
+
+    if plan["source_type"] not in VALID_SOURCE_TYPES:
+        return False
+    if plan["target_type"] not in VALID_TARGET_TYPES:
+        return False
+
+    if not isinstance(plan["transformations"], list):
+        return False
+    if not isinstance(plan["validations"], list):
+        return False
+
+    # Sanitize to known values only
+    plan["transformations"] = [
+        t for t in plan["transformations"]
+        if t in VALID_TRANSFORMATIONS
+    ]
+    plan["validations"] = [
+        v for v in plan["validations"]
+        if v in VALID_VALIDATIONS
+    ]
+
+    return True
+
+
+# ─────────────────────────────────────────────
+# Gemini Planner
+# ─────────────────────────────────────────────
+
+def _generate_gemini_plan(
+    user_request, filename, schema, api_key,
+    source_type_hint, target_type_hint,
+    has_target_config
+):
+    """Generate plan using Google Gemini API."""
+
+    from google import genai
+    from google.genai import types
+    print("***** GEMINI PLANNER USED *****")
+    client = genai.Client(api_key=api_key)
+
+    prompt = _build_planning_prompt(
+        filename, schema, user_request,
+        target_type_hint, has_target_config
+    )
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0,
+            response_mime_type="application/json",
+        )
+    )
+
+    plan = json.loads(response.text)
+
+    # Validate response structure
+    if not _validate_plan_response(plan):
+        raise ValueError(
+            "Gemini returned invalid plan structure"
+        )
+
+    plan["planning_method"] = "gemini"
+    return plan
+
+
+# ─────────────────────────────────────────────
+# OpenAI Planner (preserved for backward compat)
+# ─────────────────────────────────────────────
+
+def _generate_ai_plan(
+    user_request, filename, schema, api_key,
+    source_type_hint, target_type_hint,
+    has_target_config
+):
+    """Generate plan using OpenAI GPT via langchain-openai."""
+
+    from langchain_openai import ChatOpenAI
+
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=0,
+        api_key=api_key,
+        model_kwargs={
+            "response_format": {"type": "json_object"}
+        }
+    )
+
+    prompt = _build_planning_prompt(
+        filename, schema, user_request,
+        target_type_hint, has_target_config
+    )
 
     response = llm.invoke(prompt)
     plan = json.loads(response.content)
@@ -167,13 +323,17 @@ Rules:
     return plan
 
 
+# ─────────────────────────────────────────────
+# Deterministic Planner
+# ─────────────────────────────────────────────
+
 def _generate_deterministic_plan(
     user_request, filename, schema,
     source_type_hint=None, target_type_hint=None,
     has_target_config=False
 ):
     """Fallback deterministic planning — no LLM required."""
-
+    print("***** DETERMINISTIC PLANNER USED *****")
     # Determine source type
     source_type = (source_type_hint or "csv").lower()
 

@@ -1,0 +1,109 @@
+{
+  "timestamp": "2026-06-03T10:59:12.976003",
+  "source_type": "postgresql",
+  "target_type": "duckdb",
+  "source_config": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "migration_db",
+    "username": "migration",
+    "password": "***",
+    "table_name": "california_migrated"
+  },
+  "target_config": {
+    "db_path": "generated\\california_migrated.duckdb",
+    "table_name": "california_migrated"
+  },
+  "table_name": "california_migrated",
+  "schema": {
+    "table_name": "california_migrated",
+    "row_count": 3000,
+    "column_count": 9,
+    "columns": [
+      {
+        "name": "longitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "latitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "housing_median_age",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_rooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_bedrooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "population",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "households",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_income",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_house_value",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": []
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.0518,
+    "extract": 0.031,
+    "transform": 0.0573,
+    "load": 0.0857,
+    "validate": 0.1421,
+    "total": 0.3632
+  },
+  "transformations": [
+    "normalize_columns"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": "generated\\california_migrated.duckdb"
+}

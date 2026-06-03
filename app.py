@@ -245,14 +245,33 @@ with st.sidebar:
 
     # ─── AI Configuration ───
     st.markdown("### 🔑 AI Configuration")
-    api_key = st.text_input(
-        "OpenAI API Key (optional)", type="password",
-        help="For AI-powered planning. Leave blank for deterministic."
+    ai_provider = st.selectbox(
+        "Planning Provider",
+        ["Deterministic", "Gemini", "OpenAI"],
+        help="Choose AI provider for migration planning"
     )
-    if api_key:
-        st.caption("🟢 AI planning enabled")
+
+    api_key = None
+    if ai_provider == "Gemini":
+        api_key = st.text_input(
+            "Gemini API Key", type="password",
+            help="Google AI API key for Gemini planning"
+        )
+        if api_key:
+            st.caption("🟢 Gemini AI planning enabled")
+        else:
+            st.caption("⚠️ Enter API key to enable Gemini")
+    elif ai_provider == "OpenAI":
+        api_key = st.text_input(
+            "OpenAI API Key", type="password",
+            help="OpenAI API key for GPT planning"
+        )
+        if api_key:
+            st.caption("🟢 OpenAI planning enabled")
+        else:
+            st.caption("⚠️ Enter API key to enable OpenAI")
     else:
-        st.caption("⚪ Deterministic planning")
+        st.caption("⚙️ Deterministic planning (no AI)")
 
     st.markdown("---")
     st.markdown("### 📜 Quick Info")
@@ -366,7 +385,8 @@ if generate_plan_btn and source_ready and user_request:
                 source_config=source_config,
                 target_type_hint=target_type.lower(),
                 has_target_config=has_target_config,
-                api_key=api_key if api_key else None
+                api_key=api_key if api_key else None,
+                provider=ai_provider.lower()
             )
             st.session_state.ai_plan = plan_result["plan"]
             st.session_state.ai_schema = plan_result["schema"]
@@ -394,8 +414,15 @@ if st.session_state.ai_plan:
 
     # Method badge
     method = plan.get("planning_method", "deterministic")
-    badge_cls = "method-badge-ai" if method == "ai" else "method-badge-deterministic"
-    badge_icon = "🤖 AI-Powered" if method == "ai" else "⚙️ Deterministic"
+    if method in ("ai", "gemini"):
+        badge_cls = "method-badge-ai"
+        badge_icon = (
+            "🤖 Gemini AI" if method == "gemini"
+            else "🤖 OpenAI"
+        )
+    else:
+        badge_cls = "method-badge-deterministic"
+        badge_icon = "⚙️ Deterministic"
     st.markdown(f'<span class="{badge_cls}">{badge_icon} Plan</span>', unsafe_allow_html=True)
     st.markdown("")
 
