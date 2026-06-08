@@ -362,27 +362,65 @@ if st.session_state.workflow_started:
         st.markdown('<div class="section-header">7. Migration Reconciliation</div>', unsafe_allow_html=True)
         recon_results = state.get("reconciliation", {})
         
-        if state.get("success"):
+        if state.get("success") and recon_results.get("overall_success"):
             st.success("✅ Target Reachable and Migration Complete")
         else:
             st.error("❌ Target Unreachable or No Rows Written (Rolled Back)")
             
-        st.json(recon_results)
+        r1, r2, r3 = st.columns(3)
+        rows_read = recon_results.get("rows_read", 0)
+        rows_written = recon_results.get("rows_written", 0)
+        rows_skipped = recon_results.get("rows_skipped", 0)
+        
+        r1.metric("Rows Read (Source)", rows_read)
+        r2.metric("Rows Written (Target)", rows_written)
+        r3.metric("Discrepancy (Skipped)", rows_skipped)
+        
+        if rows_read > 0:
+            match_pct = round((rows_written / rows_read) * 100, 2)
+            # Ensure progress value is between 0.0 and 1.0
+            st.progress(min(max(match_pct / 100.0, 0.0), 1.0), text=f"Data Transfer Completion: {match_pct}%")
 
         st.markdown('<div class="section-header">8. Executive Report</div>', unsafe_allow_html=True)
         report = state.get("report", {})
         
-        with st.expander("View Executive Summary Data", expanded=True):
+        # Build Markdown UI
+        st.markdown(f"### 🚀 {report.get('project_name', 'Migration Report')}")
+        st.markdown(f"**Source:** `{report.get('source')}` ➡️ **Target:** `{report.get('target')}`")
+        status_color = "#10B981" if report.get('success') else "#EF4444"
+        status_text = "SUCCESS" if report.get('success') else "FAILED"
+        st.markdown(f"**Final Status:** <span style='color:{status_color}; font-weight:bold;'>{status_text}</span>", unsafe_allow_html=True)
+        
+        impact = report.get("impact", {})
+        if impact:
+            st.markdown("#### 📈 Business Impact")
+            ic1, ic2 = st.columns(2)
+            ic1.markdown(f"- **Data Quality Improvement:** `{impact.get('quality_score_before')}%` ➡️ `{impact.get('quality_score_after')}%`")
+            ic1.markdown(f"- **Duplicates Removed:** `{impact.get('duplicates_removed')}`")
+            ic2.markdown(f"- **Total Rows Migrated:** `{impact.get('rows_after')}`")
+            ic2.markdown(f"- **Total Schema Changes:** `{impact.get('columns_renamed', 0) + impact.get('columns_dropped', 0) + impact.get('columns_added', 0)}`")
+            
+        with st.expander("View Full Report Details"):
             st.json(report)
             
         json_report = json.dumps(report, indent=2)
-        markdown_report = f"# Migration Executive Report\n\n**Source:** {report.get('source')}\n**Target:** {report.get('target')}\n**Status:** {'SUCCESS' if report.get('success') else 'FAILED'}\n\n"
-        markdown_report += f"## Impact\n```json\n{json.dumps(report.get('impact'), indent=2)}\n```"
+        
+        # Build proper markdown file content
+        markdown_report = f"# {report.get('project_name', 'Migration Report')}\n\n"
+        markdown_report += f"**Source:** `{report.get('source')}`\n"
+        markdown_report += f"**Target:** `{report.get('target')}`\n"
+        markdown_report += f"**Status:** {status_text}\n\n"
+        markdown_report += f"## Impact\n"
+        markdown_report += f"- Data Quality: {impact.get('quality_score_before')}% -> {impact.get('quality_score_after')}%\n"
+        markdown_report += f"- Duplicates Removed: {impact.get('duplicates_removed')}\n"
+        markdown_report += f"- Rows Migrated: {impact.get('rows_after')}\n"
         
         rc1, rc2 = st.columns(2)
         rc1.download_button("📥 Download JSON Report", data=json_report, file_name="migration_executive_report.json", mime="application/json", use_container_width=True)
         rc2.download_button("📥 Download Markdown Report", data=markdown_report, file_name="migration_executive_report.md", mime="text/markdown", use_container_width=True)
-        st.balloons()
+        
+        if report.get('success') and recon_results.get("overall_success"):
+            st.balloons()
 
 
 # ─────────────────────────────────────────────
