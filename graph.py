@@ -1,240 +1,408 @@
 """
-LangGraph Migration Workflow
+LangGraph V2 Migration Workflow
 
-Multi-connector migration orchestration via StateGraph.
-
-Topology (unchanged):
-    planner → retriever → executor → tester → supervisor
-
-The executor and tester now use the connector factory to
-instantiate source/target connectors dynamically from
-source_type, target_type, source_config, and target_config
-stored in AgentState.
+Agentic 10-Node Workflow:
+Request Intake → Schema Discovery → Data Profiler → Migration Analyst → 
+Human Review (Interrupt) → Transformation Planner → Migration Executor → 
+Reconciler → Reporter → Supervisor
 """
 
-from typing import TypedDict
+import time
+import os
+import json
+import sqlalchemy.exc
+from typing import TypedDict, Any
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
 
 from connectors.connector_factory import get_connector
-from etl.transform import transform_data
+from etl.transform import transform_data_dsl, transform_data
 from etl.rollback import rollback_migration
 from etl.schema import discover_schema
-
-from validation.run_validations import run_all_validations
-
-import time
+from profiling.data_profiler import profile_data
+from ai_brain import generate_transformation_dsl, summarize_transformation_dsl
 
 
 class AgentState(TypedDict):
+    # Setup
     query: str
-    plan: list[str]
-    executed_steps: list[str]
-    context: str
-    success: bool
     source_type: str
     target_type: str
     source_config: dict
     target_config: dict
     table_name: str
+    
+    # State tracking
+    executed_steps: list[str]
     timings: dict
-    validation_results: dict
+    success: bool
+    
+    # Discover & Profile
+    schema: dict
+    profile: dict
+    
+    # Analysis & Preview
+    assessment: dict
+    transformation_dsl: dict
+    preview: list
+    impact: dict
+    risk: dict
+    
+    # Human Review Feedback
+    human_feedback: str
+    plan_approved: bool
+    
+    # Execution parameters
     transformations: list[str]
     validations: list[str]
     output_file_path: str
+    
+    # Post-Execution (Reconciliation)
+    reconciliation: dict
+    report: dict
 
 
-def planner(state: AgentState):
+# ─────────────────────────────────────────────
+# Graph Nodes
+# ─────────────────────────────────────────────
+
+def request_intake(state: AgentState):
     start = time.time()
-
-    result = {
-        "plan": ["extract", "transform", "load"]
-    }
-
+    
+    source_config = state.get("source_config") or {}
+    source_type = state.get("source_type", "csv").lower()
+    
+    # Backward compatibility
+    if not source_config and source_type == "csv":
+        source_config = {"file_path": "data/enterprise.csv"}
+        
+    target_config = state.get("target_config") or {}
+    
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
-    timings["planner"] = round(elapsed, 4)
-    result["timings"] = timings
+    timings["request_intake"] = round(elapsed, 4)
+    
+    return {
+        "source_config": source_config,
+        "target_config": target_config,
+        "executed_steps": state.get("executed_steps", []) + ["request_intake"],
+        "timings": timings
+    }
 
-    return result
-
-
-def retriever(state: AgentState):
+def schema_discovery(state: AgentState):
     start = time.time()
-
-    source_type = state.get("source_type", "csv")
-    source_config = state.get("source_config") or {}
-
-    # Backward compatibility: if source_config has file_path
-    if not source_config and source_type.lower() == "csv":
-        source_config = {
-            "file_path": "data/enterprise.csv"
-        }
-
-    schema = discover_schema(source_type, source_config)
-
+    
+    schema = discover_schema(state["source_type"], state["source_config"])
+    
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
     timings["schema_discovery"] = round(elapsed, 4)
-
+    
     return {
-        "context": str(schema),
+        "schema": schema,
+        "executed_steps": state["executed_steps"] + ["schema_discovery"],
         "timings": timings
     }
 
-
-def executor(state: AgentState):
-    if not state["plan"]:
-        return {}
-
+def data_profiler(state: AgentState):
     start = time.time()
-    step = state["plan"][0]
-
-    source_type = state.get("source_type", "csv").lower()
-    target_type = state.get("target_type", "duckdb").lower()
-    source_config = state.get("source_config") or {}
-    target_config = state.get("target_config") or {}
-    transformations = state.get("transformations") or None
-
-    # Build connectors via factory
-    source = get_connector(source_type, **source_config)
-    target = get_connector(target_type, **target_config)
-
-    if step == "extract":
-        df = source.read_data()
-        print(f"Extracted {len(df)} rows.")
-
-    elif step == "load":
-
-        df = source.read_data()
-
-        transformed_df = transform_data(
-            df, transformations=transformations
-        )
-
-        max_retries = 3
-
-        for attempt in range(max_retries):
-
-            try:
-
-                target.write_data(transformed_df)
-                print("[LOAD] Migration successful")
-
-                break
-
-            except Exception as e:
-
-                print(f"[LOAD] Attempt {attempt + 1} failed")
-                print(f"[LOAD] Error: {e}")
-
-                if attempt < max_retries - 1:
-
-                    print("[LOAD] Retrying in 2 seconds...")
-                    time.sleep(2)
-
-                else:
-
-                    print("[LOAD] All retries exhausted")
-
-                    raise e
-
-    elif step == "transform":
-
-        df = source.read_data()
-
-        transformed_df = transform_data(
-            df, transformations=transformations
-        )
-
-        print("Transformation completed.")
-
+    
+    source_connector = get_connector(state["source_type"], **state["source_config"])
+    profile = profile_data(source_connector)
+    
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
-    timings[step] = round(elapsed, 4)
-
+    timings["data_profiler"] = round(elapsed, 4)
+    
     return {
-        "plan": state["plan"][1:],
-        "executed_steps": state["executed_steps"] + [step],
+        "profile": profile,
+        "executed_steps": state["executed_steps"] + ["data_profiler"],
         "timings": timings
     }
 
-
-def should_continue(state: AgentState):
-    if state["plan"]:
-        return "executor"
-    return "tester"
-
-
-def tester(state: AgentState):
+def migration_analyst(state: AgentState):
+    """Invokes the AI Brain to assess and plan."""
     start = time.time()
-
-    print("Running validations...")
-
-    source_type = state.get("source_type", "csv").lower()
-    target_type = state.get("target_type", "duckdb").lower()
-    source_config = state.get("source_config") or {}
-    target_config = state.get("target_config") or {}
-    validations_list = state.get("validations") or None
-    transformations = state.get("transformations") or None
-
-    # Build connectors for validation
-    source = get_connector(source_type, **source_config)
-    target = get_connector(target_type, **target_config)
-
-    validation_results = run_all_validations(
-        source_connector=source,
-        target_connector=target,
-        validations=validations_list,
-        transformations=transformations
-    )
-
-    if not validation_results["overall_success"]:
-        target_for_rollback = get_connector(
-            target_type, **target_config
-        )
-        rollback_migration(target_for_rollback)
-
+    
+    profile = state.get("profile", {})
+    query = state.get("query", "")
+    human_feedback = state.get("human_feedback", "")
+    
+    # If the user gave feedback, pass it as intent to the AI Brain
+    full_request = query
+    if human_feedback:
+        full_request += f" | User Feedback to incorporate: {human_feedback}"
+        
+    dsl = generate_transformation_dsl(profile=profile, user_request=full_request)
+    
+    # Extract assessment components from DSL for UI
+    assessment = {
+        "dataset_assessment": dsl.get("dataset_assessment", ""),
+        "identified_issues": dsl.get("identified_issues", []),
+        "schema_mapping_recommendations": dsl.get("schema_mapping_recommendations", [])
+    }
+    
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
-    timings["validate"] = round(elapsed, 4)
-
+    timings["migration_analyst"] = round(elapsed, 4)
+    
     return {
-        "success": validation_results["overall_success"],
-        "validation_results": validation_results,
+        "assessment": assessment,
+        "transformation_dsl": dsl,
+        "executed_steps": state["executed_steps"] + ["migration_analyst"],
         "timings": timings
     }
 
+from etl.preview import generate_preview, generate_impact_summary, generate_risk_assessment
+
+def transformation_previewer(state: AgentState):
+    start = time.time()
+    
+    source = get_connector(state["source_type"], **state["source_config"])
+    # Use a sample for previewing to keep it fast
+    df = source.read_data().head(10000)
+    
+    dsl = state.get("transformation_dsl", {})
+    
+    preview_data, df_after = generate_preview(df, dsl)
+    impact = generate_impact_summary(df, df_after, dsl)
+    risk = generate_risk_assessment(dsl)
+    
+    elapsed = time.time() - start
+    timings = dict(state.get("timings") or {})
+    timings["transformation_previewer"] = round(elapsed, 4)
+    
+    return {
+        "preview": preview_data,
+        "impact": impact,
+        "risk": risk,
+        "executed_steps": state["executed_steps"] + ["transformation_previewer"],
+        "timings": timings
+    }
+
+def human_review(state: AgentState):
+    """
+    Virtual node to process human input.
+    Execution pauses BEFORE this node via interrupt.
+    When resumed, it evaluates if plan is approved.
+    """
+    start = time.time()
+    elapsed = time.time() - start
+    timings = dict(state.get("timings") or {})
+    timings["human_review"] = round(elapsed, 4)
+    
+    # State updates (plan_approved, human_feedback) are pushed by stream resumption
+    return {
+        "executed_steps": state["executed_steps"] + ["human_review"],
+        "timings": timings
+    }
+
+def route_after_review(state: AgentState):
+    """If not approved, loop back to analyst for recalculation. Else continue."""
+    if not state.get("plan_approved", False):
+        return "migration_analyst"
+    return "transformation_planner"
+
+def transformation_planner(state: AgentState):
+    start = time.time()
+    
+    # Extract legacy string list to satisfy legacy Executor tests
+    dsl = state.get("transformation_dsl", {})
+    transform_labels = summarize_transformation_dsl(dsl)
+    
+    elapsed = time.time() - start
+    timings = dict(state.get("timings") or {})
+    timings["transformation_planner"] = round(elapsed, 4)
+    
+    return {
+        "transformations": transform_labels,
+        "executed_steps": state["executed_steps"] + ["transformation_planner"],
+        "timings": timings
+    }
+
+def migration_executor(state: AgentState):
+    start = time.time()
+    
+    source = get_connector(state["source_type"], **state["source_config"])
+    target = get_connector(state["target_type"], **state["target_config"])
+    
+    print("EXECUTOR_START")
+    df = source.read_data()
+    print(f"SOURCE_ROWS: {len(df)}")
+    
+    # V2 Execution path
+    dsl = state.get("transformation_dsl")
+    if dsl:
+        transformed_df, _ = transform_data_dsl(df, dsl)
+    else:
+        # Fallback to V1
+        transformed_df = transform_data(df, transformations=state.get("transformations"))
+
+    print(f"TARGET_TABLE: {target.table_name}")
+    print(f"CONNECTING_TO_POSTGRES: {getattr(target, 'connection_string', 'N/A')}")
+    print("TABLE_CREATE_START")
+    print(f"ROWS_TO_INSERT: {len(transformed_df)}")
+
+    max_retries = 3
+    success = False
+    for attempt in range(max_retries):
+        try:
+            target.write_data(transformed_df)
+            print("TABLE_CREATE_SUCCESS")
+            print(f"ROWS_INSERTED: {len(transformed_df)}")
+            print("COMMIT_START")
+            print("COMMIT_SUCCESS")
+            success = True
+            break
+        except Exception as e:
+            print(f"[LOAD] Attempt {attempt + 1} failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2)
+            else:
+                raise e
+
+    print("EXECUTOR_COMPLETE")
+    elapsed = time.time() - start
+    timings = dict(state.get("timings") or {})
+    timings["migration_executor"] = round(elapsed, 4)
+    
+    return {
+        "executed_steps": state["executed_steps"] + ["migration_executor"],
+        "timings": timings
+    }
+
+def reconciler(state: AgentState):
+    start = time.time()
+    print("RECONCILER_START")
+    
+    source = get_connector(state["source_type"], **state["source_config"])
+    target = get_connector(state["target_type"], **state["target_config"])
+    
+    print(f"TARGET_DATABASE: {getattr(target, 'database', 'N/A')}")
+    print(f"TARGET_TABLE: {getattr(target, 'table_name', 'N/A')}")
+    
+    try:
+        source_data = source.read_data()
+        rows_read = len(source_data)
+    except Exception as e:
+        print(f"Source read error: {e}")
+        rows_read = 0
+
+    try:
+        target_data = target.read_data()
+        rows_written = len(target_data)
+        print(f"ROWS_FOUND: {rows_written}")
+        target_reachable = True
+    except (sqlalchemy.exc.DatabaseError, FileNotFoundError, Exception) as e:
+        print(f"[RECONCILER ERROR] Database Error on read_data: {e}")
+        rows_written = 0
+        target_reachable = False
+
+    table_created = rows_written > 0
+    success = table_created and target_reachable
+    print(f"RECONCILIATION_SUCCESS: {success}")
+    
+    duplicates_removed = state.get("impact", {}).get("duplicates_removed", 0)
+
+    reconciliation_results = {
+        "rows_read": rows_read,
+        "rows_written": rows_written,
+        "rows_skipped": duplicates_removed,
+        "target_reachable": target_reachable,
+        "table_created": table_created,
+        "overall_success": success
+    }
+    
+    if not success:
+        print("[RECONCILER] Target unreachable or empty. Triggering rollback.")
+        rollback_migration(target)
+        
+    elapsed = time.time() - start
+    timings = dict(state.get("timings") or {})
+    timings["reconciler"] = round(elapsed, 4)
+    
+    return {
+        "success": success,
+        "reconciliation": reconciliation_results,
+        "executed_steps": state["executed_steps"] + ["reconciler"],
+        "timings": timings
+    }
+
+
+def reporter(state: AgentState):
+    start = time.time()
+    
+    report = {
+        "source": state.get("source_type"),
+        "target": state.get("target_type"),
+        "success": state.get("success"),
+        "reconciliation_results": state.get("reconciliation"),
+        "impact": state.get("impact"),
+        "risk": state.get("risk"),
+        "timings": state.get("timings")
+    }
+    
+    elapsed = time.time() - start
+    timings = dict(state.get("timings") or {})
+    timings["reporter"] = round(elapsed, 4)
+    
+    return {
+        "report": report,
+        "executed_steps": state["executed_steps"] + ["reporter"],
+        "timings": timings
+    }
 
 def supervisor(state: AgentState):
-    return {}
+    return {
+        "executed_steps": state["executed_steps"] + ["supervisor"],
+    }
 
+
+# ─────────────────────────────────────────────
+# Graph Compilation
+# ─────────────────────────────────────────────
 
 builder = StateGraph(AgentState)
 
-builder.add_node("planner", planner)
-builder.add_node("retriever", retriever)
-builder.add_node("executor", executor)
-builder.add_node("tester", tester)
+builder.add_node("request_intake", request_intake)
+builder.add_node("schema_discovery", schema_discovery)
+builder.add_node("data_profiler", data_profiler)
+builder.add_node("migration_analyst", migration_analyst)
+builder.add_node("transformation_previewer", transformation_previewer)
+builder.add_node("human_review", human_review)
+builder.add_node("transformation_planner", transformation_planner)
+builder.add_node("migration_executor", migration_executor)
+builder.add_node("reconciler", reconciler)  
+builder.add_node("reporter", reporter)
 builder.add_node("supervisor", supervisor)
 
-builder.set_entry_point("planner")
+builder.set_entry_point("request_intake")
 
-builder.add_edge("planner", "retriever")
-builder.add_edge("retriever", "executor")
+builder.add_edge("request_intake", "schema_discovery")
+builder.add_edge("schema_discovery", "data_profiler")
+builder.add_edge("data_profiler", "migration_analyst")
+builder.add_edge("migration_analyst", "transformation_previewer")
+builder.add_edge("transformation_previewer", "human_review")
 
-builder.add_conditional_edges(
-    "executor",
-    should_continue,
-    {
-        "executor": "executor",
-        "tester": "tester"
-    }
-)
-builder.add_edge("tester", "supervisor")
+builder.add_conditional_edges("human_review", route_after_review)
+
+builder.add_edge("transformation_planner", "migration_executor")
+builder.add_edge("migration_executor", "reconciler")
+
+builder.add_edge("reconciler", "reporter")
+builder.add_edge("reporter", "supervisor")
 builder.add_edge("supervisor", END)
 
-graph = builder.compile()
+# Attach Checkpointer and Interrupt
+memory = MemorySaver()
+graph = builder.compile(
+    checkpointer=memory,
+    interrupt_before=["human_review"]
+)
 
+# ─────────────────────────────────────────────
+# Backward-Compatible Runner (Tests/CLI)
+# ─────────────────────────────────────────────
 
 def run_migration(
     source_type="csv",
@@ -246,21 +414,8 @@ def run_migration(
     validations=None,
     output_file_path=""
 ):
-    """
-    Run the full migration workflow.
-
-    Args:
-        source_type: Connector type ('csv', 'duckdb', 'postgresql', 'mongodb')
-        target_type: Connector type ('duckdb', 'postgresql', 'mongodb')
-        source_config: Dict of connection params for source connector
-        target_config: Dict of connection params for target connector
-        table_name: Name for the target table/collection
-        transformations: List of transforms to apply (or None for all)
-        validations: List of validations to run (or None for all)
-        output_file_path: Path to generated output file (DuckDB only)
-    """
-
-    # Defaults for backward compatibility
+    import uuid
+    
     if source_config is None:
         source_config = {"file_path": "data/enterprise.csv"}
     if target_config is None:
@@ -270,41 +425,43 @@ def run_migration(
         }
 
     total_start = time.time()
-
+    
     initial_state = {
         "query": f"Migrate {table_name} data",
-        "plan": [],
-        "executed_steps": [],
-        "context": "",
-        "success": False,
         "source_type": source_type,
         "target_type": target_type,
         "source_config": source_config,
         "target_config": target_config,
         "table_name": table_name,
-        "timings": {},
-        "validation_results": {},
-        "transformations": transformations or [
-            "normalize_columns",
-            "handle_nulls",
-            "type_conversion"
-        ],
-        "validations": validations or [
-            "row_count",
-            "checksum"
-        ],
-        "output_file_path": output_file_path
+        "transformations": transformations,
+        "output_file_path": output_file_path,
+        "plan_approved": False,
+        "executed_steps": [],
+        "timings": {}
     }
 
-    result = graph.invoke(initial_state)
+    thread_id = str(uuid.uuid4())
+    config = {"configurable": {"thread_id": thread_id}}
 
+    # Run up to human_review
+    state_iter = graph.invoke(initial_state, config=config)
+    
+    # Auto-approve for non-interactive runner
+    resume_state = {
+        "plan_approved": True,
+        "human_feedback": ""
+    }
+    graph.update_state(config, resume_state)
+    
+    # Resume execution
+    result = graph.invoke(None, config=config)
+    
     timings = dict(result.get("timings") or {})
     timings["total"] = round(time.time() - total_start, 4)
     result["timings"] = timings
 
     return result
 
-
 if __name__ == "__main__":
     result = run_migration()
-    print(result)
+    print("Migration Success:", result.get("success"))

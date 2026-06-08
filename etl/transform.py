@@ -1,4 +1,17 @@
+"""
+Transformation Module
+
+V1 transform_data() is preserved for backward compatibility.
+V2 adds transform_data_dsl() which bridges V1 string lists
+to the new DSL engine, and also accepts raw DSL dicts.
+
+All existing callers (graph.py, validate.py, diagnostics.py)
+continue to work with zero changes.
+"""
+
 import pandas as pd
+
+from etl.dsl_engine import execute_dsl
 
 
 def transform_data(df: pd.DataFrame, transformations=None) -> pd.DataFrame:
@@ -6,13 +19,21 @@ def transform_data(df: pd.DataFrame, transformations=None) -> pd.DataFrame:
     Apply transformations to the dataset.
 
     If transformations is None, apply all (backward compatible).
-    If transformations is a list, apply only the specified ones.
+    If transformations is a list of strings, apply V1 logic.
+    If transformations is a dict with "transformations" key, delegate to DSL engine.
 
-    Supported transformations:
+    Supported V1 transformations:
         - normalize_columns
         - handle_nulls
         - type_conversion
     """
+
+    # V2 path: if a DSL dict is passed, delegate to DSL engine
+    if isinstance(transformations, dict) and "transformations" in transformations:
+        result_df, log = execute_dsl(df, transformations)
+        return result_df
+
+    # V1 path: original logic preserved below
 
     # Create a copy
     df = df.copy()
@@ -60,3 +81,24 @@ def transform_data(df: pd.DataFrame, transformations=None) -> pd.DataFrame:
             df["revenue"] = df["revenue"].astype(float)
 
     return df
+
+
+def transform_data_dsl(
+    df: pd.DataFrame,
+    dsl: dict
+) -> tuple:
+    """
+    V2 DSL-based transformation entry point.
+
+    Thin wrapper around execute_dsl that provides a consistent
+    interface for the V2 LangGraph workflow.
+
+    Args:
+        df: Input DataFrame
+        dsl: DSL dict with "transformations" key
+
+    Returns:
+        tuple: (transformed_df, execution_log)
+    """
+
+    return execute_dsl(df, dsl)

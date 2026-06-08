@@ -15,6 +15,10 @@ Docker setup:
     postgres:16
 """
 
+import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
+
 from connectors.csv_connector import CSVConnector
 from connectors.postgres_connector import PostgreSQLConnector
 
@@ -28,13 +32,19 @@ def test_csv_to_postgres():
 
     # Write to PostgreSQL
     target = PostgreSQLConnector(
-        host="localhost",
+        host="127.0.0.1",
         port=5432,
         database="migration_db",
         username="migration",
         password="migration123",
         table_name="enterprise_test"
     )
+    try:
+        with target.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except OperationalError:
+        pytest.skip("PostgreSQL is not running on 127.0.0.1:5432")
+
     target.write_data(source_df)
 
     # Read back

@@ -12,6 +12,9 @@ Docker setup:
     mongo:7
 """
 
+import pytest
+from pymongo.errors import ServerSelectionTimeoutError
+
 from connectors.csv_connector import CSVConnector
 from connectors.mongodb_connector import MongoDBConnector
 
@@ -25,10 +28,15 @@ def test_csv_to_mongodb():
 
     # Write to MongoDB
     target = MongoDBConnector(
-        connection_string="mongodb://localhost:27017",
+        connection_string="mongodb://localhost:27017/?serverSelectionTimeoutMS=1000",
         database="migration_test",
         collection="enterprise_test"
     )
+    try:
+        target.client.admin.command("ping")
+    except ServerSelectionTimeoutError:
+        pytest.skip("MongoDB is not running on localhost:27017")
+
     target.write_data(source_df)
 
     # Read back

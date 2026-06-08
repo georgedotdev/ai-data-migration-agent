@@ -15,7 +15,7 @@ class PostgreSQLConnector(BaseConnector):
 
     def __init__(
         self,
-        host="localhost",
+        host="127.0.0.1",
         port=5432,
         database="migration_db",
         username="migration",
@@ -34,11 +34,13 @@ class PostgreSQLConnector(BaseConnector):
             f"@{host}:{port}/{database}"
         )
         self.engine = create_engine(self.connection_string)
+        
+        # No fallback. Fail if PostgreSQL is unreachable.
 
     def read_data(self):
         """Read entire table into a DataFrame."""
 
-        query = f"SELECT * FROM {self.table_name}"
+        query = f'SELECT * FROM "{self.table_name}"'
         df = pd.read_sql(query, self.engine)
         return df
 
@@ -78,7 +80,7 @@ class PostgreSQLConnector(BaseConnector):
         with self.engine.connect() as conn:
             conn.execute(
                 text(
-                    f"DROP TABLE IF EXISTS {self.table_name}"
+                    f'DROP TABLE IF EXISTS "{self.table_name}"'
                 )
             )
             conn.commit()
@@ -91,7 +93,7 @@ class PostgreSQLConnector(BaseConnector):
     def count_rows(self):
         """Return row count for validation."""
 
-        query = f"SELECT COUNT(*) FROM {self.table_name}"
+        query = f'SELECT COUNT(*) FROM "{self.table_name}"'
         with self.engine.connect() as conn:
             result = conn.execute(text(query))
             return result.scalar()

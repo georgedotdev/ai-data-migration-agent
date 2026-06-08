@@ -12,7 +12,7 @@ import json
 import time
 from datetime import datetime
 
-from migration_service import run_full_migration
+from graph import run_migration
 
 
 # ─────────────────────────────────────────────
@@ -127,7 +127,7 @@ with col_info:
     and collects:
 
     - ⏱️ **Per-step timings**
-    - ✅ **Validation pass/fail**
+    - ✅ **Reconciliation results**
     - 📏 **Row counts**
     - 📊 **SLA compliance**
 
@@ -179,48 +179,35 @@ if uploaded_files:
             # Run migration
             run_start = time.time()
             try:
-                result = run_full_migration(
-                    source_type="CSV",
-                    target_type="DuckDB",
-                    source_path=save_path,
-                    db_path="migration.duckdb",
+                result = run_migration(
+                    source_type="csv",
+                    target_type="duckdb",
+                    source_config={"file_path": save_path},
+                    target_config={"db_path": "migration.duckdb", "table_name": table_name},
                     table_name=table_name
                 )
 
-                total_time = result["result"].get(
-                    "timings", {}
-                ).get("total", round(time.time() - run_start, 4))
+                total_time = result.get("timings", {}).get("total", round(time.time() - run_start, 4))
+                schema = result.get("schema", {})
+                recon = result.get("reconciliation", {})
 
                 results.append({
                     "Dataset": file.name,
-                    "Rows": result["schema"].get("row_count", 0),
-                    "Columns": result["schema"].get("column_count", 0),
-                    "Row Count ✓": (
-                        "✅" if result["result"].get(
-                            "validation_results", {}
-                        ).get("row_count", False) else "❌"
+                    "Rows": schema.get("row_count", 0),
+                    "Columns": schema.get("column_count", 0),
+                    "Target Reachable ✓": (
+                        "✅" if recon.get("target_reachable", False) else "❌"
                     ),
-                    "Checksum ✓": (
-                        "✅" if result["result"].get(
-                            "validation_results", {}
-                        ).get("checksum", False) else "❌"
+                    "Table Created ✓": (
+                        "✅" if recon.get("table_created", False) else "❌"
                     ),
                     "Status": (
-                        "✅ Pass" if result["result"].get("success")
+                        "✅ Pass" if result.get("success")
                         else "❌ Fail"
                     ),
-                    "Extract (s)": result["result"].get(
-                        "timings", {}
-                    ).get("extract", "—"),
-                    "Transform (s)": result["result"].get(
-                        "timings", {}
-                    ).get("transform", "—"),
-                    "Load (s)": result["result"].get(
-                        "timings", {}
-                    ).get("load", "—"),
-                    "Validate (s)": result["result"].get(
-                        "timings", {}
-                    ).get("validate", "—"),
+                    "Extract (s)": result.get("timings", {}).get("request_intake", "—"),
+                    "Transform (s)": result.get("timings", {}).get("migration_executor", "—"),
+                    "Reconcile (s)": result.get("timings", {}).get("reconciler", "—"),
                     "Total (s)": total_time,
                     "SLA": (
                         "✅ Within SLA"
@@ -234,13 +221,12 @@ if uploaded_files:
                     "Dataset": file.name,
                     "Rows": "—",
                     "Columns": "—",
-                    "Row Count ✓": "—",
-                    "Checksum ✓": "—",
+                    "Target Reachable ✓": "—",
+                    "Table Created ✓": "—",
                     "Status": f"❌ Error",
                     "Extract (s)": "—",
                     "Transform (s)": "—",
-                    "Load (s)": "—",
-                    "Validate (s)": "—",
+                    "Reconcile (s)": "—",
                     "Total (s)": "—",
                     "SLA": "—",
                 })

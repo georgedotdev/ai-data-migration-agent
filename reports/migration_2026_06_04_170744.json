@@ -1,0 +1,108 @@
+{
+  "timestamp": "2026-06-04T17:07:44.496995",
+  "source_type": "csv",
+  "target_type": "postgresql",
+  "source_config": {
+    "file_path": "data\\california_housing_test.csv"
+  },
+  "target_config": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "migration_db",
+    "username": "migration",
+    "password": "***",
+    "table_name": "california_miagrated"
+  },
+  "table_name": "california_housing_test",
+  "schema": {
+    "table_name": "data\\california_housing_test.csv",
+    "row_count": 3000,
+    "column_count": 9,
+    "columns": [
+      {
+        "name": "longitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "latitude",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "housing_median_age",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_rooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "total_bedrooms",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "population",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "households",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_income",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "median_house_value",
+        "dtype": "float64",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": []
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.0203,
+    "extract": 0.1691,
+    "transform": 0.0135,
+    "load": 0.2634,
+    "validate": 0.1723,
+    "total": 0.655
+  },
+  "transformations": [
+    "type_conversion"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": ""
+}

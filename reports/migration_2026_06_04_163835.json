@@ -1,0 +1,128 @@
+{
+  "timestamp": "2026-06-04T16:38:35.514259",
+  "source_type": "csv",
+  "target_type": "duckdb",
+  "source_config": {
+    "file_path": "data\\customers-100000.csv"
+  },
+  "target_config": {
+    "db_path": "generated\\customers_100000.duckdb",
+    "table_name": "customers_100000"
+  },
+  "table_name": "customers_100000",
+  "schema": {
+    "table_name": "data\\customers-100000.csv",
+    "row_count": 100000,
+    "column_count": 12,
+    "columns": [
+      {
+        "name": "Index",
+        "dtype": "int64",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Customer Id",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "First Name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Last Name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Company",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "City",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Country",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Phone 1",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Phone 2",
+        "dtype": "str",
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "Email",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Subscription Date",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Website",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": [
+      "Index",
+      "Customer Id",
+      "Phone 1",
+      "Phone 2"
+    ]
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.6328,
+    "extract": 0.5211,
+    "transform": 0.5764,
+    "load": 1.6452,
+    "validate": 4.9119,
+    "total": 8.2958
+  },
+  "transformations": [
+    "normalize_columns",
+    "type_conversion"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": "generated\\customers_100000.duckdb"
+}

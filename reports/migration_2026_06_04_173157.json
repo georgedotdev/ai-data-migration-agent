@@ -1,0 +1,116 @@
+{
+  "timestamp": "2026-06-04T17:31:57.049714",
+  "source_type": "csv",
+  "target_type": "postgresql",
+  "source_config": {
+    "file_path": "data\\enterprise.csv.csv"
+  },
+  "target_config": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "migration_db",
+    "username": "migration",
+    "password": "***",
+    "table_name": "enterprise_migrated"
+  },
+  "table_name": "enterprise",
+  "schema": {
+    "table_name": "data\\enterprise.csv.csv",
+    "row_count": 55620,
+    "column_count": 10,
+    "columns": [
+      {
+        "name": "Year",
+        "dtype": "int64",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Industry_aggregation_NZSIOC",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Industry_code_NZSIOC",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Industry_name_NZSIOC",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Units",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Variable_code",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Variable_name",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Variable_category",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Value",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "name": "Industry_code_ANZSIC06",
+        "dtype": "str",
+        "nullable": false,
+        "unique": false
+      }
+    ],
+    "primary_key_candidates": []
+  },
+  "executed_steps": [
+    "extract",
+    "transform",
+    "load"
+  ],
+  "success": true,
+  "validation_results": {
+    "row_count": true,
+    "checksum": true,
+    "overall_success": true,
+    "diagnostics": null
+  },
+  "timings": {
+    "planner": 0.0,
+    "schema_discovery": 0.208,
+    "extract": 0.1469,
+    "transform": 0.1574,
+    "load": 2.8868,
+    "validate": 1.3995,
+    "total": 4.7681
+  },
+  "transformations": [
+    "normalize_columns",
+    "handle_nulls",
+    "type_conversion"
+  ],
+  "validations": [
+    "row_count",
+    "checksum"
+  ],
+  "output_file_path": ""
+}

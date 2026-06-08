@@ -13,13 +13,14 @@ so large datasets remain manageable.
 
 import pandas as pd
 
-from etl.transform import transform_data
+from etl.transform import transform_data, transform_data_dsl
 
 
 def run_diagnostics(
     source_connector,
     target_connector,
     transformations=None,
+    dsl_transformations=None,
     max_mismatches=20
 ):
     """
@@ -33,9 +34,12 @@ def run_diagnostics(
 
     # Read source data via connector and apply transforms
     source_df = source_connector.read_data()
-    source_df = transform_data(
-        source_df, transformations=transformations
-    )
+    if dsl_transformations:
+        source_df, _ = transform_data_dsl(source_df, dsl_transformations)
+    else:
+        source_df = transform_data(
+            source_df, transformations=transformations
+        )
 
     # Read target data via connector
     target_df = target_connector.read_data()
@@ -71,6 +75,12 @@ def run_diagnostics(
         set(source_df.columns) & set(target_df.columns)
     )
 
+    # ALIGNMENT FIX: Sort both dataframes deterministically by all common columns
+    # This prevents false positives when target DB shuffles rows or remove_duplicates reduces rows
+    if common_columns:
+        source_df = source_df.sort_values(by=common_columns).reset_index(drop=True)
+        target_df = target_df.sort_values(by=common_columns).reset_index(drop=True)
+
     min_rows = min(len(source_df), len(target_df))
     mismatches = []
     mismatched_columns = set()
@@ -81,13 +91,11 @@ def run_diagnostics(
             source_df[col]
             .head(min_rows)
             .astype(str)
-            .reset_index(drop=True)
         )
         target_col = (
             target_df[col]
             .head(min_rows)
             .astype(str)
-            .reset_index(drop=True)
         )
 
         diff_mask = source_col != target_col

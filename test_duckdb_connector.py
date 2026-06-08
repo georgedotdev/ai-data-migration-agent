@@ -20,4 +20,4 @@ print(loaded_df.head())
 
 print(
     f"Rows loaded: {len(loaded_df)}"
-)
+)   
