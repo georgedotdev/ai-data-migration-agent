@@ -23,14 +23,18 @@ def get_agent_state(thread_id: str):
     return graph.get_state(config)
 
 
-def resume_migration(thread_id: str, plan_approved: bool, human_feedback: str = ""):
+def resume_migration(thread_id: str, plan_approved: bool, human_feedback: str = "", rejected_steps: list = None):
     """
     Resume the LangGraph workflow with human feedback.
     """
+    if rejected_steps is None:
+        rejected_steps = []
+        
     config = {"configurable": {"thread_id": thread_id}}
     resume_state = {
         "plan_approved": plan_approved,
-        "human_feedback": human_feedback
+        "human_feedback": human_feedback,
+        "rejected_steps": rejected_steps
     }
     graph.update_state(config, resume_state)
     return graph.invoke(None, config=config)

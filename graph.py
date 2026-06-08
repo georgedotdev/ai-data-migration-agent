@@ -51,6 +51,7 @@ class AgentState(TypedDict):
     # Human Review Feedback
     human_feedback: str
     plan_approved: bool
+    rejected_steps: list[int]
     
     # Execution parameters
     transformations: list[str]
@@ -208,6 +209,13 @@ def transformation_planner(state: AgentState):
     
     # Extract legacy string list to satisfy legacy Executor tests
     dsl = state.get("transformation_dsl", {})
+    rejected_steps = state.get("rejected_steps", [])
+    
+    # Filter out any manually rejected steps from the UI checklist
+    if rejected_steps and dsl and "transformations" in dsl:
+        filtered_transformations = [t for i, t in enumerate(dsl["transformations"]) if i not in rejected_steps]
+        dsl["transformations"] = filtered_transformations
+        
     transform_labels = summarize_transformation_dsl(dsl)
     
     elapsed = time.time() - start

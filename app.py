@@ -300,8 +300,18 @@ if st.session_state.workflow_started:
                 if idx < len(reasoning_list) and "reason" in reasoning_list[idx]:
                     reason_str = reasoning_list[idx]["reason"]
                     
+                if "rejected_steps" not in st.session_state:
+                    st.session_state.rejected_steps = set()
+                    
                 with st.container(border=True):
-                    col1, col2 = st.columns([1, 2])
+                    col0, col1, col2 = st.columns([0.5, 2.5, 2])
+                    
+                    is_approved = col0.checkbox("Include", value=True, key=f"chk_{st.session_state.thread_id}_{idx}")
+                    if not is_approved:
+                        st.session_state.rejected_steps.add(idx)
+                    elif idx in st.session_state.rejected_steps:
+                        st.session_state.rejected_steps.remove(idx)
+                        
                     confidence = t.get("confidence")
                     conf_str = f" 🟢 {confidence}%" if confidence else ""
                     if confidence and confidence < 70:
@@ -320,7 +330,16 @@ if st.session_state.workflow_started:
                         if preview_samples:
                             st.markdown("##### Transformation Preview")
                             df_prev = pd.DataFrame(preview_samples)
-                            st.dataframe(df_prev, use_container_width=True, hide_index=True)
+                            
+                            def highlight_diff(s):
+                                if s.name == 'before':
+                                    return ['background-color: rgba(239, 68, 68, 0.15)'] * len(s)
+                                elif s.name == 'after':
+                                    return ['background-color: rgba(16, 185, 129, 0.15)'] * len(s)
+                                return [''] * len(s)
+                                
+                            styled_df = df_prev.style.apply(highlight_diff, axis=0)
+                            st.dataframe(styled_df, use_container_width=True, hide_index=True)
                         else:
                             st.caption("No sample changes detected for this step.")
 
@@ -334,7 +353,8 @@ if st.session_state.workflow_started:
         col1, col2, col3 = st.columns(3)
         if col1.button("✅ Approve Plan & Execute", use_container_width=True, type="primary"):
             with st.spinner("Executing migration..."):
-                resume_migration(st.session_state.thread_id, plan_approved=True)
+                rej_list = list(st.session_state.get("rejected_steps", set()))
+                resume_migration(st.session_state.thread_id, plan_approved=True, human_feedback=feedback, rejected_steps=rej_list)
             st.rerun()
             
         if col2.button("🔄 Modify Plan & Re-Analyze", use_container_width=True):
@@ -342,7 +362,8 @@ if st.session_state.workflow_started:
                 st.error("Please enter modification instructions first.")
             else:
                 with st.spinner("Re-analyzing..."):
-                    resume_migration(st.session_state.thread_id, plan_approved=False, human_feedback=feedback)
+                    rej_list = list(st.session_state.get("rejected_steps", set()))
+                    resume_migration(st.session_state.thread_id, plan_approved=False, human_feedback=feedback, rejected_steps=rej_list)
                 st.rerun()
                 
         if col3.button("❌ Reject Plan & Reset", use_container_width=True):
