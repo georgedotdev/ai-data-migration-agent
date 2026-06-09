@@ -105,7 +105,7 @@ def _action_fill_missing(df: pd.DataFrame, step: dict):
     try:
         if strategy == "constant":
             if value is None:
-                return df, {"action": "fill_missing", "status": "error", "details": {"error": "Missing 'value' for constant strategy"}}
+                value = "Unknown"
             df[column] = df[column].fillna(value)
         elif strategy == "mean":
             num_col = pd.to_numeric(df[column], errors='coerce')
@@ -179,7 +179,7 @@ def _action_cast_type(df: pd.DataFrame, step: dict):
     column = step.get("column")
     target_type = step.get("target_type")
 
-    VALID_TYPES = {"int64", "float64", "str", "string", "datetime", "bool"}
+    VALID_TYPES = {"int64", "float64", "str", "string", "datetime", "bool", "category"}
 
     if column is None:
         return df, {
