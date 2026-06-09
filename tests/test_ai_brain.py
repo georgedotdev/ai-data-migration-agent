@@ -51,8 +51,9 @@ def sample_profile():
 # ─────────────────────────────────────────────
 
 @patch.dict(os.environ, {"GOOGLE_API_KEY": "dummy"})
-def test_get_ai_provider_gemini():
-    provider = get_ai_provider("Gemini", "gemini-2.5-flash-lite")
+def test_provider_factory_gemini(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "test")
+    provider = get_ai_provider("Gemini", "gemini-2.5-pro")
     assert isinstance(provider, GeminiProvider)
 
 

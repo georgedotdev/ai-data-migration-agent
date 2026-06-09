@@ -125,7 +125,13 @@ if not st.session_state.workflow_started:
             if ai_provider == "Groq":
                 model_options = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "deepseek-r1-distill-llama-70b"]
             elif ai_provider == "Gemini":
-                model_options = ["gemini-2.5-flash-lite"]
+                model_options = [
+                    "gemini-2.5-pro",
+                    "gemini-2.5-flash",
+                    "gemini-2.5-flash-lite",
+                    "gemini-2.0-flash",
+                    "gemini-2.0-flash-lite",
+                ]
             elif ai_provider == "OpenAI":
                 model_options = ["gpt-4o"]
             ai_model = st.selectbox("AI Model", model_options, disabled=(ai_provider in ["Auto", "Deterministic"]))
