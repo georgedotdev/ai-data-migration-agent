@@ -278,9 +278,8 @@ class BaseLLMProvider(AIProvider):
         1. Preserve data whenever possible.
         2. Dropping columns should be a LAST RESORT.
         3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.
-        4. CRITICAL: NEVER use drop_missing_rows unless explicitly instructed or the row is entirely empty. You MUST use fill_missing with an appropriate strategy (e.g., mean for numeric, mode for categorical) for all null values.
-        5. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing`.
-        6. CRITICAL: If a column contains binary indicators (True/False, Y/N, yes/no, 1/0), you MUST use `standardize_boolean`.
+        4. CRITICAL: You MUST explicitly schedule a `fill_missing` action (with an appropriate strategy like mean, median, or mode) for EVERY SINGLE column that has missing values. Do not leave any missing values unresolved. NEVER use drop_missing_rows.
+        5. CRITICAL: If a column with missing values also requires parsing (e.g., `parse_currency`, `parse_datetime`, `standardize_boolean`), you MUST schedule the parsing action FIRST, and then explicitly schedule a separate `fill_missing` action for that SAME column afterwards.
         7. CRITICAL: If a column contains percentages (e.g., '84%', '12%'), you MUST use `parse_percentage`.
         8. CRITICAL: If a categorical column (like gender) has inconsistent casing or abbreviations (e.g., 'M', 'Male', 'm'), you MUST use `normalize_case` or `map_values`.
         9. CRITICAL: Schema mappings must preserve semantic meaning. Reject mappings that change data meaning (e.g. Age != Birth Year).

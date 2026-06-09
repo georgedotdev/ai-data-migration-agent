@@ -5,7 +5,7 @@ csv_df = pd.read_csv('global_freelancers_raw.csv')
 print(f'CSV Rows: {len(csv_df)}')
 
 try:
-    conn = duckdb.connect('migration (3).duckdb')
+    conn = duckdb.connect('migration (4).duckdb')
     tables = conn.execute('SHOW TABLES').fetchall()
     print('Tables in DuckDB:', tables)
     
@@ -21,5 +21,12 @@ try:
     print(csv_df.isnull().sum().to_dict())
     print('\n--- Null Counts (DuckDB) ---')
     print(db_df.isnull().sum().to_dict())
+    
+    print('\n--- Data Types (DuckDB) ---')
+    print(db_df.dtypes)
+    
+    print('\n--- Sample Values (DuckDB) ---')
+    print(db_df.head(5).to_dict(orient='records'))
+    
 except Exception as e:
     print('DuckDB Error:', e)
