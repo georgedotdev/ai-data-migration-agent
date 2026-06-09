@@ -2,8 +2,12 @@ import subprocess
 import psycopg2
 from pymongo import MongoClient
 import traceback
+import os
 
 def verify_docker():
+    if os.environ.get("PRODUCTION") == "true" or os.environ.get("RAILWAY_ENVIRONMENT"):
+        print("Skipping Docker check in production environment.")
+        return
     print("--- DOCKER VERIFICATION ---")
     try:
         result = subprocess.run(["docker", "ps"], capture_output=True, text=True, check=True)

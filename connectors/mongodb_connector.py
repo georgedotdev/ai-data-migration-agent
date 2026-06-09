@@ -11,19 +11,29 @@ from pymongo import MongoClient
 from connectors.base_connector import BaseConnector
 
 
+import os
+
 class MongoDBConnector(BaseConnector):
 
     def __init__(
         self,
-        connection_string="mongodb://localhost:27017",
+        connection_string=None,
         database="migration_db",
         collection="enterprise"
     ):
-        self.connection_string = connection_string
+        env_mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
+        self.connection_string = connection_string or env_mongo_uri
         self.database_name = database
         self.collection_name = collection
 
-        self.client = MongoClient(connection_string)
+        conn_str = self.connection_string
+        if "localhost" not in conn_str and "127.0.0.1" not in conn_str:
+            if "?" not in conn_str:
+                conn_str += "?tls=true"
+            elif "tls=true" not in conn_str.lower():
+                conn_str += "&tls=true"
+
+        self.client = MongoClient(conn_str, serverSelectionTimeoutMS=5000)
         self.db = self.client[database]
         self.collection = self.db[collection]
 

@@ -43,7 +43,7 @@ def run_migration_flow(source_type, target_type, source_config, target_config, t
         return False
         
     print("Verifying preview...")
-    if "preview" not in current_state or not current_state["preview"]:
+    if "preview" not in current_state or current_state["preview"] is None:
         print("FAIL: Preview not generated.")
         return False
 

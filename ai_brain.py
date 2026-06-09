@@ -8,6 +8,9 @@ Supports Gemini (primary), OpenAI, and a Deterministic fallback.
 """
 
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import re
 import json
 from abc import ABC, abstractmethod
@@ -241,18 +244,26 @@ class BaseLLMProvider(AIProvider):
 
 
 class GeminiProvider(BaseLLMProvider):
-    def __init__(self):
+    def __init__(self, model: str = "gemini-2.5-flash-lite"):
         from langchain_google_genai import ChatGoogleGenerativeAI
-        model_name = "gemini-2.5-flash-lite"
-        print(f"[AI Brain] Initializing GeminiProvider with model: {model_name}")
-        llm = ChatGoogleGenerativeAI(model=model_name, temperature=0.0)
+        print(f"[AI Brain] Initializing GeminiProvider with model: {model}")
+        llm = ChatGoogleGenerativeAI(model=model, temperature=0.0)
         super().__init__(llm)
 
 
 class OpenAIProvider(BaseLLMProvider):
-    def __init__(self):
+    def __init__(self, model: str = "gpt-4o"):
         from langchain_openai import ChatOpenAI
-        llm = ChatOpenAI(model="gpt-4o", temperature=0.0)
+        print(f"[AI Brain] Initializing OpenAIProvider with model: {model}")
+        llm = ChatOpenAI(model=model, temperature=0.0)
+        super().__init__(llm)
+
+
+class GroqProvider(BaseLLMProvider):
+    def __init__(self, model: str = "llama-3.3-70b-versatile"):
+        from langchain_groq import ChatGroq
+        print(f"[AI Brain] Initializing GroqProvider with model: {model}")
+        llm = ChatGroq(model=model, temperature=0.0)
         super().__init__(llm)
 
 
@@ -487,64 +498,82 @@ class DeterministicProvider(AIProvider):
 # Factory and Entry Point
 # ─────────────────────────────────────────────
 
-def get_ai_provider() -> AIProvider:
-    """Select the best available AI Provider with full diagnostics."""
-    google_key = os.environ.get("GOOGLE_API_KEY", "")
-    openai_key = os.environ.get("OPENAI_API_KEY", "")
-
-    print(f"[AI Brain] DIAGNOSTIC: GOOGLE_API_KEY present={bool(google_key)}, length={len(google_key)}")
-    print(f"[AI Brain] DIAGNOSTIC: OPENAI_API_KEY present={bool(openai_key)}, length={len(openai_key)}")
-
-    if google_key:
-        try:
-            print("[AI Brain] Attempting GeminiProvider initialization...")
-            provider = GeminiProvider()
-            print("[AI Brain] OK - GeminiProvider initialized successfully")
-            return provider
-        except Exception as e:
-            print(f"[AI Brain] FAIL - GeminiProvider initialization FAILED: {e}")
-            # Fall through to try OpenAI or deterministic
-    
-    if openai_key:
-        try:
-            print("[AI Brain] Attempting OpenAIProvider initialization...")
-            provider = OpenAIProvider()
-            print("[AI Brain] OK - OpenAIProvider initialized successfully")
-            return provider
-        except Exception as e:
-            print(f"[AI Brain] FAIL - OpenAIProvider initialization FAILED: {e}")
-    
-    print("[AI Brain] Using DeterministicProvider (Fallback)")
-    return DeterministicProvider()
+def get_ai_provider(provider_name: str, model_name: str) -> AIProvider:
+    if provider_name == "Groq":
+        return GroqProvider(model=model_name)
+    elif provider_name == "Gemini":
+        return GeminiProvider(model=model_name)
+    elif provider_name == "OpenAI":
+        return OpenAIProvider(model=model_name)
+    else:
+        return DeterministicProvider()
 
 
 def generate_transformation_dsl(
     profile: dict,
     user_request: str | None = None,
     normalize_columns: bool = True,
+    requested_provider: str = "Auto",
+    requested_model: str = ""
 ) -> dict:
     """
     Build an executable DSL plan from a data profile using the best available provider.
+    Implements a failover chain to ensure robust execution.
     """
-    try:
-        provider = get_ai_provider()
-        provider_name = provider.__class__.__name__
-        print(f"[AI Brain] Selected provider: {provider_name}")
-        print(f"[AI Brain] Calling {provider_name}.generate_plan()...")
+    DEFAULT_CHAIN = [
+        ("Groq", "llama-3.3-70b-versatile"),
+        ("Gemini", "gemini-2.5-flash-lite"),
+        ("OpenAI", "gpt-4o"),
+    ]
+    
+    chain_traversed = []
+    providers_to_try = []
+    
+    if requested_provider != "Auto" and requested_provider != "Deterministic":
+        providers_to_try.append((requested_provider, requested_model))
         
-        result = provider.generate_plan(profile, user_request, normalize_columns)
-        print(f"[AI Brain] OK - {provider_name}.generate_plan() succeeded")
-        return result
-    except Exception as e:
-        print(f"[AI Brain] FAIL - Provider failed: {e}")
-        import traceback
-        traceback.print_exc()
+    for p, m in DEFAULT_CHAIN:
+        if p != requested_provider:
+            providers_to_try.append((p, m))
 
-        print("[AI Brain] Falling back to DeterministicProvider...")
-        fallback = DeterministicProvider()
-        fallback_dsl = fallback.generate_plan(profile, user_request, normalize_columns)
-        fallback_dsl["fallback_reason"] = str(e)
-        return fallback_dsl
+    if requested_provider == "Deterministic":
+        providers_to_try = []
+
+    for provider_name, model_name in providers_to_try:
+        chain_traversed.append(provider_name)
+        try:
+            print(f"[AI Brain] Attempting {provider_name} with {model_name}...")
+            provider = get_ai_provider(provider_name, model_name)
+            result = provider.generate_plan(profile, user_request, normalize_columns)
+            
+            result["_metadata"] = {
+                "provider_used": provider_name,
+                "model_used": model_name,
+                "fallback_chain": chain_traversed,
+                "fallback_used": len(chain_traversed) > 1 or requested_provider == "Auto"
+            }
+            print(f"[AI Brain] OK - {provider_name} succeeded.")
+            return result
+        except UnicodeEncodeError as e:
+            print(f"[AI Brain] CRITICAL FAIL - Encoding error: {e}")
+            raise e
+        except Exception as e:
+            print(f"[AI Brain] FAIL - {provider_name} failed: {e}")
+            continue
+
+    print("[AI Brain] Falling back to DeterministicProvider...")
+    fallback = DeterministicProvider()
+    fallback_dsl = fallback.generate_plan(profile, user_request, normalize_columns)
+    fallback_dsl["fallback_reason"] = "All AI providers failed or Deterministic selected."
+    chain_traversed.append("Deterministic")
+    
+    fallback_dsl["_metadata"] = {
+        "provider_used": "Deterministic",
+        "model_used": "N/A",
+        "fallback_chain": chain_traversed,
+        "fallback_used": requested_provider != "Deterministic"
+    }
+    return fallback_dsl
 
 
 def summarize_transformation_dsl(dsl: dict) -> list[str]:

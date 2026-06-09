@@ -37,6 +37,14 @@ class AgentState(TypedDict):
     timings: dict
     success: bool
     
+    # AI Metadata
+    ai_provider: str
+    ai_model: str
+    fallback_used: bool
+    fallback_chain_traversed: list[str]
+    assessment_provider: str
+    transformation_provider: str
+    
     # Discover & Profile
     schema: dict
     profile: dict
@@ -128,13 +136,26 @@ def migration_analyst(state: AgentState):
     profile = state.get("profile", {})
     query = state.get("query", "")
     human_feedback = state.get("human_feedback", "")
+    ai_provider_req = state.get("ai_provider", "Auto")
+    ai_model_req = state.get("ai_model", "")
     
     # If the user gave feedback, pass it as intent to the AI Brain
     full_request = query
     if human_feedback:
         full_request += f" | User Feedback to incorporate: {human_feedback}"
         
-    dsl = generate_transformation_dsl(profile=profile, user_request=full_request)
+    dsl = generate_transformation_dsl(
+        profile=profile, 
+        user_request=full_request,
+        requested_provider=ai_provider_req,
+        requested_model=ai_model_req
+    )
+    
+    metadata = dsl.get("_metadata", {})
+    provider_used = metadata.get("provider_used", "Deterministic")
+    model_used = metadata.get("model_used", "N/A")
+    fallback_used = metadata.get("fallback_used", False)
+    fallback_chain = metadata.get("fallback_chain", [])
     
     # Extract assessment components from DSL for UI
     assessment = {
@@ -150,6 +171,12 @@ def migration_analyst(state: AgentState):
     return {
         "assessment": assessment,
         "transformation_dsl": dsl,
+        "ai_provider": provider_used,
+        "ai_model": model_used,
+        "fallback_used": fallback_used,
+        "fallback_chain_traversed": fallback_chain,
+        "assessment_provider": provider_used,
+        "transformation_provider": provider_used,
         "executed_steps": state["executed_steps"] + ["migration_analyst"],
         "timings": timings
     }
@@ -247,7 +274,14 @@ def migration_executor(state: AgentState):
         transformed_df = transform_data(df, transformations=state.get("transformations"))
 
     print(f"TARGET_TABLE: {target.table_name}")
-    print(f"CONNECTING_TO_POSTGRES: {getattr(target, 'connection_string', 'N/A')}")
+    conn_str = getattr(target, 'connection_string', 'N/A')
+    if '@' in conn_str:
+        parts = conn_str.split('@')
+        auth = parts[0].split(':')
+        if len(auth) >= 3:
+            auth[-1] = '***'
+        conn_str = ':'.join(auth) + '@' + parts[1]
+    print(f"CONNECTING_TO_POSTGRES: {conn_str}")
     print("TABLE_CREATE_START")
     print(f"ROWS_TO_INSERT: {len(transformed_df)}")
 
@@ -344,6 +378,12 @@ def reporter(state: AgentState):
         "source": state.get("source_type"),
         "target": state.get("target_type"),
         "success": state.get("success"),
+        "provider_used": state.get("ai_provider", "Unknown"),
+        "model_used": state.get("ai_model", "Unknown"),
+        "fallback_used": state.get("fallback_used", False),
+        "fallback_chain_traversed": state.get("fallback_chain_traversed", []),
+        "assessment_provider": state.get("assessment_provider", "Unknown"),
+        "transformation_provider": state.get("transformation_provider", "Unknown"),
         "reconciliation_results": state.get("reconciliation"),
         "impact": state.get("impact"),
         "risk": state.get("risk"),
@@ -402,7 +442,18 @@ builder.add_edge("reporter", "supervisor")
 builder.add_edge("supervisor", END)
 
 # Attach Checkpointer and Interrupt
-memory = MemorySaver()
+import os
+db_url = os.environ.get("DATABASE_URL")
+if db_url and "postgres" in db_url:
+    from langgraph.checkpoint.postgres import PostgresSaver
+    from psycopg_pool import ConnectionPool
+    # Establish persistent DB checkpointer
+    pool = ConnectionPool(conninfo=db_url)
+    memory = PostgresSaver(pool)
+    memory.setup()
+else:
+    memory = MemorySaver()
+
 graph = builder.compile(
     checkpointer=memory,
     interrupt_before=["human_review"]

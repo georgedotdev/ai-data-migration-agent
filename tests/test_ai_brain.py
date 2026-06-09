@@ -50,21 +50,20 @@ def sample_profile():
 # Provider Selection Tests
 # ─────────────────────────────────────────────
 
-@patch.dict(os.environ, {"GOOGLE_API_KEY": "dummy", "OPENAI_API_KEY": ""})
+@patch.dict(os.environ, {"GOOGLE_API_KEY": "dummy"})
 def test_get_ai_provider_gemini():
-    provider = get_ai_provider()
+    provider = get_ai_provider("Gemini", "gemini-2.5-flash-lite")
     assert isinstance(provider, GeminiProvider)
 
 
-@patch.dict(os.environ, {"OPENAI_API_KEY": "dummy", "GOOGLE_API_KEY": ""})
+@patch.dict(os.environ, {"OPENAI_API_KEY": "dummy"})
 def test_get_ai_provider_openai():
-    provider = get_ai_provider()
+    provider = get_ai_provider("OpenAI", "gpt-4o")
     assert isinstance(provider, OpenAIProvider)
 
 
-@patch.dict(os.environ, {"GOOGLE_API_KEY": "", "OPENAI_API_KEY": ""})
 def test_get_ai_provider_deterministic():
-    provider = get_ai_provider()
+    provider = get_ai_provider("Deterministic", "")
     assert isinstance(provider, DeterministicProvider)
 
 

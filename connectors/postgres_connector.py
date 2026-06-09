@@ -11,28 +11,38 @@ from sqlalchemy import create_engine, text
 from connectors.base_connector import BaseConnector
 
 
+import os
+
 class PostgreSQLConnector(BaseConnector):
 
     def __init__(
         self,
-        host="127.0.0.1",
+        host=None,
         port=5432,
-        database="migration_db",
-        username="migration",
-        password="migration123",
-        table_name="enterprise"
+        database=None,
+        username=None,
+        password=None,
+        table_name="enterprise",
+        connection_string=None
     ):
-        self.host = host
-        self.port = port
-        self.database = database
-        self.username = username
-        self.password = password
+        self.host = host or os.environ.get("DB_HOST", "127.0.0.1")
+        self.port = port or int(os.environ.get("DB_PORT", "5432"))
+        self.database = database or os.environ.get("DB_DATABASE", "migration_db")
+        self.username = username or os.environ.get("DB_USER", "migration")
+        self.password = password or os.environ.get("DB_PASSWORD", "migration123")
         self.table_name = table_name
 
-        self.connection_string = (
-            f"postgresql+psycopg2://{username}:{password}"
-            f"@{host}:{port}/{database}"
-        )
+        env_db_url = os.environ.get("DATABASE_URL")
+
+        if connection_string:
+            self.connection_string = connection_string
+        elif env_db_url:
+            self.connection_string = env_db_url
+        else:
+            self.connection_string = (
+                f"postgresql+psycopg2://{self.username}:{self.password}"
+                f"@{self.host}:{self.port}/{self.database}"
+            )
         self.engine = create_engine(self.connection_string)
         
         # No fallback. Fail if PostgreSQL is unreachable.

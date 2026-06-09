@@ -11,6 +11,8 @@ import os
 import json
 from datetime import datetime
 import uuid
+from dotenv import load_dotenv
+load_dotenv()
 
 from migration_service import start_migration, get_agent_state, resume_migration
 
@@ -114,6 +116,20 @@ if not st.session_state.workflow_started:
     st.markdown('<div class="section-header">1. Migration Request</div>', unsafe_allow_html=True)
     
     with st.container(border=True):
+        st.markdown("#### 🤖 AI Configuration")
+        ap_col1, ap_col2 = st.columns(2)
+        with ap_col1:
+            ai_provider = st.selectbox("AI Provider", ["Auto", "Groq", "Gemini", "OpenAI", "Deterministic"])
+        with ap_col2:
+            model_options = [""]
+            if ai_provider == "Groq":
+                model_options = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "deepseek-r1-distill-llama-70b"]
+            elif ai_provider == "Gemini":
+                model_options = ["gemini-2.5-flash-lite"]
+            elif ai_provider == "OpenAI":
+                model_options = ["gpt-4o"]
+            ai_model = st.selectbox("AI Model", model_options, disabled=(ai_provider in ["Auto", "Deterministic"]))
+            
         user_request = st.text_area("What is your migration goal?", placeholder="E.g., Migrate this MongoDB collection to PostgreSQL and clean the data.")
         
         col1, col2 = st.columns(2)
@@ -124,24 +140,26 @@ if not st.session_state.workflow_started:
             if source_type == "CSV":
                 uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
                 if uploaded_file:
-                    os.makedirs("data", exist_ok=True)
-                    file_path = os.path.join("data", uploaded_file.name)
+                    import tempfile
+                    temp_dir = os.environ.get("DATA_DIR", tempfile.gettempdir())
+                    os.makedirs(temp_dir, exist_ok=True)
+                    file_path = os.path.join(temp_dir, uploaded_file.name)
                     with open(file_path, "wb") as f:
                         f.write(uploaded_file.getbuffer())
                     source_config = {"file_path": file_path}
             elif source_type == "PostgreSQL":
                 source_config = {
-                    "host": st.text_input("Host", "127.0.0.1", key="s_pg_h"),
-                    "port": st.number_input("Port", 5432, key="s_pg_p"),
-                    "database": st.text_input("Database", "migration_db", key="s_pg_d"),
-                    "username": st.text_input("User", "migration", key="s_pg_u"),
-                    "password": st.text_input("Password", "migration123", type="password", key="s_pg_pw"),
+                    "host": st.text_input("Host", os.environ.get("DB_HOST", "127.0.0.1"), key="s_pg_h"),
+                    "port": st.number_input("Port", int(os.environ.get("DB_PORT", "5432")), key="s_pg_p"),
+                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="s_pg_d"),
+                    "username": st.text_input("User", os.environ.get("DB_USER", "migration"), key="s_pg_u"),
+                    "password": st.text_input("Password", os.environ.get("DB_PASSWORD", "migration123"), type="password", key="s_pg_pw"),
                     "table_name": st.text_input("Table", "enterprise", key="s_pg_t")
                 }
             elif source_type == "MongoDB":
                 source_config = {
-                    "connection_string": st.text_input("URI", "mongodb://localhost:27017", key="s_m_u"),
-                    "database": st.text_input("Database", "migration_db", key="s_m_d"),
+                    "connection_string": st.text_input("URI", os.environ.get("MONGO_URI", "mongodb://localhost:27017"), key="s_m_u"),
+                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="s_m_d"),
                     "collection": st.text_input("Collection", "enterprise", key="s_m_c")
                 }
 
@@ -163,23 +181,25 @@ if not st.session_state.workflow_started:
                 target_config = {"db_path": "migration.duckdb", "table_name": table_name}
             elif target_type == "PostgreSQL":
                 target_config = {
-                    "host": st.text_input("Host", "127.0.0.1", key="t_pg_h"),
-                    "port": st.number_input("Port", 5432, key="t_pg_p"),
-                    "database": st.text_input("Database", "migration_db", key="t_pg_d"),
-                    "username": st.text_input("User", "migration", key="t_pg_u"),
-                    "password": st.text_input("Password", "migration123", type="password", key="t_pg_pw"),
+                    "host": st.text_input("Host", os.environ.get("DB_HOST", "127.0.0.1"), key="t_pg_h"),
+                    "port": st.number_input("Port", int(os.environ.get("DB_PORT", "5432")), key="t_pg_p"),
+                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="t_pg_d"),
+                    "username": st.text_input("User", os.environ.get("DB_USER", "migration"), key="t_pg_u"),
+                    "password": st.text_input("Password", os.environ.get("DB_PASSWORD", "migration123"), type="password", key="t_pg_pw"),
                     "table_name": table_name
                 }
             elif target_type == "MongoDB":
                 target_config = {
-                    "connection_string": st.text_input("URI", "mongodb://localhost:27017", key="t_m_u"),
-                    "database": st.text_input("Database", "migration_db", key="t_m_d"),
+                    "connection_string": st.text_input("URI", os.environ.get("MONGO_URI", "mongodb://localhost:27017"), key="t_m_u"),
+                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="t_m_d"),
                     "collection": table_name
                 }
 
         if st.button("🚀 Start Migration Assessment", use_container_width=True, type="primary"):
             initial_state = {
                 "query": user_request,
+                "ai_provider": ai_provider,
+                "ai_model": ai_model,
                 "source_type": source_type.lower(),
                 "target_type": target_type.lower(),
                 "source_config": source_config,
@@ -412,6 +432,16 @@ if st.session_state.workflow_started:
         status_text = "SUCCESS" if report.get('success') else "FAILED"
         st.markdown(f"**Final Status:** <span style='color:{status_color}; font-weight:bold;'>{status_text}</span>", unsafe_allow_html=True)
         
+        st.markdown("#### 🤖 AI Execution Metadata")
+        st.markdown(f"- **Provider Used:** `{report.get('provider_used', 'Unknown')}`")
+        st.markdown(f"- **Model Used:** `{report.get('model_used', 'Unknown')}`")
+        st.markdown(f"- **Fallback Used:** `{report.get('fallback_used', False)}`")
+        if report.get('fallback_used'):
+            chain_str = ' ➡️ '.join(report.get('fallback_chain_traversed', []))
+            st.markdown(f"- **Fallback Chain:** `{chain_str}`")
+        st.markdown(f"- **Assessment Provider:** `{report.get('assessment_provider', 'Unknown')}`")
+        st.markdown(f"- **Transformation Provider:** `{report.get('transformation_provider', 'Unknown')}`")
+        
         impact = report.get("impact", {})
         if impact:
             st.markdown("#### 📈 Business Impact")
@@ -431,6 +461,15 @@ if st.session_state.workflow_started:
         markdown_report += f"**Source:** `{report.get('source')}`\n"
         markdown_report += f"**Target:** `{report.get('target')}`\n"
         markdown_report += f"**Status:** {status_text}\n\n"
+        markdown_report += f"## AI Execution Metadata\n"
+        markdown_report += f"- Provider Used: `{report.get('provider_used', 'Unknown')}`\n"
+        markdown_report += f"- Model Used: `{report.get('model_used', 'Unknown')}`\n"
+        markdown_report += f"- Fallback Used: `{report.get('fallback_used', False)}`\n"
+        if report.get('fallback_used'):
+            chain_str = ' -> '.join(report.get('fallback_chain_traversed', []))
+            markdown_report += f"- Fallback Chain: `{chain_str}`\n"
+        markdown_report += f"- Assessment Provider: `{report.get('assessment_provider', 'Unknown')}`\n"
+        markdown_report += f"- Transformation Provider: `{report.get('transformation_provider', 'Unknown')}`\n\n"
         markdown_report += f"## Impact\n"
         markdown_report += f"- Data Quality: {impact.get('quality_score_before')}% -> {impact.get('quality_score_after')}%\n"
         markdown_report += f"- Duplicates Removed: {impact.get('duplicates_removed')}\n"
