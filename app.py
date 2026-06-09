@@ -452,10 +452,26 @@ if st.session_state.workflow_started:
         if impact:
             st.markdown("#### 📈 Business Impact")
             ic1, ic2 = st.columns(2)
-            ic1.markdown(f"- **Data Quality Improvement:** `{impact.get('quality_score_before')}%` ➡️ `{impact.get('quality_score_after')}%`")
-            ic1.markdown(f"- **Duplicates Removed:** `{impact.get('duplicates_removed')}`")
+            qb = impact.get('quality_score_before', 0)
+            qa = impact.get('quality_score_after', 0)
+            diff = round(qa - qb, 2)
+            sign = "+" if diff >= 0 else ""
+            
+            ic1.markdown(f"- **Data Quality Improvement:** `{qb}%` ➡️ `{qa}%` ({sign}{diff}%)")
             ic2.markdown(f"- **Total Rows Migrated:** `{impact.get('rows_after')}`")
             ic2.markdown(f"- **Total Schema Changes:** `{impact.get('columns_renamed', 0) + impact.get('columns_dropped', 0) + impact.get('columns_added', 0)}`")
+            
+            st.markdown("**Contributors:**")
+            if impact.get('duplicates_removed', 0):
+                st.markdown(f"✓ Duplicate rows removed: {impact.get('duplicates_removed')}")
+            if impact.get('missing_filled', 0):
+                st.markdown(f"✓ Missing values filled: {impact.get('missing_filled')}")
+            if impact.get('datetime_standardized', 0):
+                st.markdown(f"✓ Datetime columns standardized: {impact.get('datetime_standardized')}")
+            if impact.get('currency_parsed', 0):
+                st.markdown(f"✓ Currency columns parsed: {impact.get('currency_parsed')}")
+            if impact.get('fields_normalized', 0):
+                st.markdown(f"✓ Rating fields normalized: {impact.get('fields_normalized')}")
             
         with st.expander("View Full Report Details"):
             st.json(report)
@@ -478,8 +494,18 @@ if st.session_state.workflow_started:
         markdown_report += f"- Transformation Provider: `{report.get('transformation_provider', 'Unknown')}`\n\n"
         markdown_report += f"## Impact\n"
         markdown_report += f"- Data Quality: {impact.get('quality_score_before')}% -> {impact.get('quality_score_after')}%\n"
-        markdown_report += f"- Duplicates Removed: {impact.get('duplicates_removed')}\n"
         markdown_report += f"- Rows Migrated: {impact.get('rows_after')}\n"
+        markdown_report += f"### Contributors\n"
+        if impact.get('duplicates_removed', 0):
+            markdown_report += f"- Duplicate rows removed: {impact.get('duplicates_removed')}\n"
+        if impact.get('missing_filled', 0):
+            markdown_report += f"- Missing values filled: {impact.get('missing_filled')}\n"
+        if impact.get('datetime_standardized', 0):
+            markdown_report += f"- Datetime columns standardized: {impact.get('datetime_standardized')}\n"
+        if impact.get('currency_parsed', 0):
+            markdown_report += f"- Currency columns parsed: {impact.get('currency_parsed')}\n"
+        if impact.get('fields_normalized', 0):
+            markdown_report += f"- Rating fields normalized: {impact.get('fields_normalized')}\n"
         
         rc1, rc2 = st.columns(2)
         rc1.download_button("📥 Download JSON Report", data=json_report, file_name="migration_executive_report.json", mime="application/json", use_container_width=True)

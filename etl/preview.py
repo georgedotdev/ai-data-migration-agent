@@ -95,17 +95,31 @@ def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl
     cols_dropped = 0
     cols_added = 0
     
+    missing_filled = 0
+    datetime_standardized = 0
+    currency_parsed = 0
+    fields_normalized = 0
+    
     transformations = dsl.get("transformations", [])
     for t in transformations:
         action = t.get("action")
         if action == "remove_duplicates":
             duplicates_removed += 1 # Rough count of actions, exact rows is below
-        elif action == "rename_column" or action == "normalize_columns":
+        elif action == "rename_column":
             cols_renamed += 1
         elif action == "drop_column":
             cols_dropped += 1
         elif action == "split_column" or action == "flatten_object":
             cols_added += 1
+        elif action == "fill_missing":
+            missing_filled += 1
+        elif action == "parse_datetime":
+            datetime_standardized += 1
+        elif action == "clean_currency":
+            currency_parsed += 1
+        elif action == "normalize_columns":
+            fields_normalized += 1
+            cols_renamed += 1 # count as schema change too
             
     # Calculate duplicates removed correctly by checking log or row delta
     row_delta = len(df_before) - len(df_after)
@@ -118,6 +132,10 @@ def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl
         "columns_renamed": cols_renamed,
         "columns_dropped": cols_dropped,
         "columns_added": cols_added,
+        "missing_filled": missing_filled,
+        "datetime_standardized": datetime_standardized,
+        "currency_parsed": currency_parsed,
+        "fields_normalized": fields_normalized,
         "quality_score_before": score_before,
         "quality_score_after": score_after,
         "improvement_pct": round(score_after - score_before, 2)

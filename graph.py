@@ -49,11 +49,12 @@ class AgentState(TypedDict):
     schema: dict
     profile: dict
     
-    # Analysis & Preview
-    assessment: dict
+    # Analysis    # Outputs
     transformation_dsl: dict
-    preview: list
-    impact: dict
+    transformations: list[str]  # Summarized text points
+    preview: list[dict]
+    preview_impact: dict
+    execution_impact: dict
     risk: dict
     
     # Human Review Feedback
@@ -193,7 +194,7 @@ def transformation_previewer(state: AgentState):
     dsl = state.get("transformation_dsl", {})
     
     preview_data, df_after = generate_preview(df, dsl)
-    impact = generate_impact_summary(df, df_after, dsl)
+    preview_impact = generate_impact_summary(df, df_after, dsl)
     risk = generate_risk_assessment(dsl)
     
     elapsed = time.time() - start
@@ -202,7 +203,7 @@ def transformation_previewer(state: AgentState):
     
     return {
         "preview": preview_data,
-        "impact": impact,
+        "preview_impact": preview_impact,
         "risk": risk,
         "executed_steps": state["executed_steps"] + ["transformation_previewer"],
         "timings": timings
@@ -304,11 +305,21 @@ def migration_executor(state: AgentState):
                 raise e
 
     print("EXECUTOR_COMPLETE")
+    
+    # Calculate actual impact on the full dataset
+    try:
+        from etl.preview import generate_impact_summary
+        execution_impact = generate_impact_summary(df, transformed_df, dsl if dsl else {"transformations": []})
+    except Exception as e:
+        print(f"[IMPACT ERROR] {e}")
+        execution_impact = {}
+
     elapsed = time.time() - start
     timings = dict(state.get("timings") or {})
     timings["migration_executor"] = round(elapsed, 4)
     
     return {
+        "execution_impact": execution_impact,
         "executed_steps": state["executed_steps"] + ["migration_executor"],
         "timings": timings
     }
@@ -344,7 +355,10 @@ def reconciler(state: AgentState):
     success = table_created and target_reachable
     print(f"RECONCILIATION_SUCCESS: {success}")
     
-    duplicates_removed = state.get("impact", {}).get("duplicates_removed", 0)
+    execution_impact = state.get("execution_impact", {})
+    preview_impact = state.get("preview_impact", {})
+    impact_source = execution_impact if execution_impact else preview_impact
+    duplicates_removed = impact_source.get("duplicates_removed", 0)
 
     reconciliation_results = {
         "rows_read": rows_read,
@@ -385,7 +399,9 @@ def reporter(state: AgentState):
         "assessment_provider": state.get("assessment_provider", "Unknown"),
         "transformation_provider": state.get("transformation_provider", "Unknown"),
         "reconciliation_results": state.get("reconciliation"),
-        "impact": state.get("impact"),
+        "preview_impact": state.get("preview_impact"),
+        "execution_impact": state.get("execution_impact"),
+        "impact": state.get("execution_impact") or state.get("preview_impact"),
         "risk": state.get("risk"),
         "timings": state.get("timings")
     }
