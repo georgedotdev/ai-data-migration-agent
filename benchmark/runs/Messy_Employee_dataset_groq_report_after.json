@@ -1,0 +1,271 @@
+{
+  "dataset": "Messy_Employee_dataset.csv",
+  "success": true,
+  "error": null,
+  "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 1020\n        Duplicates: 0\n        Quality Score: 87.01\n\n        Columns:\n        {\n  \"Employee_ID\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 1020,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": true,\n    \"sample_values\": [\n      \"EMP1000\",\n      \"EMP1001\",\n      \"EMP1002\"\n    ]\n  },\n  \"First_Name\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 8,\n    \"unique_pct\": 0.78,\n    \"duplicate_count\": 1012,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Bob\",\n      \"Alice\",\n      \"Eva\"\n    ]\n  },\n  \"Last_Name\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 8,\n    \"unique_pct\": 0.78,\n    \"duplicate_count\": 1012,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Davis\",\n      \"Brown\",\n      \"Jones\"\n    ]\n  },\n  \"Age\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 211,\n    \"missing_pct\": 20.69,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.49,\n    \"duplicate_count\": 805,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      25.0,\n      40.0,\n      30.0\n    ],\n    \"numeric_stats\": {\n      \"min\": 25.0,\n      \"max\": 40.0,\n      \"mean\": 32.4845,\n      \"median\": 30.0,\n      \"std\": 5.6569,\n      \"q1\": 25.0,\n      \"q3\": 40.0,\n      \"iqr\": 15.0,\n      \"lower_bound\": 2.5,\n      \"upper_bound\": 62.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"Department_Region\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 36,\n    \"unique_pct\": 3.53,\n    \"duplicate_count\": 984,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"DevOps-California\",\n      \"Finance-Texas\",\n      \"Admin-Nevada\"\n    ]\n  },\n  \"Status\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 3,\n    \"unique_pct\": 0.29,\n    \"duplicate_count\": 1017,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Active\",\n      \"Pending\",\n      \"Inactive\"\n    ]\n  },\n  \"Join_Date\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 760,\n    \"unique_pct\": 74.51,\n    \"duplicate_count\": 260,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"4/2/2021\",\n      \"7/10/2020\",\n      \"12/7/2023\"\n    ]\n  },\n  \"Salary\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 24,\n    \"missing_pct\": 2.35,\n    \"unique_count\": 978,\n    \"unique_pct\": 98.19,\n    \"duplicate_count\": 18,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      59767.65,\n      65304.66,\n      88145.9\n    ],\n    \"numeric_stats\": {\n      \"min\": 50047.32,\n      \"max\": 119971.65,\n      \"mean\": 85155.0564,\n      \"median\": 85547.87,\n      \"std\": 19873.7279,\n      \"q1\": 68392.48749999999,\n      \"q3\": 100974.0275,\n      \"iqr\": 32581.54,\n      \"lower_bound\": 19520.1775,\n      \"upper_bound\": 149846.3375,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"Email\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 64,\n    \"unique_pct\": 6.27,\n    \"duplicate_count\": 956,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"bob.davis@example.com\",\n      \"bob.brown@example.com\",\n      \"alice.jones@example.com\"\n    ]\n  },\n  \"Phone\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 1020,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": true,\n    \"sample_values\": [\n      -1651623197,\n      -1898471390,\n      -5596363211\n    ],\n    \"numeric_stats\": {\n      \"min\": -9994973202.0,\n      \"max\": -3896086.0,\n      \"mean\": -4942252959.2216,\n      \"median\": -4943996508.5,\n      \"std\": 2817326049.742,\n      \"q1\": -7341991816.5,\n      \"q3\": -2520390678.75,\n      \"iqr\": 4821601137.75,\n      \"lower_bound\": -14574393523.125,\n      \"upper_bound\": 4712011027.875,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"Performance_Score\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.39,\n    \"duplicate_count\": 1016,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Average\",\n      \"Excellent\",\n      \"Good\"\n    ]\n  },\n  \"Remote_Work\": {\n    \"dtype\": \"bool\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.2,\n    \"duplicate_count\": 1018,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      true,\n      false\n    ]\n  }\n}\n\n        ## User Request\n        Migrate and clean data from Messy_Employee_dataset.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+  "raw_response": "",
+  "parsed_dsl": {
+    "dataset_assessment": "The dataset has a quality score of 87.01, indicating a relatively healthy dataset. However, there are some data quality issues that need to be addressed, such as missing values in the 'Age' and 'Salary' columns.",
+    "identified_issues": [
+      "missing values in 'Age' and 'Salary' columns",
+      "potential data type issues in 'Phone' column"
+    ],
+    "schema_mapping_recommendations": [
+      "Employee_ID as primary key",
+      "Phone as unique identifier"
+    ],
+    "transformations": [
+      {
+        "action": "normalize_columns"
+      },
+      {
+        "action": "fill_missing",
+        "column": "Age",
+        "strategy": "mean",
+        "confidence": 90
+      },
+      {
+        "action": "fill_missing",
+        "column": "Salary",
+        "strategy": "mean",
+        "confidence": 90
+      },
+      {
+        "action": "normalize_phone",
+        "column": "Phone",
+        "confidence": 95
+      },
+      {
+        "action": "parse_datetime",
+        "column": "Join_Date",
+        "confidence": 95
+      },
+      {
+        "action": "standardize_boolean",
+        "column": "Remote_Work",
+        "confidence": 95
+      }
+    ],
+    "reasoning": [
+      {
+        "step": 0,
+        "reason": "Standardizing column names automatically."
+      },
+      {
+        "reason": "The 'Age' column has 211 missing values, which is approximately 20.69% of the total rows. We will use the 'fill_missing' action with a strategy of 'mean' to fill these missing values.",
+        "step": 2
+      },
+      {
+        "reason": "The 'Salary' column has 24 missing values, which is approximately 2.35% of the total rows. We will use the 'fill_missing' action with a strategy of 'mean' to fill these missing values.",
+        "step": 3
+      },
+      {
+        "reason": "The 'Phone' column has a data type of 'int64', but it contains phone numbers with special characters. We will use the 'normalize_phone' action to standardize the phone numbers.",
+        "step": 4
+      },
+      {
+        "reason": "The 'Join_Date' column has a data type of 'object', but it contains date values. We will use the 'parse_datetime' action to convert the 'Join_Date' column to a datetime data type.",
+        "step": 5
+      },
+      {
+        "reason": "The 'Remote_Work' column has a data type of 'bool', but it may contain inconsistent boolean values. We will use the 'standardize_boolean' action to standardize the boolean values.",
+        "step": 6
+      }
+    ],
+    "planning_method": "GroqProvider",
+    "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 1020\n        Duplicates: 0\n        Quality Score: 87.01\n\n        Columns:\n        {\n  \"Employee_ID\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 1020,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": true,\n    \"sample_values\": [\n      \"EMP1000\",\n      \"EMP1001\",\n      \"EMP1002\"\n    ]\n  },\n  \"First_Name\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 8,\n    \"unique_pct\": 0.78,\n    \"duplicate_count\": 1012,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Bob\",\n      \"Alice\",\n      \"Eva\"\n    ]\n  },\n  \"Last_Name\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 8,\n    \"unique_pct\": 0.78,\n    \"duplicate_count\": 1012,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Davis\",\n      \"Brown\",\n      \"Jones\"\n    ]\n  },\n  \"Age\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 211,\n    \"missing_pct\": 20.69,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.49,\n    \"duplicate_count\": 805,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      25.0,\n      40.0,\n      30.0\n    ],\n    \"numeric_stats\": {\n      \"min\": 25.0,\n      \"max\": 40.0,\n      \"mean\": 32.4845,\n      \"median\": 30.0,\n      \"std\": 5.6569,\n      \"q1\": 25.0,\n      \"q3\": 40.0,\n      \"iqr\": 15.0,\n      \"lower_bound\": 2.5,\n      \"upper_bound\": 62.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"Department_Region\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 36,\n    \"unique_pct\": 3.53,\n    \"duplicate_count\": 984,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"DevOps-California\",\n      \"Finance-Texas\",\n      \"Admin-Nevada\"\n    ]\n  },\n  \"Status\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 3,\n    \"unique_pct\": 0.29,\n    \"duplicate_count\": 1017,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Active\",\n      \"Pending\",\n      \"Inactive\"\n    ]\n  },\n  \"Join_Date\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 760,\n    \"unique_pct\": 74.51,\n    \"duplicate_count\": 260,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"4/2/2021\",\n      \"7/10/2020\",\n      \"12/7/2023\"\n    ]\n  },\n  \"Salary\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 24,\n    \"missing_pct\": 2.35,\n    \"unique_count\": 978,\n    \"unique_pct\": 98.19,\n    \"duplicate_count\": 18,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      59767.65,\n      65304.66,\n      88145.9\n    ],\n    \"numeric_stats\": {\n      \"min\": 50047.32,\n      \"max\": 119971.65,\n      \"mean\": 85155.0564,\n      \"median\": 85547.87,\n      \"std\": 19873.7279,\n      \"q1\": 68392.48749999999,\n      \"q3\": 100974.0275,\n      \"iqr\": 32581.54,\n      \"lower_bound\": 19520.1775,\n      \"upper_bound\": 149846.3375,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"Email\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 64,\n    \"unique_pct\": 6.27,\n    \"duplicate_count\": 956,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"bob.davis@example.com\",\n      \"bob.brown@example.com\",\n      \"alice.jones@example.com\"\n    ]\n  },\n  \"Phone\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 1020,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": true,\n    \"sample_values\": [\n      -1651623197,\n      -1898471390,\n      -5596363211\n    ],\n    \"numeric_stats\": {\n      \"min\": -9994973202.0,\n      \"max\": -3896086.0,\n      \"mean\": -4942252959.2216,\n      \"median\": -4943996508.5,\n      \"std\": 2817326049.742,\n      \"q1\": -7341991816.5,\n      \"q3\": -2520390678.75,\n      \"iqr\": 4821601137.75,\n      \"lower_bound\": -14574393523.125,\n      \"upper_bound\": 4712011027.875,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"Performance_Score\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.39,\n    \"duplicate_count\": 1016,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Average\",\n      \"Excellent\",\n      \"Good\"\n    ]\n  },\n  \"Remote_Work\": {\n    \"dtype\": \"bool\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.2,\n    \"duplicate_count\": 1018,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      true,\n      false\n    ]\n  }\n}\n\n        ## User Request\n        Migrate and clean data from Messy_Employee_dataset.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+    "raw_ai_response": "",
+    "_metadata": {
+      "provider_used": "Groq",
+      "model_used": "llama-3.3-70b-versatile",
+      "fallback_chain": [
+        "Groq"
+      ],
+      "fallback_used": false
+    }
+  },
+  "impact_summary": {
+    "rows_before": 1020,
+    "rows_after": 1020,
+    "duplicates_removed": 0,
+    "columns_renamed": 1,
+    "columns_dropped": 0,
+    "columns_added": 0,
+    "missing_filled": 2,
+    "datetime_standardized": 1,
+    "currency_parsed": 0,
+    "fields_normalized": 1,
+    "missing_before": 235,
+    "missing_after": 235,
+    "dupes_before": 0,
+    "dupes_after": 0,
+    "quality_score_before": 87.01,
+    "quality_score_after": 87.01,
+    "improvement_pct": 0.0
+  },
+  "execution_log": [
+    {
+      "action": "normalize_columns",
+      "status": "success",
+      "details": {
+        "renamed_count": 12,
+        "renamed": {
+          "Employee_ID": "employee_id",
+          "First_Name": "first_name",
+          "Last_Name": "last_name",
+          "Age": "age",
+          "Department_Region": "department_region",
+          "Status": "status",
+          "Join_Date": "join_date",
+          "Salary": "salary",
+          "Email": "email",
+          "Phone": "phone",
+          "Performance_Score": "performance_score",
+          "Remote_Work": "remote_work"
+        }
+      },
+      "step_index": 0
+    },
+    {
+      "action": "fill_missing",
+      "status": "error",
+      "details": {
+        "error": "Column 'Age' not found in DataFrame"
+      },
+      "step_index": 1
+    },
+    {
+      "action": "fill_missing",
+      "status": "error",
+      "details": {
+        "error": "Column 'Salary' not found in DataFrame"
+      },
+      "step_index": 2
+    },
+    {
+      "status": "error",
+      "details": {
+        "error": "Invalid column"
+      },
+      "step_index": 3,
+      "action": "normalize_phone"
+    },
+    {
+      "status": "error",
+      "details": {
+        "error": "Invalid column"
+      },
+      "step_index": 4,
+      "action": "parse_datetime"
+    },
+    {
+      "status": "error",
+      "details": {
+        "error": "Invalid column"
+      },
+      "step_index": 5,
+      "action": "standardize_boolean"
+    }
+  ],
+  "executive_report": {
+    "source": "csv",
+    "target": "duckdb",
+    "success": true,
+    "provider_used": "Groq",
+    "model_used": "llama-3.3-70b-versatile",
+    "fallback_used": false,
+    "fallback_chain_traversed": [
+      "Groq"
+    ],
+    "assessment_provider": "Groq",
+    "transformation_provider": "Groq",
+    "reconciliation_results": {
+      "rows_read": 1020,
+      "rows_written": 1020,
+      "rows_skipped": 0,
+      "target_reachable": true,
+      "table_created": true,
+      "overall_success": true
+    },
+    "preview_impact": {
+      "rows_before": 1020,
+      "rows_after": 1020,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 2,
+      "datetime_standardized": 1,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 235,
+      "missing_after": 235,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 87.01,
+      "quality_score_after": 87.01,
+      "improvement_pct": 0.0
+    },
+    "execution_impact": {
+      "rows_before": 1020,
+      "rows_after": 1020,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 2,
+      "datetime_standardized": 1,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 235,
+      "missing_after": 235,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 87.01,
+      "quality_score_after": 87.01,
+      "improvement_pct": 0.0
+    },
+    "impact": {
+      "rows_before": 1020,
+      "rows_after": 1020,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 2,
+      "datetime_standardized": 1,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 235,
+      "missing_after": 235,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 87.01,
+      "quality_score_after": 87.01,
+      "improvement_pct": 0.0
+    },
+    "risk": {
+      "overall_confidence": 94,
+      "low_risk": [
+        "parse_datetime",
+        "normalize_phone",
+        "normalize_columns",
+        "fill_missing",
+        "standardize_boolean"
+      ],
+      "medium_risk": [],
+      "high_risk": []
+    },
+    "timings": {
+      "request_intake": 0.0,
+      "schema_discovery": 0.0132,
+      "data_profiler": 0.0273,
+      "migration_analyst": 5.4523,
+      "transformation_previewer": 0.0238,
+      "human_review": 0.0,
+      "transformation_planner": 0.0,
+      "migration_executor": 0.0853,
+      "reconciler": 0.0369
+    }
+  }
+}

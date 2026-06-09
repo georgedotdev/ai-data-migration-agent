@@ -39,6 +39,7 @@ class DSLStep(BaseModel):
     operation: Optional[str] = Field(default=None, description="Operation string for conditional_transform")
     delimiter: Optional[str] = Field(default=None, description="Delimiter for split_column")
     regex: Optional[str] = Field(default=None, description="Regex pattern for extract_pattern or split_column")
+    mapping: Optional[dict] = Field(default=None, description="Dictionary mapping for map_values action (e.g. {'Old': 'New'})")
 
     @field_validator('regex')
     @classmethod
@@ -227,6 +228,8 @@ class BaseLLMProvider(AIProvider):
         1. Preserve data whenever possible.
         2. Dropping columns should be a LAST RESORT.
         3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.
+        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.
+        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.
 
         Available DSL Actions include:
         - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
@@ -569,6 +572,9 @@ def generate_transformation_dsl(
         except Exception as e:
             print(f"[AI Brain] FAIL - {provider_name} failed: {e}")
             continue
+
+    if requested_provider != "Auto" and requested_provider != "Deterministic":
+        raise RuntimeError(f"Requested provider {requested_provider} failed: {chain_traversed}")
 
     print("[AI Brain] Falling back to DeterministicProvider...")
     fallback = DeterministicProvider()

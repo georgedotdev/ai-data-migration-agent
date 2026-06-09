@@ -1,0 +1,5 @@
+{
+  "dataset": "messy_IMDB_dataset.csv",
+  "success": false,
+  "error": "'utf-8' codec can't decode byte 0xca in position 27: invalid continuation byte"
+}

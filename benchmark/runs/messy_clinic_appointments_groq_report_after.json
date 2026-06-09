@@ -1,0 +1,256 @@
+{
+  "dataset": "messy_clinic_appointments.csv",
+  "success": true,
+  "error": null,
+  "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 1000\n        Duplicates: 0\n        Quality Score: 91.69\n\n        Columns:\n        {\n  \"patient_id\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 101,\n    \"unique_pct\": 10.1,\n    \"duplicate_count\": 899,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      1080,\n      1074,\n      1067\n    ],\n    \"numeric_stats\": {\n      \"min\": 1000.0,\n      \"max\": 1100.0,\n      \"mean\": 1050.521,\n      \"median\": 1051.0,\n      \"std\": 28.8886,\n      \"q1\": 1025.0,\n      \"q3\": 1075.0,\n      \"iqr\": 50.0,\n      \"lower_bound\": 950.0,\n      \"upper_bound\": 1150.0,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"patient_name\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 988,\n    \"unique_pct\": 98.8,\n    \"duplicate_count\": 12,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Tammy Williams\",\n      \"Megan Strickland\",\n      \"Amanda Schroeder\"\n    ]\n  },\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 73,\n    \"unique_pct\": 7.3,\n    \"duplicate_count\": 927,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      76,\n      69,\n      79\n    ],\n    \"numeric_stats\": {\n      \"min\": 18.0,\n      \"max\": 90.0,\n      \"mean\": 53.75,\n      \"median\": 55.0,\n      \"std\": 21.1376,\n      \"q1\": 34.0,\n      \"q3\": 71.0,\n      \"iqr\": 37.0,\n      \"lower_bound\": -21.5,\n      \"upper_bound\": 126.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 50,\n    \"missing_pct\": 5.0,\n    \"unique_count\": 8,\n    \"unique_pct\": 0.84,\n    \"duplicate_count\": 942,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"female\",\n      \"F\",\n      \"M\"\n    ]\n  },\n  \"appointment_date\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 735,\n    \"unique_pct\": 73.5,\n    \"duplicate_count\": 265,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"2026/02/26\",\n      \"05/23/2025\",\n      \"30-Nov-2025\"\n    ]\n  },\n  \"booking_date\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 822,\n    \"unique_pct\": 82.2,\n    \"duplicate_count\": 178,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"2024/12/03\",\n      \"12-Jun-2024\",\n      \"August 05, 24\"\n    ]\n  },\n  \"doctor\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 990,\n    \"unique_pct\": 99.0,\n    \"duplicate_count\": 10,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Christopher Graham\",\n      \"Brandon Lewis\",\n      \"Deanna Edwards\"\n    ]\n  },\n  \"department\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.4,\n    \"duplicate_count\": 996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Cardiology\",\n      \"Orthopedics\",\n      \"Neurology\"\n    ]\n  },\n  \"billing_amount\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 50,\n    \"missing_pct\": 5.0,\n    \"unique_count\": 949,\n    \"unique_pct\": 99.89,\n    \"duplicate_count\": 1,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"\\u00a3425.8\",\n      \"\\u20ac344.26\",\n      \"\\u20ac203.34\"\n    ]\n  },\n  \"follow_up_required\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 6,\n    \"unique_pct\": 0.6,\n    \"duplicate_count\": 994,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"1\",\n      \"Y\",\n      \"No\"\n    ]\n  }\n}\n\n        ## User Request\n        Migrate and clean data from messy_clinic_appointments.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+  "raw_response": "",
+  "parsed_dsl": {
+    "dataset_assessment": "The dataset health is generally good with a quality score of 91.69. However, there are some data quality issues that need to be addressed, such as missing values in the 'gender' and 'billing_amount' columns, and inconsistent formatting in the 'appointment_date', 'booking_date', and 'billing_amount' columns.",
+    "identified_issues": [
+      "missing values in 'gender' and 'billing_amount' columns",
+      "inconsistent formatting in 'appointment_date', 'booking_date', and 'billing_amount' columns"
+    ],
+    "schema_mapping_recommendations": [
+      "The 'patient_id' column can be used as a primary key.",
+      "The 'appointment_date' and 'booking_date' columns can be used to create a separate 'dates' table.",
+      "The 'billing_amount' column can be used to create a separate 'billing' table."
+    ],
+    "transformations": [
+      {
+        "action": "normalize_columns"
+      },
+      {
+        "action": "fill_missing",
+        "column": "gender",
+        "strategy": "mode",
+        "confidence": 90
+      },
+      {
+        "action": "parse_datetime",
+        "column": "appointment_date",
+        "confidence": 95
+      },
+      {
+        "action": "parse_datetime",
+        "column": "booking_date",
+        "confidence": 95
+      },
+      {
+        "action": "parse_currency",
+        "column": "billing_amount",
+        "confidence": 90
+      },
+      {
+        "action": "standardize_boolean",
+        "column": "follow_up_required",
+        "confidence": 90
+      }
+    ],
+    "reasoning": [
+      {
+        "step": 0,
+        "reason": "Standardizing column names automatically."
+      },
+      {
+        "reason": "The 'gender' column has 50 missing values, which is 5% of the total rows. We will use the 'fill_missing' action with a strategy of 'mode' to fill these missing values, as the 'gender' column has a limited number of unique values.",
+        "step": 2
+      },
+      {
+        "reason": "The 'appointment_date' and 'booking_date' columns have inconsistent formatting. We will use the 'parse_datetime' action to parse these columns into a standard datetime format.",
+        "step": 3
+      },
+      {
+        "reason": "The 'billing_amount' column has inconsistent formatting, with some values having a currency symbol and others not. We will use the 'parse_currency' action to parse these values into a standard numerical format.",
+        "step": 4
+      },
+      {
+        "reason": "The 'follow_up_required' column has inconsistent formatting, with some values being '1', 'Y', or 'No'. We will use the 'standardize_boolean' action to standardize these values into a boolean format.",
+        "step": 5
+      }
+    ],
+    "planning_method": "GroqProvider",
+    "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 1000\n        Duplicates: 0\n        Quality Score: 91.69\n\n        Columns:\n        {\n  \"patient_id\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 101,\n    \"unique_pct\": 10.1,\n    \"duplicate_count\": 899,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      1080,\n      1074,\n      1067\n    ],\n    \"numeric_stats\": {\n      \"min\": 1000.0,\n      \"max\": 1100.0,\n      \"mean\": 1050.521,\n      \"median\": 1051.0,\n      \"std\": 28.8886,\n      \"q1\": 1025.0,\n      \"q3\": 1075.0,\n      \"iqr\": 50.0,\n      \"lower_bound\": 950.0,\n      \"upper_bound\": 1150.0,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"patient_name\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 988,\n    \"unique_pct\": 98.8,\n    \"duplicate_count\": 12,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Tammy Williams\",\n      \"Megan Strickland\",\n      \"Amanda Schroeder\"\n    ]\n  },\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 73,\n    \"unique_pct\": 7.3,\n    \"duplicate_count\": 927,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      76,\n      69,\n      79\n    ],\n    \"numeric_stats\": {\n      \"min\": 18.0,\n      \"max\": 90.0,\n      \"mean\": 53.75,\n      \"median\": 55.0,\n      \"std\": 21.1376,\n      \"q1\": 34.0,\n      \"q3\": 71.0,\n      \"iqr\": 37.0,\n      \"lower_bound\": -21.5,\n      \"upper_bound\": 126.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 50,\n    \"missing_pct\": 5.0,\n    \"unique_count\": 8,\n    \"unique_pct\": 0.84,\n    \"duplicate_count\": 942,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"female\",\n      \"F\",\n      \"M\"\n    ]\n  },\n  \"appointment_date\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 735,\n    \"unique_pct\": 73.5,\n    \"duplicate_count\": 265,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"2026/02/26\",\n      \"05/23/2025\",\n      \"30-Nov-2025\"\n    ]\n  },\n  \"booking_date\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 822,\n    \"unique_pct\": 82.2,\n    \"duplicate_count\": 178,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"2024/12/03\",\n      \"12-Jun-2024\",\n      \"August 05, 24\"\n    ]\n  },\n  \"doctor\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 990,\n    \"unique_pct\": 99.0,\n    \"duplicate_count\": 10,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Christopher Graham\",\n      \"Brandon Lewis\",\n      \"Deanna Edwards\"\n    ]\n  },\n  \"department\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.4,\n    \"duplicate_count\": 996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Cardiology\",\n      \"Orthopedics\",\n      \"Neurology\"\n    ]\n  },\n  \"billing_amount\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 50,\n    \"missing_pct\": 5.0,\n    \"unique_count\": 949,\n    \"unique_pct\": 99.89,\n    \"duplicate_count\": 1,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"\\u00a3425.8\",\n      \"\\u20ac344.26\",\n      \"\\u20ac203.34\"\n    ]\n  },\n  \"follow_up_required\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 6,\n    \"unique_pct\": 0.6,\n    \"duplicate_count\": 994,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"1\",\n      \"Y\",\n      \"No\"\n    ]\n  }\n}\n\n        ## User Request\n        Migrate and clean data from messy_clinic_appointments.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+    "raw_ai_response": "",
+    "_metadata": {
+      "provider_used": "Groq",
+      "model_used": "llama-3.3-70b-versatile",
+      "fallback_chain": [
+        "Groq"
+      ],
+      "fallback_used": false
+    }
+  },
+  "impact_summary": {
+    "rows_before": 1000,
+    "rows_after": 1000,
+    "duplicates_removed": 0,
+    "columns_renamed": 1,
+    "columns_dropped": 0,
+    "columns_added": 0,
+    "missing_filled": 1,
+    "datetime_standardized": 2,
+    "currency_parsed": 0,
+    "fields_normalized": 1,
+    "missing_before": 100,
+    "missing_after": 1520,
+    "dupes_before": 0,
+    "dupes_after": 0,
+    "quality_score_before": 91.69,
+    "quality_score_after": 85.92,
+    "improvement_pct": -5.77
+  },
+  "execution_log": [
+    {
+      "action": "normalize_columns",
+      "status": "success",
+      "details": {
+        "renamed_count": 0,
+        "renamed": {}
+      },
+      "step_index": 0
+    },
+    {
+      "action": "fill_missing",
+      "status": "success",
+      "details": {
+        "column": "gender",
+        "strategy": "mode",
+        "nulls_filled": 50
+      },
+      "step_index": 1
+    },
+    {
+      "status": "success",
+      "details": {
+        "column": "appointment_date"
+      },
+      "step_index": 2,
+      "action": "parse_datetime"
+    },
+    {
+      "status": "success",
+      "details": {
+        "column": "booking_date"
+      },
+      "step_index": 3,
+      "action": "parse_datetime"
+    },
+    {
+      "status": "success",
+      "details": {
+        "column": "billing_amount"
+      },
+      "step_index": 4,
+      "action": "parse_currency"
+    },
+    {
+      "status": "success",
+      "details": {
+        "column": "follow_up_required"
+      },
+      "step_index": 5,
+      "action": "standardize_boolean"
+    }
+  ],
+  "executive_report": {
+    "source": "csv",
+    "target": "duckdb",
+    "success": true,
+    "provider_used": "Groq",
+    "model_used": "llama-3.3-70b-versatile",
+    "fallback_used": false,
+    "fallback_chain_traversed": [
+      "Groq"
+    ],
+    "assessment_provider": "Groq",
+    "transformation_provider": "Groq",
+    "reconciliation_results": {
+      "rows_read": 1000,
+      "rows_written": 1000,
+      "rows_skipped": 0,
+      "target_reachable": true,
+      "table_created": true,
+      "overall_success": true
+    },
+    "preview_impact": {
+      "rows_before": 1000,
+      "rows_after": 1000,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 1,
+      "datetime_standardized": 2,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 100,
+      "missing_after": 1520,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 91.69,
+      "quality_score_after": 85.92,
+      "improvement_pct": -5.77
+    },
+    "execution_impact": {
+      "rows_before": 1000,
+      "rows_after": 1000,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 1,
+      "datetime_standardized": 2,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 100,
+      "missing_after": 1520,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 91.69,
+      "quality_score_after": 85.92,
+      "improvement_pct": -5.77
+    },
+    "impact": {
+      "rows_before": 1000,
+      "rows_after": 1000,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 1,
+      "datetime_standardized": 2,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 100,
+      "missing_after": 1520,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 91.69,
+      "quality_score_after": 85.92,
+      "improvement_pct": -5.77
+    },
+    "risk": {
+      "overall_confidence": 93,
+      "low_risk": [
+        "parse_currency",
+        "parse_datetime",
+        "normalize_columns",
+        "fill_missing",
+        "standardize_boolean"
+      ],
+      "medium_risk": [],
+      "high_risk": []
+    },
+    "timings": {
+      "request_intake": 0.0,
+      "schema_discovery": 0.0124,
+      "data_profiler": 0.0313,
+      "migration_analyst": 2.5599,
+      "transformation_previewer": 0.0317,
+      "human_review": 0.0,
+      "transformation_planner": 0.0,
+      "migration_executor": 0.0973,
+      "reconciler": 0.0358
+    }
+  }
+}

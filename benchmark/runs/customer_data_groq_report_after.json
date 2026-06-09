@@ -1,0 +1,235 @@
+{
+  "dataset": "customer_data.csv",
+  "success": true,
+  "error": null,
+  "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 25000\n        Duplicates: 0\n        Quality Score: 88.61\n\n        Columns:\n        {\n  \"customer_id\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 10000,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": true,\n    \"sample_values\": [\n      \"C000001\",\n      \"C000002\",\n      \"C000003\"\n    ]\n  },\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 54,\n    \"unique_pct\": 0.54,\n    \"duplicate_count\": 9946,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      61,\n      22,\n      46\n    ],\n    \"numeric_stats\": {\n      \"min\": 16.0,\n      \"max\": 69.0,\n      \"mean\": 42.5322,\n      \"median\": 43.0,\n      \"std\": 15.6939,\n      \"q1\": 29.0,\n      \"q3\": 56.0,\n      \"iqr\": 27.0,\n      \"lower_bound\": -11.5,\n      \"upper_bound\": 96.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.04,\n    \"duplicate_count\": 9996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Other\",\n      \"Female\",\n      \"Male\"\n    ]\n  },\n  \"city\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 5,\n    \"unique_pct\": 0.05,\n    \"duplicate_count\": 9995,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Lisbon\",\n      \"Coimbra\",\n      \"Faro\"\n    ]\n  },\n  \"email\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 199,\n    \"missing_pct\": 1.99,\n    \"unique_count\": 9801,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"user1@example.com\",\n      \"user2@example.com\",\n      \"user3@example.com\"\n    ]\n  }\n}\n\n        ## User Request\n        Migrate and clean data from customer_data.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+  "raw_response": "",
+  "parsed_dsl": {
+    "dataset_assessment": "The dataset has a quality score of 88.61, with no duplicates and a row count of 25000. The 'email' column has 199 missing values.",
+    "identified_issues": [
+      "missing values in 'email' column",
+      "potential data type issues in 'age' and 'gender' columns"
+    ],
+    "schema_mapping_recommendations": [
+      "Map 'customer_id' to 'customer_id' in target schema",
+      "Map 'age' to 'age' in target schema",
+      "Map 'gender' to 'gender' in target schema",
+      "Map 'city' to 'city' in target schema",
+      "Map 'email' to 'email' in target schema"
+    ],
+    "transformations": [
+      {
+        "action": "normalize_columns"
+      },
+      {
+        "action": "fill_missing",
+        "column": "email",
+        "value": "unknown",
+        "strategy": "constant",
+        "confidence": 90
+      },
+      {
+        "action": "cast_type",
+        "column": "age",
+        "target_type": "int64",
+        "confidence": 95
+      },
+      {
+        "action": "cast_type",
+        "column": "gender",
+        "target_type": "str",
+        "confidence": 95
+      }
+    ],
+    "reasoning": [
+      {
+        "step": 0,
+        "reason": "Standardizing column names automatically."
+      },
+      {
+        "reason": "The 'email' column has missing values, which need to be filled to preserve data.",
+        "step": 2
+      },
+      {
+        "reason": "The 'age' column has a unique count of 54, which might indicate potential data type issues.",
+        "step": 3
+      },
+      {
+        "reason": "The 'gender' column has a unique count of 4, which might indicate potential data type issues.",
+        "step": 4
+      }
+    ],
+    "planning_method": "GroqProvider",
+    "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 25000\n        Duplicates: 0\n        Quality Score: 88.61\n\n        Columns:\n        {\n  \"customer_id\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 10000,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": true,\n    \"sample_values\": [\n      \"C000001\",\n      \"C000002\",\n      \"C000003\"\n    ]\n  },\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 54,\n    \"unique_pct\": 0.54,\n    \"duplicate_count\": 9946,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      61,\n      22,\n      46\n    ],\n    \"numeric_stats\": {\n      \"min\": 16.0,\n      \"max\": 69.0,\n      \"mean\": 42.5322,\n      \"median\": 43.0,\n      \"std\": 15.6939,\n      \"q1\": 29.0,\n      \"q3\": 56.0,\n      \"iqr\": 27.0,\n      \"lower_bound\": -11.5,\n      \"upper_bound\": 96.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.04,\n    \"duplicate_count\": 9996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Other\",\n      \"Female\",\n      \"Male\"\n    ]\n  },\n  \"city\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 5,\n    \"unique_pct\": 0.05,\n    \"duplicate_count\": 9995,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"Lisbon\",\n      \"Coimbra\",\n      \"Faro\"\n    ]\n  },\n  \"email\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 199,\n    \"missing_pct\": 1.99,\n    \"unique_count\": 9801,\n    \"unique_pct\": 100.0,\n    \"duplicate_count\": 0,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"user1@example.com\",\n      \"user2@example.com\",\n      \"user3@example.com\"\n    ]\n  }\n}\n\n        ## User Request\n        Migrate and clean data from customer_data.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+    "raw_ai_response": "",
+    "_metadata": {
+      "provider_used": "Groq",
+      "model_used": "llama-3.3-70b-versatile",
+      "fallback_chain": [
+        "Groq"
+      ],
+      "fallback_used": false
+    }
+  },
+  "impact_summary": {
+    "rows_before": 10000,
+    "rows_after": 10000,
+    "duplicates_removed": 0,
+    "columns_renamed": 1,
+    "columns_dropped": 0,
+    "columns_added": 0,
+    "missing_filled": 1,
+    "datetime_standardized": 0,
+    "currency_parsed": 0,
+    "fields_normalized": 1,
+    "missing_before": 199,
+    "missing_after": 0,
+    "dupes_before": 0,
+    "dupes_after": 0,
+    "quality_score_before": 88.61,
+    "quality_score_after": 88.7,
+    "improvement_pct": 0.09
+  },
+  "execution_log": [
+    {
+      "action": "normalize_columns",
+      "status": "success",
+      "details": {
+        "renamed_count": 0,
+        "renamed": {}
+      },
+      "step_index": 0
+    },
+    {
+      "action": "fill_missing",
+      "status": "success",
+      "details": {
+        "column": "email",
+        "strategy": "constant",
+        "nulls_filled": 496
+      },
+      "step_index": 1
+    },
+    {
+      "action": "cast_type",
+      "status": "success",
+      "details": {
+        "column": "age",
+        "original_dtype": "int64",
+        "target_dtype": "int64",
+        "new_dtype": "int64"
+      },
+      "step_index": 2
+    },
+    {
+      "action": "cast_type",
+      "status": "success",
+      "details": {
+        "column": "gender",
+        "original_dtype": "object",
+        "target_dtype": "str",
+        "new_dtype": "object"
+      },
+      "step_index": 3
+    }
+  ],
+  "executive_report": {
+    "source": "csv",
+    "target": "duckdb",
+    "success": true,
+    "provider_used": "Groq",
+    "model_used": "llama-3.3-70b-versatile",
+    "fallback_used": false,
+    "fallback_chain_traversed": [
+      "Groq"
+    ],
+    "assessment_provider": "Groq",
+    "transformation_provider": "Groq",
+    "reconciliation_results": {
+      "rows_read": 25000,
+      "rows_written": 25000,
+      "rows_skipped": 0,
+      "target_reachable": true,
+      "table_created": true,
+      "overall_success": true
+    },
+    "preview_impact": {
+      "rows_before": 10000,
+      "rows_after": 10000,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 1,
+      "datetime_standardized": 0,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 199,
+      "missing_after": 0,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 88.61,
+      "quality_score_after": 88.7,
+      "improvement_pct": 0.09
+    },
+    "execution_impact": {
+      "rows_before": 25000,
+      "rows_after": 25000,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 1,
+      "datetime_standardized": 0,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 199,
+      "missing_after": 0,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 88.61,
+      "quality_score_after": 88.7,
+      "improvement_pct": 0.09
+    },
+    "impact": {
+      "rows_before": 25000,
+      "rows_after": 25000,
+      "duplicates_removed": 0,
+      "columns_renamed": 1,
+      "columns_dropped": 0,
+      "columns_added": 0,
+      "missing_filled": 1,
+      "datetime_standardized": 0,
+      "currency_parsed": 0,
+      "fields_normalized": 1,
+      "missing_before": 199,
+      "missing_after": 0,
+      "dupes_before": 0,
+      "dupes_after": 0,
+      "quality_score_before": 88.61,
+      "quality_score_after": 88.7,
+      "improvement_pct": 0.09
+    },
+    "risk": {
+      "overall_confidence": 95,
+      "low_risk": [
+        "fill_missing",
+        "normalize_columns",
+        "cast_type"
+      ],
+      "medium_risk": [],
+      "high_risk": []
+    },
+    "timings": {
+      "request_intake": 0.0,
+      "schema_discovery": 0.0495,
+      "data_profiler": 0.0516,
+      "migration_analyst": 2.2118,
+      "transformation_previewer": 0.0704,
+      "human_review": 0.0,
+      "transformation_planner": 0.0,
+      "migration_executor": 0.1633,
+      "reconciler": 0.063
+    }
+  }
+}

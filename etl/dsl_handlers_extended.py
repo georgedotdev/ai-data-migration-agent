@@ -424,8 +424,58 @@ def _action_metadata_only(df: pd.DataFrame, step: dict):
     # These tools just log findings and return the DF unchanged
     return df, {"status": "success", "details": {"info": "Metadata step evaluated"}}
 
+def _action_standardize_boolean(df: pd.DataFrame, step: dict):
+    column = step.get("column")
+    if not column or column not in df.columns:
+        return df, {"status": "error", "details": {"error": "Invalid column"}}
+    
+    df = df.copy()
+    truthy = ['yes', 'y', 'true', 't', '1', '1.0']
+    falsy = ['no', 'n', 'false', 'f', '0', '0.0']
+    
+    def map_bool(val):
+        if pd.isna(val): return None
+        s = str(val).strip().lower()
+        if s in truthy: return True
+        if s in falsy: return False
+        return None
+        
+    df[column] = df[column].apply(map_bool)
+    return df, {"status": "success", "details": {"column": column}}
+
+def _action_normalize_phone(df: pd.DataFrame, step: dict):
+    column = step.get("column")
+    if not column or column not in df.columns:
+        return df, {"status": "error", "details": {"error": "Invalid column"}}
+        
+    df = df.copy()
+    def clean_phone(val):
+        if pd.isna(val): return None
+        s = str(val)
+        # Strip negative signs if accidental (common in some exports)
+        if s.startswith('-'): s = s[1:]
+        # Strip non-digits
+        digits = re.sub(r'\D', '', s)
+        return digits if digits else None
+        
+    df[column] = df[column].apply(clean_phone)
+    return df, {"status": "success", "details": {"column": column}}
+
+def _action_map_values(df: pd.DataFrame, step: dict):
+    column = step.get("column")
+    mapping = step.get("mapping") # dict
+    if not column or column not in df.columns or not isinstance(mapping, dict):
+        return df, {"status": "error", "details": {"error": "Requires column and mapping dict"}}
+        
+    df = df.copy()
+    df[column] = df[column].replace(mapping)
+    return df, {"status": "success", "details": {"column": column, "mapped_keys": list(mapping.keys())}}
+
 # Mapping
 EXTENDED_HANDLERS = {
+    "standardize_boolean": _action_standardize_boolean,
+    "normalize_phone": _action_normalize_phone,
+    "map_values": _action_map_values,
     "drop_missing_rows": _action_drop_missing_rows,
     "keep_latest_duplicate": _action_keep_latest_duplicate,
     "parse_datetime": _action_parse_datetime,
