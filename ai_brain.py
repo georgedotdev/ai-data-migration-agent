@@ -284,6 +284,9 @@ class BaseLLMProvider(AIProvider):
         7. CRITICAL: If a column contains percentages (e.g., '84%', '12%'), you MUST use `parse_percentage`.
         8. CRITICAL: If a categorical column (like gender) has inconsistent casing or abbreviations (e.g., 'M', 'Male', 'm'), you MUST use `normalize_case` or `map_values`.
         9. CRITICAL: Schema mappings must preserve semantic meaning. Reject mappings that change data meaning (e.g. Age != Birth Year).
+        10. CRITICAL: Duplicates in categorical/dimension columns (e.g., gender, skill, language) are NORMAL. DO NOT use remove_duplicates on them just because their duplicate_count is high. ONLY use remove_duplicates on unique identifiers (e.g., ID, Email).
+        11. CRITICAL: When using `fill_missing`, you MUST specify either the `strategy` field (e.g., mean, median, mode) OR the `value` field if using a constant.
+        12. CRITICAL: When using `cast_type`, you MUST specify the `target_type` field (e.g., int64, float64, str, bool, datetime, category).
 
         Available DSL Actions include:
         - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
