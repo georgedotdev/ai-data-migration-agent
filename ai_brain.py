@@ -312,7 +312,7 @@ class BaseLLMProvider(AIProvider):
 
 
 class GeminiProvider(BaseLLMProvider):
-    def __init__(self, model: str = "gemini-2.5-pro"):
+    def __init__(self, model: str = "gemini-2.5-flash"):
         from langchain_google_genai import ChatGoogleGenerativeAI
         print(f"[AI Brain] Initializing GeminiProvider with model: {model}")
         llm = ChatGoogleGenerativeAI(model=model, temperature=0.0)
@@ -590,7 +590,7 @@ def generate_transformation_dsl(
     """
     DEFAULT_CHAIN = [
         ("Groq", "llama-3.3-70b-versatile"),
-        ("Gemini", "gemini-2.5-pro"),
+        ("Gemini", "gemini-2.5-flash"),
         ("OpenAI", "gpt-4o"),
     ]
     

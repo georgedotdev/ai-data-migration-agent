@@ -126,8 +126,8 @@ if not st.session_state.workflow_started:
                 model_options = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "deepseek-r1-distill-llama-70b"]
             elif ai_provider == "Gemini":
                 model_options = [
-                    "gemini-2.5-pro",
                     "gemini-2.5-flash",
+                    "gemini-2.5-pro",
                     "gemini-2.5-flash-lite",
                     "gemini-2.0-flash",
                     "gemini-2.0-flash-lite",
