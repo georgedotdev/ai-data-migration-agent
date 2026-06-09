@@ -450,16 +450,25 @@ if st.session_state.workflow_started:
         
         impact = report.get("impact", {})
         if impact:
-            st.markdown("#### 📈 Business Impact")
+            st.markdown('<div class="section-header">11. 📈 Quality Breakdown</div>', unsafe_allow_html=True)
             ic1, ic2 = st.columns(2)
             qb = impact.get('quality_score_before', 0)
             qa = impact.get('quality_score_after', 0)
             diff = round(qa - qb, 2)
             sign = "+" if diff >= 0 else ""
             
-            ic1.markdown(f"- **Data Quality Improvement:** `{qb}%` ➡️ `{qa}%` ({sign}{diff}%)")
-            ic2.markdown(f"- **Total Rows Migrated:** `{impact.get('rows_after')}`")
-            ic2.markdown(f"- **Total Schema Changes:** `{impact.get('columns_renamed', 0) + impact.get('columns_dropped', 0) + impact.get('columns_added', 0)}`")
+            ic1.metric("Data Quality Score", f"{qa}%", f"{sign}{diff}%")
+            ic2.metric("Total Rows Migrated", impact.get('rows_after'))
+            
+            st.markdown("**Forensics:**")
+            col1, col2 = st.columns(2)
+            mb = impact.get('missing_before', 0)
+            ma = impact.get('missing_after', 0)
+            col1.markdown(f"- **Missing Values:** `{mb}` ➡️ `{ma}`")
+            
+            db = impact.get('dupes_before', 0)
+            da = impact.get('dupes_after', 0)
+            col2.markdown(f"- **Duplicate Rows:** `{db}` ➡️ `{da}`")
             
             st.markdown("**Contributors:**")
             if impact.get('duplicates_removed', 0):
@@ -511,8 +520,62 @@ if st.session_state.workflow_started:
         rc1.download_button("📥 Download JSON Report", data=json_report, file_name="migration_executive_report.json", mime="application/json", use_container_width=True)
         rc2.download_button("📥 Download Markdown Report", data=markdown_report, file_name="migration_executive_report.md", mime="text/markdown", use_container_width=True)
         
+        # ─── Task 4: DuckDB Download Audit & Repair ───
+        target_type = state.get("target_type", "")
+        if target_type == "duckdb" and report.get("success") and recon_results.get("overall_success"):
+            duckdb_path = state.get("target_config", {}).get("db_path", "migration.duckdb")
+            if os.path.exists(duckdb_path):
+                file_size_mb = os.path.getsize(duckdb_path) / (1024 * 1024)
+                st.markdown('<div class="section-header">📦 Download Migrated DuckDB Database</div>', unsafe_allow_html=True)
+                st.markdown(f"**Filename:** `{os.path.basename(duckdb_path)}` | **Size:** `{file_size_mb:.2f} MB`")
+                with open(duckdb_path, "rb") as f:
+                    st.download_button("📥 Download DuckDB", data=f, file_name=os.path.basename(duckdb_path), mime="application/octet-stream", use_container_width=True, type="primary")
+
         if report.get('success') and recon_results.get("overall_success"):
             st.balloons()
+            
+    # ─── New Sections: AI Observability ───
+    if state.get("transformation_dsl"):
+        st.markdown('<div class="section-header">9. 🧠 AI Forensics</div>', unsafe_allow_html=True)
+        st.markdown(f"- **Provider Used:** `{state.get('provider_used', 'Unknown')}`")
+        st.markdown(f"- **Model Used:** `{state.get('model_used', 'Unknown')}`")
+        st.markdown(f"- **Fallback Used:** `{state.get('fallback_used', False)}`")
+        
+        with st.expander("Raw Prompt"):
+            st.code(state.get("raw_prompt", ""), language="markdown")
+            
+        with st.expander("Raw AI Response"):
+            st.code(state.get("raw_ai_response", ""), language="json")
+            
+        with st.expander("Parsed DSL JSON"):
+            st.json(state.get("transformation_dsl", {}))
+            
+        exec_log = state.get("execution_log", [])
+        if exec_log:
+            st.markdown("#### Execution Log")
+            for log_item in exec_log:
+                action = log_item.get("action", "unknown")
+                status = log_item.get("status", "unknown")
+                if status == "success":
+                    st.markdown(f"**{action}**: ✓ Success")
+                elif status == "skipped":
+                    reason = log_item.get("reason", "Unknown reason")
+                    st.markdown(f"**{action}**: ⚠ Skipped - Reason: {reason}")
+                else:
+                    reason = log_item.get("details", {}).get("error", "Unknown error")
+                    st.markdown(f"**{action}**: ✗ Failed - Reason: {reason}")
+                    
+            st.markdown('<div class="section-header">10. 📊 Transformation Coverage</div>', unsafe_allow_html=True)
+            recommended_steps = len(state.get("transformation_dsl", {}).get("transformations", []))
+            executed_steps = sum(1 for item in exec_log if item.get("status") == "success")
+            skipped_steps = sum(1 for item in exec_log if item.get("status") != "success")
+            coverage_pct = round((executed_steps / recommended_steps) * 100, 2) if recommended_steps else 100
+            
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("AI Recommended Steps", recommended_steps)
+            c2.metric("Executed Steps", executed_steps)
+            c3.metric("Skipped Steps", skipped_steps)
+            c4.metric("Coverage %", f"{coverage_pct}%")
 
 
 # ─────────────────────────────────────────────

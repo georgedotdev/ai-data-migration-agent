@@ -156,13 +156,22 @@ class BaseLLMProvider(AIProvider):
             step_dict = {k: v for k, v in step.model_dump().items() if v is not None}
             transformations.append(step_dict)
 
+        raw_content = ""
+        if raw:
+            if hasattr(raw, "content"):
+                raw_content = str(raw.content)
+            else:
+                raw_content = str(raw)
+
         dsl = {
             "dataset_assessment": assessment.dataset_assessment,
             "identified_issues": assessment.identified_issues,
             "schema_mapping_recommendations": assessment.schema_mapping_recommendations,
             "transformations": transformations,
             "reasoning": assessment.reasoning,
-            "planning_method": self.__class__.__name__
+            "planning_method": self.__class__.__name__,
+            "raw_prompt": prompt,
+            "raw_ai_response": raw_content
         }
 
         # Automatically insert normalize_columns if requested and not present

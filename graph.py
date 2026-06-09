@@ -49,13 +49,19 @@ class AgentState(TypedDict):
     schema: dict
     profile: dict
     
-    # Analysis    # Outputs
+    # Outputs
+    assessment: dict
     transformation_dsl: dict
     transformations: list[str]  # Summarized text points
     preview: list[dict]
     preview_impact: dict
     execution_impact: dict
     risk: dict
+    raw_ai_response: str
+    raw_prompt: str
+    provider_used: str
+    model_used: str
+    execution_log: list
     
     # Human Review Feedback
     human_feedback: str
@@ -178,6 +184,10 @@ def migration_analyst(state: AgentState):
         "fallback_chain_traversed": fallback_chain,
         "assessment_provider": provider_used,
         "transformation_provider": provider_used,
+        "raw_prompt": dsl.get("raw_prompt", ""),
+        "raw_ai_response": dsl.get("raw_ai_response", ""),
+        "provider_used": provider_used,
+        "model_used": model_used,
         "executed_steps": state["executed_steps"] + ["migration_analyst"],
         "timings": timings
     }
@@ -268,8 +278,9 @@ def migration_executor(state: AgentState):
     
     # V2 Execution path
     dsl = state.get("transformation_dsl")
+    execution_log = []
     if dsl:
-        transformed_df, _ = transform_data_dsl(df, dsl)
+        transformed_df, execution_log = transform_data_dsl(df, dsl)
     else:
         # Fallback to V1
         transformed_df = transform_data(df, transformations=state.get("transformations"))
@@ -320,6 +331,7 @@ def migration_executor(state: AgentState):
     
     return {
         "execution_impact": execution_impact,
+        "execution_log": execution_log,
         "executed_steps": state["executed_steps"] + ["migration_executor"],
         "timings": timings
     }

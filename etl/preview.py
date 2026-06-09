@@ -121,6 +121,13 @@ def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl
             fields_normalized += 1
             cols_renamed += 1 # count as schema change too
             
+    # Extract exact counts for forensics
+    missing_before = sum(col.get("missing_count", 0) for col in profile_before.get("columns", {}).values())
+    missing_after = sum(col.get("missing_count", 0) for col in profile_after.get("columns", {}).values())
+    
+    dupes_before = profile_before.get("duplicate_rows", 0)
+    dupes_after = profile_after.get("duplicate_rows", 0)
+
     # Calculate duplicates removed correctly by checking log or row delta
     row_delta = len(df_before) - len(df_after)
     actual_dups_removed = row_delta if row_delta > 0 else 0
@@ -136,6 +143,10 @@ def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl
         "datetime_standardized": datetime_standardized,
         "currency_parsed": currency_parsed,
         "fields_normalized": fields_normalized,
+        "missing_before": missing_before,
+        "missing_after": missing_after,
+        "dupes_before": dupes_before,
+        "dupes_after": dupes_after,
         "quality_score_before": score_before,
         "quality_score_after": score_after,
         "improvement_pct": round(score_after - score_before, 2)
