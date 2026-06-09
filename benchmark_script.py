@@ -6,15 +6,19 @@ import traceback
 
 from graph import graph
 
-def run_benchmark():
+def run_benchmark(custom_files=None):
     os.makedirs('benchmark/runs', exist_ok=True)
-    datasets = [
-        'customer_data.csv',
-        'fitness_dataset.csv',
-        'messy_clinic_appointments.csv',
-        'Messy_Employee_dataset.csv',
-        'messy_IMDB_dataset.csv'
-    ]
+    
+    if custom_files:
+        datasets = custom_files
+    else:
+        datasets = [
+            'customer_data.csv',
+            'fitness_dataset.csv',
+            'messy_clinic_appointments.csv',
+            'Messy_Employee_dataset.csv',
+            'messy_IMDB_dataset.csv'
+        ]
     
     for filename in datasets:
         print(f"\n--- Running benchmark on {filename} ---")
@@ -86,4 +90,5 @@ def run_benchmark():
         print(f"Saved report to {report_file}")
 
 if __name__ == "__main__":
-    run_benchmark()
+    import sys
+    run_benchmark(sys.argv[1:] if len(sys.argv) > 1 else None)

@@ -197,10 +197,7 @@ def _action_cast_type(df: pd.DataFrame, step: dict):
         return df, {
             "action": "cast_type",
             "status": "error",
-            "details": {
-                "error": f"Invalid target_type '{target_type}'. "
-                         f"Valid: {sorted(VALID_TYPES)}"
-            }
+            "details": {"error": f"Invalid target_type '{target_type}'"}
         }
 
     if column not in df.columns:
@@ -214,12 +211,16 @@ def _action_cast_type(df: pd.DataFrame, step: dict):
     original_dtype = str(df[column].dtype)
 
     try:
-        if target_type == "datetime":
+        if target_type in ("int64", "float64"):
+            df[column] = pd.to_numeric(df[column], errors="coerce").astype(target_type)
+        elif target_type == "datetime":
             df[column] = pd.to_datetime(df[column], errors="coerce")
         elif target_type in ("str", "string"):
             df[column] = df[column].astype(str)
         elif target_type == "bool":
             df[column] = df[column].astype(bool)
+        elif target_type == "category":
+            df[column] = df[column].astype('category')
         else:
             df[column] = pd.to_numeric(df[column], errors="coerce").astype(target_type)
     except Exception as e:
@@ -412,7 +413,8 @@ def list_actions():
 
 def execute_dsl(
     df: pd.DataFrame,
-    dsl: dict
+    dsl: dict,
+    column_mapping: dict = None
 ) -> tuple:
     """
     Execute a JSON DSL transformation plan.
@@ -421,6 +423,7 @@ def execute_dsl(
         df: Input DataFrame.
         dsl: Dict with a "transformations" key containing a list of steps.
              Each step has an "action" key and action-specific parameters.
+        column_mapping: Optional dict to track and resolve renamed columns across execution chunks.
 
     Returns:
         tuple: (transformed_df, execution_log)
@@ -449,6 +452,8 @@ def execute_dsl(
         )
 
     log = []
+    if column_mapping is None:
+        column_mapping = {}
 
     for i, step in enumerate(steps):
         if not isinstance(step, dict):
@@ -485,12 +490,69 @@ def execute_dsl(
             })
             continue
 
+        # Target Resolution (Phase 2 & 3)
+        resolved = False
+        original_col = step.get("column")
+        if "column" in step and step["column"] in column_mapping:
+            step["column"] = column_mapping[step["column"]]
+            resolved = True
+        
+        if "columns" in step and isinstance(step["columns"], list):
+            new_cols = []
+            for c in step["columns"]:
+                if c in column_mapping:
+                    new_cols.append(column_mapping[c])
+                    resolved = True
+                else:
+                    new_cols.append(c)
+            step["columns"] = new_cols
+
+        # Target Validation
+        # If the step defines a column, verify it exists.
+        # Note: some actions create columns (e.g., create_column), so we skip validation for them.
+        actions_creating_columns = {"create_column", "generate_surrogate_key", "rename_column"}
+        target_col = step.get("column")
+        if target_col and action not in actions_creating_columns:
+            if target_col not in df.columns:
+                msg = f"Target column '{target_col}' does not exist"
+                if resolved:
+                    msg += f" (resolved from '{original_col}')"
+                log.append({
+                    "step_index": i,
+                    "action": action,
+                    "status": "skipped",
+                    "details": {"reason": msg}
+                })
+                continue
+
         try:
             df, result = handler(df, step)
             result["step_index"] = i
             if "action" not in result:
                 result["action"] = action
+            if resolved:
+                if "details" not in result:
+                    result["details"] = {}
+                result["details"]["resolved_from"] = original_col
             log.append(result)
+            
+            # Update column mappings if step was successful
+            if result.get("status") == "success":
+                details = result.get("details", {})
+                if action == "normalize_columns" and "renamed" in details:
+                    for old, new in details["renamed"].items():
+                        for k, v in column_mapping.items():
+                            if v == old:
+                                column_mapping[k] = new
+                        column_mapping[old] = new
+                elif action == "rename_column" and "original_name" in details and "new_name" in details:
+                    old = details["original_name"]
+                    new = details["new_name"]
+                    for k, v in column_mapping.items():
+                        if v == old:
+                            column_mapping[k] = new
+                    column_mapping[old] = new
+
         except Exception as e:
             log.append({
                 "step_index": i,

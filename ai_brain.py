@@ -159,8 +159,10 @@ class BaseLLMProvider(AIProvider):
 
         raw_content = ""
         if raw:
-            if hasattr(raw, "content"):
+            if hasattr(raw, "content") and raw.content:
                 raw_content = str(raw.content)
+            elif hasattr(raw, "tool_calls") and raw.tool_calls:
+                raw_content = json.dumps(raw.tool_calls, indent=2)
             else:
                 raw_content = str(raw)
 
@@ -230,11 +232,12 @@ class BaseLLMProvider(AIProvider):
         3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.
         4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.
         5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.
+        6. CRITICAL: Schema mappings must preserve semantic meaning. Reject mappings that change data meaning (e.g. Age != Birth Year, Country != Nationality). Do NOT recommend them as schema_mapping_recommendations.
 
         Available DSL Actions include:
         - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
         - Cat 2: remove_duplicates, keep_latest_duplicate
-        - Cat 3: cast_type (int64, float64, str, datetime, bool)
+        - Cat 3: cast_type (int64, float64, str, datetime, bool, category)
         - Cat 4: parse_datetime, extract_year, extract_month, extract_day
         - Cat 5: parse_currency (e.g., €67.5M -> 67500000)
         - Cat 6: parse_height, parse_weight

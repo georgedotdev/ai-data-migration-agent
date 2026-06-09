@@ -2,18 +2,17 @@
   "dataset": "fitness_dataset.csv",
   "success": true,
   "error": null,
-  "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 2000\n        Duplicates: 0\n        Quality Score: 86.45\n\n        Columns:\n        {\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 62,\n    \"unique_pct\": 3.1,\n    \"duplicate_count\": 1938,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      56,\n      69,\n      46\n    ],\n    \"numeric_stats\": {\n      \"min\": 18.0,\n      \"max\": 79.0,\n      \"mean\": 49.114,\n      \"median\": 49.0,\n      \"std\": 17.9266,\n      \"q1\": 34.0,\n      \"q3\": 65.0,\n      \"iqr\": 31.0,\n      \"lower_bound\": -12.5,\n      \"upper_bound\": 111.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"height_cm\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 50,\n    \"unique_pct\": 2.5,\n    \"duplicate_count\": 1950,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      152,\n      186,\n      192\n    ],\n    \"numeric_stats\": {\n      \"min\": 150.0,\n      \"max\": 199.0,\n      \"mean\": 174.533,\n      \"median\": 174.0,\n      \"std\": 14.3717,\n      \"q1\": 162.0,\n      \"q3\": 187.0,\n      \"iqr\": 25.0,\n      \"lower_bound\": 124.5,\n      \"upper_bound\": 224.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"weight_kg\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 80,\n    \"unique_pct\": 4.0,\n    \"duplicate_count\": 1920,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      65,\n      95,\n      103\n    ],\n    \"numeric_stats\": {\n      \"min\": 30.0,\n      \"max\": 250.0,\n      \"mean\": 83.5405,\n      \"median\": 83.0,\n      \"std\": 25.8525,\n      \"q1\": 64.0,\n      \"q3\": 102.0,\n      \"iqr\": 38.0,\n      \"lower_bound\": 7.0,\n      \"upper_bound\": 159.0,\n      \"outlier_count\": 21,\n      \"outlier_pct\": 1.05\n    }\n  },\n  \"heart_rate\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 484,\n    \"unique_pct\": 24.2,\n    \"duplicate_count\": 1516,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      69.6,\n      60.8,\n      61.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 45.0,\n      \"max\": 118.6,\n      \"mean\": 70.2886,\n      \"median\": 70.25,\n      \"std\": 11.8463,\n      \"q1\": 62.1,\n      \"q3\": 78.42500000000001,\n      \"iqr\": 16.325,\n      \"lower_bound\": 37.6125,\n      \"upper_bound\": 102.9125,\n      \"outlier_count\": 10,\n      \"outlier_pct\": 0.5\n    }\n  },\n  \"blood_pressure\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 563,\n    \"unique_pct\": 28.15,\n    \"duplicate_count\": 1437,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      117.0,\n      114.8,\n      116.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 90.0,\n      \"max\": 171.2,\n      \"mean\": 119.9089,\n      \"median\": 120.0,\n      \"std\": 14.578,\n      \"q1\": 109.7,\n      \"q3\": 129.8,\n      \"iqr\": 20.1,\n      \"lower_bound\": 79.55,\n      \"upper_bound\": 159.95,\n      \"outlier_count\": 4,\n      \"outlier_pct\": 0.2\n    }\n  },\n  \"sleep_hours\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 160,\n    \"missing_pct\": 8.0,\n    \"unique_count\": 79,\n    \"unique_pct\": 4.29,\n    \"duplicate_count\": 1761,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      7.5,\n      7.0,\n      8.0\n    ],\n    \"numeric_stats\": {\n      \"min\": 4.0,\n      \"max\": 12.0,\n      \"mean\": 7.5133,\n      \"median\": 7.5,\n      \"std\": 1.502,\n      \"q1\": 6.5,\n      \"q3\": 8.6,\n      \"iqr\": 2.1,\n      \"lower_bound\": 3.35,\n      \"upper_bound\": 11.75,\n      \"outlier_count\": 2,\n      \"outlier_pct\": 0.11\n    }\n  },\n  \"nutrition_quality\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 866,\n    \"unique_pct\": 43.3,\n    \"duplicate_count\": 1134,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      2.37,\n      8.77,\n      8.2\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 10.0,\n      \"mean\": 5.0351,\n      \"median\": 5.0649999999999995,\n      \"std\": 2.8642,\n      \"q1\": 2.5475,\n      \"q3\": 7.47,\n      \"iqr\": 4.9225,\n      \"lower_bound\": -4.8362,\n      \"upper_bound\": 14.8537,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"activity_index\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 398,\n    \"unique_pct\": 19.9,\n    \"duplicate_count\": 1602,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      3.97,\n      3.19,\n      2.03\n    ],\n    \"numeric_stats\": {\n      \"min\": 1.0,\n      \"max\": 4.99,\n      \"mean\": 2.999,\n      \"median\": 2.98,\n      \"std\": 1.1364,\n      \"q1\": 2.0375,\n      \"q3\": 3.95,\n      \"iqr\": 1.9125,\n      \"lower_bound\": -0.8313,\n      \"upper_bound\": 6.8188,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"smokes\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.2,\n    \"duplicate_count\": 1996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"no\",\n      \"0\",\n      \"yes\"\n    ]\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"F\",\n      \"M\"\n    ]\n  },\n  \"is_fit\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      1,\n      0\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 1.0,\n      \"mean\": 0.3995,\n      \"median\": 0.0,\n      \"std\": 0.4899,\n      \"q1\": 0.0,\n      \"q3\": 1.0,\n      \"iqr\": 1.0,\n      \"lower_bound\": -1.5,\n      \"upper_bound\": 2.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  }\n}\n\n        ## User Request\n        Migrate and clean data from fitness_dataset.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+  "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 2000\n        Duplicates: 0\n        Quality Score: 86.45\n\n        Columns:\n        {\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 62,\n    \"unique_pct\": 3.1,\n    \"duplicate_count\": 1938,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      56,\n      69,\n      46\n    ],\n    \"numeric_stats\": {\n      \"min\": 18.0,\n      \"max\": 79.0,\n      \"mean\": 49.114,\n      \"median\": 49.0,\n      \"std\": 17.9266,\n      \"q1\": 34.0,\n      \"q3\": 65.0,\n      \"iqr\": 31.0,\n      \"lower_bound\": -12.5,\n      \"upper_bound\": 111.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"height_cm\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 50,\n    \"unique_pct\": 2.5,\n    \"duplicate_count\": 1950,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      152,\n      186,\n      192\n    ],\n    \"numeric_stats\": {\n      \"min\": 150.0,\n      \"max\": 199.0,\n      \"mean\": 174.533,\n      \"median\": 174.0,\n      \"std\": 14.3717,\n      \"q1\": 162.0,\n      \"q3\": 187.0,\n      \"iqr\": 25.0,\n      \"lower_bound\": 124.5,\n      \"upper_bound\": 224.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"weight_kg\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 80,\n    \"unique_pct\": 4.0,\n    \"duplicate_count\": 1920,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      65,\n      95,\n      103\n    ],\n    \"numeric_stats\": {\n      \"min\": 30.0,\n      \"max\": 250.0,\n      \"mean\": 83.5405,\n      \"median\": 83.0,\n      \"std\": 25.8525,\n      \"q1\": 64.0,\n      \"q3\": 102.0,\n      \"iqr\": 38.0,\n      \"lower_bound\": 7.0,\n      \"upper_bound\": 159.0,\n      \"outlier_count\": 21,\n      \"outlier_pct\": 1.05\n    }\n  },\n  \"heart_rate\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 484,\n    \"unique_pct\": 24.2,\n    \"duplicate_count\": 1516,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      69.6,\n      60.8,\n      61.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 45.0,\n      \"max\": 118.6,\n      \"mean\": 70.2886,\n      \"median\": 70.25,\n      \"std\": 11.8463,\n      \"q1\": 62.1,\n      \"q3\": 78.42500000000001,\n      \"iqr\": 16.325,\n      \"lower_bound\": 37.6125,\n      \"upper_bound\": 102.9125,\n      \"outlier_count\": 10,\n      \"outlier_pct\": 0.5\n    }\n  },\n  \"blood_pressure\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 563,\n    \"unique_pct\": 28.15,\n    \"duplicate_count\": 1437,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      117.0,\n      114.8,\n      116.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 90.0,\n      \"max\": 171.2,\n      \"mean\": 119.9089,\n      \"median\": 120.0,\n      \"std\": 14.578,\n      \"q1\": 109.7,\n      \"q3\": 129.8,\n      \"iqr\": 20.1,\n      \"lower_bound\": 79.55,\n      \"upper_bound\": 159.95,\n      \"outlier_count\": 4,\n      \"outlier_pct\": 0.2\n    }\n  },\n  \"sleep_hours\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 160,\n    \"missing_pct\": 8.0,\n    \"unique_count\": 79,\n    \"unique_pct\": 4.29,\n    \"duplicate_count\": 1761,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      7.5,\n      7.0,\n      8.0\n    ],\n    \"numeric_stats\": {\n      \"min\": 4.0,\n      \"max\": 12.0,\n      \"mean\": 7.5133,\n      \"median\": 7.5,\n      \"std\": 1.502,\n      \"q1\": 6.5,\n      \"q3\": 8.6,\n      \"iqr\": 2.1,\n      \"lower_bound\": 3.35,\n      \"upper_bound\": 11.75,\n      \"outlier_count\": 2,\n      \"outlier_pct\": 0.11\n    }\n  },\n  \"nutrition_quality\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 866,\n    \"unique_pct\": 43.3,\n    \"duplicate_count\": 1134,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      2.37,\n      8.77,\n      8.2\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 10.0,\n      \"mean\": 5.0351,\n      \"median\": 5.0649999999999995,\n      \"std\": 2.8642,\n      \"q1\": 2.5475,\n      \"q3\": 7.47,\n      \"iqr\": 4.9225,\n      \"lower_bound\": -4.8362,\n      \"upper_bound\": 14.8537,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"activity_index\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 398,\n    \"unique_pct\": 19.9,\n    \"duplicate_count\": 1602,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      3.97,\n      3.19,\n      2.03\n    ],\n    \"numeric_stats\": {\n      \"min\": 1.0,\n      \"max\": 4.99,\n      \"mean\": 2.999,\n      \"median\": 2.98,\n      \"std\": 1.1364,\n      \"q1\": 2.0375,\n      \"q3\": 3.95,\n      \"iqr\": 1.9125,\n      \"lower_bound\": -0.8313,\n      \"upper_bound\": 6.8188,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"smokes\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.2,\n    \"duplicate_count\": 1996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"no\",\n      \"0\",\n      \"yes\"\n    ]\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"F\",\n      \"M\"\n    ]\n  },\n  \"is_fit\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      1,\n      0\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 1.0,\n      \"mean\": 0.3995,\n      \"median\": 0.0,\n      \"std\": 0.4899,\n      \"q1\": 0.0,\n      \"q3\": 1.0,\n      \"iqr\": 1.0,\n      \"lower_bound\": -1.5,\n      \"upper_bound\": 2.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  }\n}\n\n        ## User Request\n        Migrate and clean data from fitness_dataset.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n        6. CRITICAL: Schema mappings must preserve semantic meaning. Reject mappings that change data meaning (e.g. Age != Birth Year, Country != Nationality). Do NOT recommend them as schema_mapping_recommendations.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
   "raw_response": "",
   "parsed_dsl": {
-    "dataset_assessment": "The dataset has a quality score of 86.45, indicating a relatively high level of data quality. However, there are some data quality issues that need to be addressed, such as missing values in the 'sleep_hours' column and outliers in the 'weight_kg' and 'heart_rate' columns.",
+    "dataset_assessment": "The dataset has a quality score of 86.45, indicating a relatively healthy dataset. However, there are some data quality issues that need to be addressed, such as missing values in the 'sleep_hours' column and potential outliers in the 'weight_kg' and 'heart_rate' columns.",
     "identified_issues": [
       "missing values in 'sleep_hours' column",
-      "outliers in 'weight_kg' and 'heart_rate' columns"
+      "potential outliers in 'weight_kg' and 'heart_rate' columns"
     ],
     "schema_mapping_recommendations": [
-      "The 'sleep_hours' column should be filled with the mean value to preserve data.",
-      "The 'weight_kg' and 'heart_rate' columns should be clipped to remove outliers and ensure data quality.",
-      "The 'smokes' column should be cast to a consistent data type to ensure data integrity."
+      "Map 'smokes' column to a standardized boolean format",
+      "Map 'gender' column to a standardized string format"
     ],
     "transformations": [
       {
@@ -26,20 +25,34 @@
         "confidence": 90
       },
       {
+        "action": "detect_outliers",
+        "column": "weight_kg",
+        "confidence": 80
+      },
+      {
         "action": "clip_outliers",
         "column": "weight_kg",
-        "confidence": 95
+        "confidence": 80
+      },
+      {
+        "action": "detect_outliers",
+        "column": "heart_rate",
+        "confidence": 80
       },
       {
         "action": "clip_outliers",
         "column": "heart_rate",
+        "confidence": 80
+      },
+      {
+        "action": "standardize_boolean",
+        "column": "smokes",
         "confidence": 95
       },
       {
-        "action": "cast_type",
-        "column": "smokes",
-        "target_type": "str",
-        "confidence": 100
+        "action": "normalize_case",
+        "column": "gender",
+        "confidence": 95
       }
     ],
     "reasoning": [
@@ -52,16 +65,20 @@
         "step": 2
       },
       {
-        "reason": "The 'weight_kg' and 'heart_rate' columns have outliers, which can affect the accuracy of the data. We need to detect and clip these outliers to ensure data quality.",
+        "reason": "The 'weight_kg' and 'heart_rate' columns have potential outliers, which may affect the accuracy of the data. We need to detect and clip these outliers to ensure data quality.",
         "step": 3
       },
       {
-        "reason": "The 'smokes' column has inconsistent data types, with both 'yes' and 'no' values. We need to cast this column to a consistent data type to ensure data integrity.",
+        "reason": "The 'smokes' column has inconsistent string formats, which may cause issues in analysis. We need to standardize the boolean values in this column.",
         "step": 4
+      },
+      {
+        "reason": "The 'gender' column has inconsistent string formats, which may cause issues in analysis. We need to standardize the string formats in this column.",
+        "step": 5
       }
     ],
     "planning_method": "GroqProvider",
-    "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 2000\n        Duplicates: 0\n        Quality Score: 86.45\n\n        Columns:\n        {\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 62,\n    \"unique_pct\": 3.1,\n    \"duplicate_count\": 1938,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      56,\n      69,\n      46\n    ],\n    \"numeric_stats\": {\n      \"min\": 18.0,\n      \"max\": 79.0,\n      \"mean\": 49.114,\n      \"median\": 49.0,\n      \"std\": 17.9266,\n      \"q1\": 34.0,\n      \"q3\": 65.0,\n      \"iqr\": 31.0,\n      \"lower_bound\": -12.5,\n      \"upper_bound\": 111.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"height_cm\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 50,\n    \"unique_pct\": 2.5,\n    \"duplicate_count\": 1950,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      152,\n      186,\n      192\n    ],\n    \"numeric_stats\": {\n      \"min\": 150.0,\n      \"max\": 199.0,\n      \"mean\": 174.533,\n      \"median\": 174.0,\n      \"std\": 14.3717,\n      \"q1\": 162.0,\n      \"q3\": 187.0,\n      \"iqr\": 25.0,\n      \"lower_bound\": 124.5,\n      \"upper_bound\": 224.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"weight_kg\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 80,\n    \"unique_pct\": 4.0,\n    \"duplicate_count\": 1920,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      65,\n      95,\n      103\n    ],\n    \"numeric_stats\": {\n      \"min\": 30.0,\n      \"max\": 250.0,\n      \"mean\": 83.5405,\n      \"median\": 83.0,\n      \"std\": 25.8525,\n      \"q1\": 64.0,\n      \"q3\": 102.0,\n      \"iqr\": 38.0,\n      \"lower_bound\": 7.0,\n      \"upper_bound\": 159.0,\n      \"outlier_count\": 21,\n      \"outlier_pct\": 1.05\n    }\n  },\n  \"heart_rate\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 484,\n    \"unique_pct\": 24.2,\n    \"duplicate_count\": 1516,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      69.6,\n      60.8,\n      61.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 45.0,\n      \"max\": 118.6,\n      \"mean\": 70.2886,\n      \"median\": 70.25,\n      \"std\": 11.8463,\n      \"q1\": 62.1,\n      \"q3\": 78.42500000000001,\n      \"iqr\": 16.325,\n      \"lower_bound\": 37.6125,\n      \"upper_bound\": 102.9125,\n      \"outlier_count\": 10,\n      \"outlier_pct\": 0.5\n    }\n  },\n  \"blood_pressure\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 563,\n    \"unique_pct\": 28.15,\n    \"duplicate_count\": 1437,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      117.0,\n      114.8,\n      116.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 90.0,\n      \"max\": 171.2,\n      \"mean\": 119.9089,\n      \"median\": 120.0,\n      \"std\": 14.578,\n      \"q1\": 109.7,\n      \"q3\": 129.8,\n      \"iqr\": 20.1,\n      \"lower_bound\": 79.55,\n      \"upper_bound\": 159.95,\n      \"outlier_count\": 4,\n      \"outlier_pct\": 0.2\n    }\n  },\n  \"sleep_hours\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 160,\n    \"missing_pct\": 8.0,\n    \"unique_count\": 79,\n    \"unique_pct\": 4.29,\n    \"duplicate_count\": 1761,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      7.5,\n      7.0,\n      8.0\n    ],\n    \"numeric_stats\": {\n      \"min\": 4.0,\n      \"max\": 12.0,\n      \"mean\": 7.5133,\n      \"median\": 7.5,\n      \"std\": 1.502,\n      \"q1\": 6.5,\n      \"q3\": 8.6,\n      \"iqr\": 2.1,\n      \"lower_bound\": 3.35,\n      \"upper_bound\": 11.75,\n      \"outlier_count\": 2,\n      \"outlier_pct\": 0.11\n    }\n  },\n  \"nutrition_quality\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 866,\n    \"unique_pct\": 43.3,\n    \"duplicate_count\": 1134,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      2.37,\n      8.77,\n      8.2\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 10.0,\n      \"mean\": 5.0351,\n      \"median\": 5.0649999999999995,\n      \"std\": 2.8642,\n      \"q1\": 2.5475,\n      \"q3\": 7.47,\n      \"iqr\": 4.9225,\n      \"lower_bound\": -4.8362,\n      \"upper_bound\": 14.8537,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"activity_index\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 398,\n    \"unique_pct\": 19.9,\n    \"duplicate_count\": 1602,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      3.97,\n      3.19,\n      2.03\n    ],\n    \"numeric_stats\": {\n      \"min\": 1.0,\n      \"max\": 4.99,\n      \"mean\": 2.999,\n      \"median\": 2.98,\n      \"std\": 1.1364,\n      \"q1\": 2.0375,\n      \"q3\": 3.95,\n      \"iqr\": 1.9125,\n      \"lower_bound\": -0.8313,\n      \"upper_bound\": 6.8188,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"smokes\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.2,\n    \"duplicate_count\": 1996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"no\",\n      \"0\",\n      \"yes\"\n    ]\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"F\",\n      \"M\"\n    ]\n  },\n  \"is_fit\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      1,\n      0\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 1.0,\n      \"mean\": 0.3995,\n      \"median\": 0.0,\n      \"std\": 0.4899,\n      \"q1\": 0.0,\n      \"q3\": 1.0,\n      \"iqr\": 1.0,\n      \"lower_bound\": -1.5,\n      \"upper_bound\": 2.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  }\n}\n\n        ## User Request\n        Migrate and clean data from fitness_dataset.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
+    "raw_prompt": "\n        You are an expert Data Migration AI. Your job is to analyze the data profile and recommend a sequence of transformation steps using a specific DSL.\n\n        ## Data Profile\n        Row Count: 2000\n        Duplicates: 0\n        Quality Score: 86.45\n\n        Columns:\n        {\n  \"age\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 62,\n    \"unique_pct\": 3.1,\n    \"duplicate_count\": 1938,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      56,\n      69,\n      46\n    ],\n    \"numeric_stats\": {\n      \"min\": 18.0,\n      \"max\": 79.0,\n      \"mean\": 49.114,\n      \"median\": 49.0,\n      \"std\": 17.9266,\n      \"q1\": 34.0,\n      \"q3\": 65.0,\n      \"iqr\": 31.0,\n      \"lower_bound\": -12.5,\n      \"upper_bound\": 111.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"height_cm\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 50,\n    \"unique_pct\": 2.5,\n    \"duplicate_count\": 1950,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      152,\n      186,\n      192\n    ],\n    \"numeric_stats\": {\n      \"min\": 150.0,\n      \"max\": 199.0,\n      \"mean\": 174.533,\n      \"median\": 174.0,\n      \"std\": 14.3717,\n      \"q1\": 162.0,\n      \"q3\": 187.0,\n      \"iqr\": 25.0,\n      \"lower_bound\": 124.5,\n      \"upper_bound\": 224.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"weight_kg\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 80,\n    \"unique_pct\": 4.0,\n    \"duplicate_count\": 1920,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      65,\n      95,\n      103\n    ],\n    \"numeric_stats\": {\n      \"min\": 30.0,\n      \"max\": 250.0,\n      \"mean\": 83.5405,\n      \"median\": 83.0,\n      \"std\": 25.8525,\n      \"q1\": 64.0,\n      \"q3\": 102.0,\n      \"iqr\": 38.0,\n      \"lower_bound\": 7.0,\n      \"upper_bound\": 159.0,\n      \"outlier_count\": 21,\n      \"outlier_pct\": 1.05\n    }\n  },\n  \"heart_rate\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 484,\n    \"unique_pct\": 24.2,\n    \"duplicate_count\": 1516,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      69.6,\n      60.8,\n      61.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 45.0,\n      \"max\": 118.6,\n      \"mean\": 70.2886,\n      \"median\": 70.25,\n      \"std\": 11.8463,\n      \"q1\": 62.1,\n      \"q3\": 78.42500000000001,\n      \"iqr\": 16.325,\n      \"lower_bound\": 37.6125,\n      \"upper_bound\": 102.9125,\n      \"outlier_count\": 10,\n      \"outlier_pct\": 0.5\n    }\n  },\n  \"blood_pressure\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 563,\n    \"unique_pct\": 28.15,\n    \"duplicate_count\": 1437,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      117.0,\n      114.8,\n      116.4\n    ],\n    \"numeric_stats\": {\n      \"min\": 90.0,\n      \"max\": 171.2,\n      \"mean\": 119.9089,\n      \"median\": 120.0,\n      \"std\": 14.578,\n      \"q1\": 109.7,\n      \"q3\": 129.8,\n      \"iqr\": 20.1,\n      \"lower_bound\": 79.55,\n      \"upper_bound\": 159.95,\n      \"outlier_count\": 4,\n      \"outlier_pct\": 0.2\n    }\n  },\n  \"sleep_hours\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 160,\n    \"missing_pct\": 8.0,\n    \"unique_count\": 79,\n    \"unique_pct\": 4.29,\n    \"duplicate_count\": 1761,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      7.5,\n      7.0,\n      8.0\n    ],\n    \"numeric_stats\": {\n      \"min\": 4.0,\n      \"max\": 12.0,\n      \"mean\": 7.5133,\n      \"median\": 7.5,\n      \"std\": 1.502,\n      \"q1\": 6.5,\n      \"q3\": 8.6,\n      \"iqr\": 2.1,\n      \"lower_bound\": 3.35,\n      \"upper_bound\": 11.75,\n      \"outlier_count\": 2,\n      \"outlier_pct\": 0.11\n    }\n  },\n  \"nutrition_quality\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 866,\n    \"unique_pct\": 43.3,\n    \"duplicate_count\": 1134,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      2.37,\n      8.77,\n      8.2\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 10.0,\n      \"mean\": 5.0351,\n      \"median\": 5.0649999999999995,\n      \"std\": 2.8642,\n      \"q1\": 2.5475,\n      \"q3\": 7.47,\n      \"iqr\": 4.9225,\n      \"lower_bound\": -4.8362,\n      \"upper_bound\": 14.8537,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"activity_index\": {\n    \"dtype\": \"float64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 398,\n    \"unique_pct\": 19.9,\n    \"duplicate_count\": 1602,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      3.97,\n      3.19,\n      2.03\n    ],\n    \"numeric_stats\": {\n      \"min\": 1.0,\n      \"max\": 4.99,\n      \"mean\": 2.999,\n      \"median\": 2.98,\n      \"std\": 1.1364,\n      \"q1\": 2.0375,\n      \"q3\": 3.95,\n      \"iqr\": 1.9125,\n      \"lower_bound\": -0.8313,\n      \"upper_bound\": 6.8188,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  },\n  \"smokes\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 4,\n    \"unique_pct\": 0.2,\n    \"duplicate_count\": 1996,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"no\",\n      \"0\",\n      \"yes\"\n    ]\n  },\n  \"gender\": {\n    \"dtype\": \"object\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      \"F\",\n      \"M\"\n    ]\n  },\n  \"is_fit\": {\n    \"dtype\": \"int64\",\n    \"structural_type\": \"flat\",\n    \"missing_count\": 0,\n    \"missing_pct\": 0.0,\n    \"unique_count\": 2,\n    \"unique_pct\": 0.1,\n    \"duplicate_count\": 1998,\n    \"is_potential_pk\": false,\n    \"sample_values\": [\n      1,\n      0\n    ],\n    \"numeric_stats\": {\n      \"min\": 0.0,\n      \"max\": 1.0,\n      \"mean\": 0.3995,\n      \"median\": 0.0,\n      \"std\": 0.4899,\n      \"q1\": 0.0,\n      \"q3\": 1.0,\n      \"iqr\": 1.0,\n      \"lower_bound\": -1.5,\n      \"upper_bound\": 2.5,\n      \"outlier_count\": 0,\n      \"outlier_pct\": 0.0\n    }\n  }\n}\n\n        ## User Request\n        Migrate and clean data from fitness_dataset.csv\n\n        ## Instructions\n        1. Assess the dataset health.\n        2. Identify data quality issues (nulls, nested objects, duplicates, wrong types).\n        3. Provide schema mapping recommendations.\n        4. Recommend a strict sequence of DSL transformations to fix the issues.\n        5. Provide reasoning for each step.\n        \n        # CORE DESIGN PRINCIPLE\n        1. Preserve data whenever possible.\n        2. Dropping columns should be a LAST RESORT.\n        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.\n        4. CRITICAL: If a numerical column has malformed strings (like currencies '$425'), you MUST use `parse_currency` or `strip_special_characters` BEFORE you use `fill_missing` with statistical strategies like 'mean'.\n        5. CRITICAL: Use `standardize_boolean`, `normalize_phone`, `map_values`, or `split_column` to fix messy string formats.\n        6. CRITICAL: Schema mappings must preserve semantic meaning. Reject mappings that change data meaning (e.g. Age != Birth Year, Country != Nationality). Do NOT recommend them as schema_mapping_recommendations.\n\n        Available DSL Actions include:\n        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows\n        - Cat 2: remove_duplicates, keep_latest_duplicate\n        - Cat 3: cast_type (int64, float64, str, datetime, bool)\n        - Cat 4: parse_datetime, extract_year, extract_month, extract_day\n        - Cat 5: parse_currency (e.g., \u20ac67.5M -> 67500000)\n        - Cat 6: parse_height, parse_weight\n        - Cat 7: parse_percentage\n        - Cat 8: parse_rating\n        - Cat 9: strip_special_characters, trim_whitespace, normalize_case, remove_line_breaks, remove_non_ascii\n        - Cat 10: split_column\n        - Cat 11: extract_pattern\n        - Cat 12: flatten_object, explode_array, serialize_json\n        - Cat 13: rename_column, merge_columns, drop_column, create_column\n        - Cat 14: validate_email, validate_phone, validate_postal_code, validate_country_code, validate_uuid\n        - Cat 15: detect_outliers, clip_outliers, remove_outliers\n        - Cat 16: conditional_transform\n        - Cat 17: generate_surrogate_key, identify_primary_key, identify_foreign_keys, infer_relationships, schema_recommendation\n\n        For each DSL Action you recommend, you MUST provide a confidence score (0-100) and an exact, explainable reason in the reasoning array.\n        ",
     "raw_ai_response": "",
     "_metadata": {
       "provider_used": "Groq",
@@ -95,49 +112,68 @@
     {
       "status": "success",
       "details": {
-        "column": "weight_kg"
+        "outliers_found": 21
       },
       "step_index": 2,
+      "action": "detect_outliers"
+    },
+    {
+      "status": "success",
+      "details": {
+        "column": "weight_kg"
+      },
+      "step_index": 3,
       "action": "clip_outliers"
+    },
+    {
+      "status": "success",
+      "details": {
+        "outliers_found": 10
+      },
+      "step_index": 4,
+      "action": "detect_outliers"
     },
     {
       "status": "success",
       "details": {
         "column": "heart_rate"
       },
-      "step_index": 3,
+      "step_index": 5,
       "action": "clip_outliers"
     },
     {
-      "action": "cast_type",
       "status": "success",
       "details": {
-        "column": "smokes",
-        "original_dtype": "object",
-        "target_dtype": "str",
-        "new_dtype": "object"
+        "column": "smokes"
       },
-      "step_index": 4
+      "step_index": 6,
+      "action": "standardize_boolean"
+    },
+    {
+      "status": "success",
+      "details": {
+        "column": "gender"
+      },
+      "step_index": 7,
+      "action": "normalize_case"
     }
   ],
   "impact_summary": {
     "rows_before": 2000,
     "rows_after": 2000,
     "duplicates_removed": 0,
-    "columns_renamed": 1,
+    "columns_renamed": 0,
     "columns_dropped": 0,
     "columns_added": 0,
-    "missing_filled": 1,
+    "missing_filled": 160,
     "datetime_standardized": 0,
     "currency_parsed": 0,
-    "fields_normalized": 1,
+    "fields_normalized": 0,
     "missing_before": 160,
     "missing_after": 0,
-    "dupes_before": 0,
-    "dupes_after": 0,
     "quality_score_before": 86.45,
-    "quality_score_after": 86.75,
-    "improvement_pct": 0.3
+    "quality_score_after": 86.48,
+    "improvement_pct": 0.03
   },
   "executive_report": {
     "source": "csv",
@@ -163,80 +199,77 @@
       "rows_before": 2000,
       "rows_after": 2000,
       "duplicates_removed": 0,
-      "columns_renamed": 1,
+      "columns_renamed": 0,
       "columns_dropped": 0,
       "columns_added": 0,
-      "missing_filled": 1,
+      "missing_filled": 160,
       "datetime_standardized": 0,
       "currency_parsed": 0,
-      "fields_normalized": 1,
+      "fields_normalized": 0,
       "missing_before": 160,
       "missing_after": 0,
-      "dupes_before": 0,
-      "dupes_after": 0,
       "quality_score_before": 86.45,
-      "quality_score_after": 86.75,
-      "improvement_pct": 0.3
+      "quality_score_after": 86.48,
+      "improvement_pct": 0.03
     },
     "execution_impact": {
       "rows_before": 2000,
       "rows_after": 2000,
       "duplicates_removed": 0,
-      "columns_renamed": 1,
+      "columns_renamed": 0,
       "columns_dropped": 0,
       "columns_added": 0,
-      "missing_filled": 1,
+      "missing_filled": 160,
       "datetime_standardized": 0,
       "currency_parsed": 0,
-      "fields_normalized": 1,
+      "fields_normalized": 0,
       "missing_before": 160,
       "missing_after": 0,
-      "dupes_before": 0,
-      "dupes_after": 0,
       "quality_score_before": 86.45,
-      "quality_score_after": 86.75,
-      "improvement_pct": 0.3
+      "quality_score_after": 86.48,
+      "improvement_pct": 0.03
     },
     "impact": {
       "rows_before": 2000,
       "rows_after": 2000,
       "duplicates_removed": 0,
-      "columns_renamed": 1,
+      "columns_renamed": 0,
       "columns_dropped": 0,
       "columns_added": 0,
-      "missing_filled": 1,
+      "missing_filled": 160,
       "datetime_standardized": 0,
       "currency_parsed": 0,
-      "fields_normalized": 1,
+      "fields_normalized": 0,
       "missing_before": 160,
       "missing_after": 0,
-      "dupes_before": 0,
-      "dupes_after": 0,
       "quality_score_before": 86.45,
-      "quality_score_after": 86.75,
-      "improvement_pct": 0.3
+      "quality_score_after": 86.48,
+      "improvement_pct": 0.03
     },
     "risk": {
-      "overall_confidence": 96,
+      "overall_confidence": 88,
       "low_risk": [
-        "clip_outliers",
+        "normalize_case",
+        "fill_missing",
         "normalize_columns",
-        "cast_type",
-        "fill_missing"
+        "standardize_boolean"
       ],
-      "medium_risk": [],
+      "medium_risk": [
+        "clip_outliers",
+        "detect_outliers"
+      ],
       "high_risk": []
     },
     "timings": {
       "request_intake": 0.0,
-      "schema_discovery": 0.005,
-      "data_profiler": 0.0172,
-      "migration_analyst": 1.8777,
-      "transformation_previewer": 0.0445,
+      "schema_discovery": 0.0067,
+      "data_profiler": 0.016,
+      "migration_analyst": 2.0508,
+      "transformation_previewer": 0.048,
       "human_review": 0.0,
       "transformation_planner": 0.0,
-      "migration_executor": 0.0784,
-      "reconciler": 0.0273
+      "migration_executor": 0.0745,
+      "reconciler": 0.0263
     }
   }
 }

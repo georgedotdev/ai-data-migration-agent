@@ -541,14 +541,14 @@ if st.session_state.workflow_started:
         st.markdown(f"- **Model Used:** `{state.get('model_used', 'Unknown')}`")
         st.markdown(f"- **Fallback Used:** `{state.get('fallback_used', False)}`")
         
-        with st.expander("Raw Prompt"):
-            st.code(state.get("raw_prompt", ""), language="markdown")
+        st.markdown("#### Raw Prompt")
+        st.code(state.get("raw_prompt", ""), language="markdown")
             
-        with st.expander("Raw AI Response"):
-            st.code(state.get("raw_ai_response", ""), language="json")
+        st.markdown("#### Raw AI Response")
+        st.code(state.get("raw_ai_response", ""), language="json")
             
-        with st.expander("Parsed DSL JSON"):
-            st.json(state.get("transformation_dsl", {}))
+        st.markdown("#### Parsed DSL JSON")
+        st.json(state.get("transformation_dsl", {}))
             
         exec_log = state.get("execution_log", [])
         if exec_log:

@@ -1,0 +1,6 @@
+freelancer_ID,age,years_of_experience,hourly_rate (USD),country,language
+1,25,2,$45.00,US,English
+2,,5,€50.50,FR,French
+3,30,,$60,UK,English
+4,45,20,Rs100.00,IN,Hindi
+5,35,10,,DE,German

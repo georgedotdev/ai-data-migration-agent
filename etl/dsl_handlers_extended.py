@@ -86,7 +86,7 @@ def _action_parse_currency(df: pd.DataFrame, step: dict):
     def parse_curr(val):
         if pd.isna(val): return val
         val_str = str(val).upper().replace(",", "").strip()
-        val_str = re.sub(r'[^\d\.MK]', '', val_str) # Keep digits, dot, M, K
+        val_str = re.sub(r'[^0-9\.MK]', '', val_str) # Keep digits, dot, M, K
         if not val_str: return np.nan
         
         multiplier = 1
