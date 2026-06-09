@@ -108,9 +108,11 @@ def _action_fill_missing(df: pd.DataFrame, step: dict):
                 return df, {"action": "fill_missing", "status": "error", "details": {"error": "Missing 'value' for constant strategy"}}
             df[column] = df[column].fillna(value)
         elif strategy == "mean":
-            df[column] = df[column].fillna(df[column].mean())
+            num_col = pd.to_numeric(df[column], errors='coerce')
+            df[column] = df[column].fillna(num_col.mean())
         elif strategy == "median":
-            df[column] = df[column].fillna(df[column].median())
+            num_col = pd.to_numeric(df[column], errors='coerce')
+            df[column] = df[column].fillna(num_col.median())
         elif strategy == "mode":
             mode_val = df[column].mode()
             if not mode_val.empty:

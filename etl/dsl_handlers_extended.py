@@ -49,7 +49,7 @@ def _action_parse_datetime(df: pd.DataFrame, step: dict):
         return df, {"status": "error", "details": {"error": "Invalid column"}}
     
     df = df.copy()
-    df[column] = pd.to_datetime(df[column], errors="coerce")
+    df[column] = pd.to_datetime(df[column], errors="coerce", format="mixed")
     return df, {"status": "success", "details": {"column": column}}
 
 def _action_extract_datetime_part(df: pd.DataFrame, step: dict, part: str):
