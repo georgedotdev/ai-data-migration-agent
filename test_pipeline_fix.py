@@ -9,7 +9,7 @@ def test_freelancers():
         "source_type": "csv",
         "target_type": "duckdb",
         "source_config": {"file_path": "global_freelancers_raw.csv"},
-        "target_config": {"db_path": "migration_test.duckdb"},
+        "target_config": {"db_path": "migration_test.duckdb", "table_name": "global_freelancers_raw"},
         "table_name": "global_freelancers_raw",
         "plan_approved": False,
         "executed_steps": [],

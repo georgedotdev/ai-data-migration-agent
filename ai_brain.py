@@ -123,6 +123,54 @@ class BaseLLMProvider(AIProvider):
         try:
             response = self.llm.invoke(prompt)
         except Exception as e:
+            error_str = str(e)
+            
+            # Special handling for Groq's tool_use_failed which buries the generated JSON in the error message string
+            idx = error_str.find("'failed_generation':")
+            if idx != -1:
+                start_quote = error_str.find("'", idx + 20)
+                if start_quote != -1:
+                    end_quote = error_str.find("'}", start_quote)
+                    if end_quote != -1:
+                        failed_gen = error_str[start_quote+1:end_quote]
+                        start_idx = failed_gen.find('{')
+                        if start_idx != -1:
+                            raw_content = failed_gen[start_idx:]
+                            raw_content = raw_content.replace("\\'", "'")
+                            try:
+                                raw_json = json.loads(raw_content)
+                                print(f"[AI Brain] ⚠️ Recovered JSON from failed tool call exception.")
+                                parsed = self._recover_assessment(raw_json)
+                                assessment = parsed
+                                transformations = []
+                                for step in assessment.recommended_transformations:
+                                    step_dict = {k: v for k, v in step.model_dump().items() if v is not None}
+                                    transformations.append(step_dict)
+                                dsl = {
+                                    "dataset_assessment": assessment.dataset_assessment,
+                                    "identified_issues": assessment.identified_issues,
+                                    "schema_mapping_recommendations": assessment.schema_mapping_recommendations,
+                                    "transformations": transformations,
+                                    "reasoning": assessment.reasoning,
+                                    "planning_method": self.__class__.__name__,
+                                    "raw_prompt": prompt,
+                                    "raw_ai_response": error_str
+                                }
+                                if normalize_columns:
+                                    has_normalize = any(t.get("action") == "normalize_columns" for t in transformations)
+                                    if not has_normalize:
+                                        transformations.insert(0, {"action": "normalize_columns"})
+                                        dsl["reasoning"].insert(0, {"step": 0, "reason": "Standardizing column names automatically."})
+                                        for i in range(1, len(dsl["reasoning"])):
+                                            if "step" in dsl["reasoning"][i]:
+                                                dsl["reasoning"][i]["step"] += 1
+                                is_valid, errors = validate_dsl(dsl)
+                                if not is_valid:
+                                    raise ValueError(f"LLM generated invalid transformation DSL: {errors}")
+                                return dsl
+                            except json.JSONDecodeError:
+                                pass
+            
             raise RuntimeError(f"LLM generation failed completely: {e}")
 
         parsing_error = response.get("parsing_error")
