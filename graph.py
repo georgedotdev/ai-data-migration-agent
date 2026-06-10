@@ -62,6 +62,7 @@ class AgentState(TypedDict):
     provider_used: str
     model_used: str
     execution_log: list
+    quarantine_report: list
     
     # Human Review Feedback
     human_feedback: str
@@ -279,8 +280,9 @@ def migration_executor(state: AgentState):
     # V2 Execution path
     dsl = state.get("transformation_dsl")
     execution_log = []
+    quarantine_report = []
     if dsl:
-        transformed_df, execution_log = transform_data_dsl(df, dsl)
+        transformed_df, execution_log, quarantine_report = transform_data_dsl(df, dsl)
     else:
         # Fallback to V1
         transformed_df = transform_data(df, transformations=state.get("transformations"))
@@ -332,6 +334,7 @@ def migration_executor(state: AgentState):
     return {
         "execution_impact": execution_impact,
         "execution_log": execution_log,
+        "quarantine_report": quarantine_report,
         "executed_steps": state["executed_steps"] + ["migration_executor"],
         "timings": timings
     }
@@ -411,6 +414,7 @@ def reporter(state: AgentState):
         "assessment_provider": state.get("assessment_provider", "Unknown"),
         "transformation_provider": state.get("transformation_provider", "Unknown"),
         "reconciliation_results": state.get("reconciliation"),
+        "quarantine_report": state.get("quarantine_report", []),
         "preview_impact": state.get("preview_impact"),
         "execution_impact": state.get("execution_impact"),
         "impact": state.get("execution_impact") or state.get("preview_impact"),

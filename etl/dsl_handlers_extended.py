@@ -25,8 +25,18 @@ def _action_drop_missing_rows(df: pd.DataFrame, step: dict):
 def _action_keep_latest_duplicate(df: pd.DataFrame, step: dict):
     column = step.get("column")
     timestamp_col = step.get("timestamp_column")
+    
+    # Phase 3: Auto-infer timestamp column if missing
+    if not timestamp_col:
+        datetime_cols = [c for c in df.columns if pd.api.types.is_datetime64_any_dtype(df[c])]
+        if len(datetime_cols) == 1:
+            timestamp_col = datetime_cols[0]
+        elif len(datetime_cols) > 1:
+            candidates = [c for c in datetime_cols if any(kw in c.lower() for kw in ("date", "time", "created", "updated"))]
+            timestamp_col = candidates[0] if candidates else datetime_cols[0]
+
     if not column or not timestamp_col:
-        return df, {"status": "error", "details": {"error": "Requires 'column' and 'timestamp_column'"}}
+        return df, {"status": "error", "details": {"error": "Requires 'column' and 'timestamp_column' (auto-inference failed: no datetime columns found)"}}
     if column not in df.columns or timestamp_col not in df.columns:
         return df, {"status": "error", "details": {"error": "Column not found"}}
     
@@ -38,7 +48,8 @@ def _action_keep_latest_duplicate(df: pd.DataFrame, step: dict):
     df = df.sort_values(by=timestamp_col)
     df = df.drop_duplicates(subset=[column], keep="last").reset_index(drop=True)
     
-    return df, {"status": "success", "details": {"rows_removed": rows_before - len(df)}}
+    return df, {"status": "success", "details": {"rows_removed": rows_before - len(df), "inferred_timestamp_column": timestamp_col}}
+
 
 # ─────────────────────────────────────────────
 # Category 4: Date & Time Parsing
@@ -102,8 +113,22 @@ def _action_parse_currency(df: pd.DataFrame, step: dict):
         except:
             return np.nan
 
+    df_before = df.copy()
     df[column] = df[column].apply(parse_curr)
-    return df, {"status": "success", "details": {"column": column}}
+    
+    # Phase 2: Capture Data Quarantine events
+    was_not_null = ~df_before[column].isna()
+    is_now_null = df[column].isna()
+    coerced_to_nan = was_not_null & is_now_null
+
+    return df, {
+        "status": "success", 
+        "details": {
+            "column": column,
+            "coerced_to_nan_count": int(coerced_to_nan.sum()),
+            "coerced_indices": df.index[coerced_to_nan].tolist()[:20]
+        }
+    }
 
 # ─────────────────────────────────────────────
 # Category 6: Measurement Parsing
@@ -166,8 +191,22 @@ def _action_parse_percentage(df: pd.DataFrame, step: dict):
         except:
             return np.nan
 
+    df_before = df.copy()
     df[column] = df[column].apply(to_pct)
-    return df, {"status": "success", "details": {"column": column}}
+    
+    # Phase 2: Capture Data Quarantine events
+    was_not_null = ~df_before[column].isna()
+    is_now_null = df[column].isna()
+    coerced_to_nan = was_not_null & is_now_null
+
+    return df, {
+        "status": "success", 
+        "details": {
+            "column": column,
+            "coerced_to_nan_count": int(coerced_to_nan.sum()),
+            "coerced_indices": df.index[coerced_to_nan].tolist()[:20]
+        }
+    }
 
 # ─────────────────────────────────────────────
 # Category 8: Rating Parsing
@@ -186,8 +225,22 @@ def _action_parse_rating(df: pd.DataFrame, step: dict):
             return float(match.group(1))
         return np.nan
 
+    df_before = df.copy()
     df[column] = df[column].apply(to_rating)
-    return df, {"status": "success", "details": {"column": column}}
+    
+    # Phase 2: Capture Data Quarantine events
+    was_not_null = ~df_before[column].isna()
+    is_now_null = df[column].isna()
+    coerced_to_nan = was_not_null & is_now_null
+
+    return df, {
+        "status": "success", 
+        "details": {
+            "column": column,
+            "coerced_to_nan_count": int(coerced_to_nan.sum()),
+            "coerced_indices": df.index[coerced_to_nan].tolist()[:20]
+        }
+    }
 
 # ─────────────────────────────────────────────
 # Category 9: String Cleaning

@@ -36,7 +36,7 @@ def generate_preview(df: pd.DataFrame, dsl: dict) -> list:
         
         # Execute just this single step
         single_step_dsl = {"transformations": [step]}
-        df_current, log = execute_dsl(df_current, single_step_dsl, column_mapping)
+        df_current, log, _ = execute_dsl(df_current, single_step_dsl, column_mapping)
         
         preview_samples = []
         
@@ -121,11 +121,10 @@ def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl
     missing_before = sum(col.get("missing_count", 0) for col in profile_before.get("columns", {}).values())
     missing_after = sum(col.get("missing_count", 0) for col in profile_after.get("columns", {}).values())
     
-    # To satisfy mathematically consistent reporting, we compute exact filled count
-    # If missing_after > missing_before, something failed and coerced NaNs. 
-    # The requirement says "missing_after must never increase unless explicitly documented"
+    # Phase 5: Honest Impact Reporting (remove silent clamping)
+    parsing_induced_nulls = 0
     if missing_after > missing_before:
-        missing_after = missing_before
+        parsing_induced_nulls = missing_after - missing_before
         
     actual_missing_filled = missing_before - missing_after
     if actual_missing_filled < 0:
@@ -144,6 +143,7 @@ def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl
         "fields_normalized": fields_normalized,
         "missing_before": missing_before,
         "missing_after": missing_after,
+        "parsing_induced_nulls": parsing_induced_nulls,
         "quality_score_before": score_before,
         "quality_score_after": score_after,
         "improvement_pct": round(score_after - score_before, 2)

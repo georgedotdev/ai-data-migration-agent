@@ -30,7 +30,7 @@ def transform_data(df: pd.DataFrame, transformations=None) -> pd.DataFrame:
 
     # V2 path: if a DSL dict is passed, delegate to DSL engine
     if isinstance(transformations, dict) and "transformations" in transformations:
-        result_df, log = execute_dsl(df, transformations)
+        result_df, log, quarantine = execute_dsl(df, transformations)
         return result_df
 
     # V1 path: original logic preserved below
@@ -98,7 +98,7 @@ def transform_data_dsl(
         dsl: DSL dict with "transformations" key
 
     Returns:
-        tuple: (transformed_df, execution_log)
+        tuple: (transformed_df, execution_log, quarantine_report)
     """
 
     return execute_dsl(df, dsl)

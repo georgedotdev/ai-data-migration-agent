@@ -16,8 +16,13 @@ dsl = {
     ]
 }
 
+print("\nOriginal DataFrame:")
+print(df_before)
+
 # Run execution
-df_after, log = execute_dsl(df_before, dsl)
+df_after, log, quarantine = execute_dsl(df_before, dsl)
+
+print("\nTransformed DataFrame:")
 
 # Run impact summary
 impact = generate_impact_summary(df_before, df_after, dsl)

@@ -34,7 +34,7 @@ Usage:
     from etl.dsl_engine import execute_dsl
 
     dsl = {"transformations": [{"action": "normalize_columns"}]}
-    df_out, log = execute_dsl(df, dsl)
+    df_out, log, quarantine = execute_dsl(df, dsl)
 """
 
 import re
@@ -415,6 +415,65 @@ def list_actions():
 # DSL Executor
 # ─────────────────────────────────────────────
 
+def _reorder_transformations(steps: list[dict]) -> tuple[list[dict], list[dict]]:
+    """
+    Deterministically reorder steps to fix LLM sequencing traps:
+    1. fill_missing must precede cast_type: int64 on the same column.
+    2. parsing actions must precede cast_type on the same column.
+    3. parse actions must precede fill_missing on the same column.
+    Returns (reordered_steps, swaps_made)
+    """
+    if not steps:
+        return steps, []
+
+    swaps = []
+    # Work on a copy to sort topologically
+    reordered = list(steps)
+    
+    parsing_actions = {"parse_currency", "parse_percentage", "parse_datetime", "parse_rating", "parse_height", "parse_weight", "strip_special_characters"}
+    
+    # Simple bubble sort style pass to push requirements backwards
+    n = len(reordered)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            step1 = reordered[j]
+            step2 = reordered[j + 1]
+            
+            if not isinstance(step1, dict) or not isinstance(step2, dict):
+                continue
+                
+            col1 = step1.get("column")
+            col2 = step2.get("column")
+            
+            if col1 and col2 and col1 == col2:
+                a1 = step1.get("action")
+                a2 = step2.get("action")
+                
+                swap_needed = False
+                reason = ""
+                # Rule 1: cast_type(int) before fill_missing -> Swap!
+                target_type = step1.get("target_type", "").lower()
+                if a1 == "cast_type" and "int" in target_type and a2 == "fill_missing":
+                    swap_needed = True
+                    reason = f"cast_type: {target_type} must happen after fill_missing for column '{col1}'"
+                
+                # Rule 2: cast_type before parsing -> Swap!
+                elif a1 == "cast_type" and a2 in parsing_actions:
+                    swap_needed = True
+                    reason = f"parsing action '{a2}' must happen before cast_type for column '{col1}'"
+                
+                # Rule 3: fill_missing before parsing -> Swap!
+                elif a1 == "fill_missing" and a2 in parsing_actions:
+                    swap_needed = True
+                    reason = f"parsing action '{a2}' must happen before fill_missing for column '{col1}'"
+                
+                if swap_needed:
+                    swaps.append(reason)
+                    reordered[j], reordered[j + 1] = reordered[j + 1], reordered[j]
+
+    return reordered, swaps
+
+
 def execute_dsl(
     df: pd.DataFrame,
     dsl: dict,
@@ -430,9 +489,10 @@ def execute_dsl(
         column_mapping: Optional dict to track and resolve renamed columns across execution chunks.
 
     Returns:
-        tuple: (transformed_df, execution_log)
+        tuple: (transformed_df, execution_log, quarantine_report)
             - transformed_df: The DataFrame after all transformations
             - execution_log: List of result dicts from each step
+            - quarantine_report: List of data loss events during parsing
 
     Raises:
         ValueError: If the DSL is malformed (missing "transformations" key)
@@ -456,8 +516,19 @@ def execute_dsl(
         )
 
     log = []
+    quarantine_report = []
     if column_mapping is None:
         column_mapping = {}
+
+    # Phase 1: Reorder steps to fix sequencing traps
+    steps, swaps = _reorder_transformations(steps)
+    if swaps:
+        log.append({
+            "step_index": -1,
+            "action": "plan_reorder",
+            "status": "info",
+            "details": {"message": "Reordered steps to fix sequencing traps", "swaps": swaps}
+        })
 
     for i, step in enumerate(steps):
         if not isinstance(step, dict):
@@ -561,6 +632,16 @@ def execute_dsl(
                 result["details"]["resolved_from"] = original_col
             log.append(result)
             
+            # Phase 2: Capture Data Quarantine events
+            if result.get("status") == "success" and result.get("details", {}).get("coerced_to_nan_count", 0) > 0:
+                quarantine_report.append({
+                    "action": action,
+                    "column": result["details"].get("column", target_col),
+                    "rows_affected": result["details"]["coerced_to_nan_count"],
+                    "sample_indices": result["details"].get("coerced_indices", []),
+                    "reason": f"Values could not be parsed by {action} and were converted to NaN"
+                })
+
             # Update column mappings if step was successful
             if result.get("status") == "success":
                 details = result.get("details", {})
@@ -586,7 +667,7 @@ def execute_dsl(
                 "details": {"error": f"Unexpected error: {str(e)}"}
             })
 
-    return df, log
+    return df, log, quarantine_report
 
 
 # ─────────────────────────────────────────────

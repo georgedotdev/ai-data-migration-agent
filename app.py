@@ -461,6 +461,11 @@ if st.session_state.workflow_started:
             ic2.metric("Total Rows Migrated", impact.get('rows_after'))
             
             st.markdown("**Forensics:**")
+            
+            parsing_induced_nulls = impact.get('parsing_induced_nulls', 0)
+            if parsing_induced_nulls > 0:
+                st.warning(f"⚠️ Parsing introduced {parsing_induced_nulls} new null values (e.g., unparseable text converted to NaN)")
+                
             col1, col2 = st.columns(2)
             mb = impact.get('missing_before', 0)
             ma = impact.get('missing_after', 0)
@@ -564,6 +569,12 @@ if st.session_state.workflow_started:
                 else:
                     reason = log_item.get("details", {}).get("error", "Unknown error")
                     st.markdown(f"**{action}**: ✗ Failed - Reason: {reason}")
+                    
+            quarantine = state.get("quarantine_report", [])
+            if quarantine:
+                with st.expander("⚠️ Data Quarantine Report", expanded=True):
+                    for q in quarantine:
+                        st.markdown(f"- **{q['column']}**: {q['rows_affected']} values could not be parsed by `{q['action']}` → became NaN. (Sample indices: {q.get('sample_indices', [])})")
                     
             st.markdown('<div class="section-header">10. 📊 Transformation Coverage</div>', unsafe_allow_html=True)
             recommended_steps = len(state.get("transformation_dsl", {}).get("transformations", []))

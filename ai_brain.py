@@ -286,6 +286,10 @@ class BaseLLMProvider(AIProvider):
         10. CRITICAL: Duplicates in categorical/dimension columns (e.g., gender, skill, language) are NORMAL. DO NOT use remove_duplicates on them just because their duplicate_count is high. ONLY use remove_duplicates on unique identifiers (e.g., ID, Email).
         11. CRITICAL: When using `fill_missing`, you MUST specify either the `strategy` field (e.g., mean, median, mode) OR the `value` field if using a constant.
         12. CRITICAL: When using `cast_type`, you MUST specify the `target_type` field (e.g., int64, float64, str, bool, datetime, category).
+        13. CRITICAL SEQUENCING RULE: You MUST schedule `fill_missing` BEFORE `cast_type: int64` on the same column. Pandas int64 cannot hold NaN values. If you cast before filling, the step will crash. The correct order is: parse → fill_missing → cast_type.
+        14. CRITICAL: When using `keep_latest_duplicate`, you MUST provide both `column` (the dedup key) AND `timestamp_column` (the datetime column used to determine which record is "latest").
+        15. CRITICAL: If a categorical column has inconsistent casing across its values (e.g., "Electronics", "ELECTRONICS", "electronic"), you MUST schedule `normalize_case` for that column. Check the sample_values carefully for mixed casing.
+        16. CRITICAL: When `parse_currency` or `cast_type` converts unparseable text values (like "abd" or "four hundred") to NaN, be aware this is DATA LOSS. Flag it in your identified_issues.
 
         Available DSL Actions include:
         - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows

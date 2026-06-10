@@ -13,7 +13,8 @@ dsl = {
     ]
 }
 
-df_out, log = execute_dsl(df, dsl)
+# Execute
+df_out, log, quarantine = execute_dsl(df, dsl)
 
 for step in log:
     print(step)
