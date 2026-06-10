@@ -236,7 +236,7 @@ def _action_split_column(df: pd.DataFrame, step: dict):
         splits = df[column].astype(str).str.split(delimiter, expand=True)
         
     for i in range(splits.shape[1]):
-        df[f"{column}_part{i+1}"] = splits[i]
+        df[f"{column}_{i+1}"] = splits[i]
         
     return df, {"status": "success", "details": {"column": column, "parts": splits.shape[1]}}
 

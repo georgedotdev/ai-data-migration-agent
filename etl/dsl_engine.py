@@ -495,16 +495,37 @@ def execute_dsl(
         # Target Resolution (Phase 2 & 3)
         resolved = False
         original_col = step.get("column")
-        if "column" in step and step["column"] in column_mapping:
-            step["column"] = column_mapping[step["column"]]
-            resolved = True
-        
+        if "column" in step:
+            col = step["column"]
+            if col in column_mapping:
+                step["column"] = column_mapping[col]
+                resolved = True
+            elif col not in df.columns:
+                # Fallback: case-insensitive search in df.columns for dynamically created columns
+                lower_col = col.lower().replace(' ', '_')
+                for c in df.columns:
+                    if c.lower() == lower_col:
+                        step["column"] = c
+                        resolved = True
+                        break
+
         if "columns" in step and isinstance(step["columns"], list):
             new_cols = []
             for c in step["columns"]:
                 if c in column_mapping:
                     new_cols.append(column_mapping[c])
                     resolved = True
+                elif c not in df.columns:
+                    lower_c = c.lower().replace(' ', '_')
+                    found = False
+                    for existing_col in df.columns:
+                        if existing_col.lower() == lower_c:
+                            new_cols.append(existing_col)
+                            resolved = True
+                            found = True
+                            break
+                    if not found:
+                        new_cols.append(c)
                 else:
                     new_cols.append(c)
             step["columns"] = new_cols
