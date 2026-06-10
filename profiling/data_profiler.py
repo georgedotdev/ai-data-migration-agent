@@ -199,6 +199,9 @@ def _profile_column(series: pd.Series, total_rows: int) -> dict:
     # ─── Outlier detection (numeric only) ───
     outlier_info = _detect_outliers(series)
 
+    # ─── Sentinel detection ───
+    suspected_sentinels = _detect_sentinels(non_null)
+
     # ─── Build profile ───
     profile = {
         "dtype": dtype,
@@ -210,6 +213,7 @@ def _profile_column(series: pd.Series, total_rows: int) -> dict:
         "duplicate_count": duplicate_count,
         "is_potential_pk": is_potential_pk,
         "sample_values": sample_values,
+        "suspected_sentinels": suspected_sentinels
     }
 
     # Add nested structure metadata if applicable
@@ -223,6 +227,31 @@ def _profile_column(series: pd.Series, total_rows: int) -> dict:
 
     return profile
 
+
+# ─────────────────────────────────────────────
+# Sentinel Value Detection
+# ─────────────────────────────────────────────
+
+def _detect_sentinels(series: pd.Series) -> list:
+    """
+    Detect suspected sentinel values like 'ERROR' or 'UNKNOWN'.
+    Only applies to categorical/string columns.
+    """
+    if pd.api.types.is_numeric_dtype(series) or pd.api.types.is_bool_dtype(series):
+        return []
+        
+    COMMON_SENTINELS = {"ERROR", "UNKNOWN", "N/A", "MISSING", "999", "NULL", "NONE", "NA", "UNDEFINED"}
+    
+    try:
+        # Check the unique string values against our common sentinels set
+        unique_vals = series.unique()
+        found_sentinels = []
+        for val in unique_vals:
+            if isinstance(val, str) and val.strip().upper() in COMMON_SENTINELS:
+                found_sentinels.append(val)
+        return found_sentinels
+    except TypeError:
+        return []
 
 # ─────────────────────────────────────────────
 # Structural Type Detection

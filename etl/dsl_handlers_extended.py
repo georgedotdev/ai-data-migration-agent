@@ -514,6 +514,20 @@ def _action_normalize_phone(df: pd.DataFrame, step: dict):
     df[column] = df[column].apply(clean_phone)
     return df, {"status": "success", "details": {"column": column}}
 
+def _action_replace_with_null(df: pd.DataFrame, step: dict):
+    column = step.get("column")
+    values = step.get("values")
+    if not column or column not in df.columns or not isinstance(values, list):
+        return df, {"status": "error", "details": {"error": "Requires column and a list of values to replace"}}
+        
+    df = df.copy()
+    
+    # We replace exact matches of the strings with np.nan
+    # pandas replace allows replacing a list of values with a single value
+    df[column] = df[column].replace(values, np.nan)
+    
+    return df, {"status": "success", "details": {"column": column, "replaced_values": values}}
+
 def _action_map_values(df: pd.DataFrame, step: dict):
     column = step.get("column")
     mapping = step.get("mapping") # dict
@@ -528,6 +542,7 @@ def _action_map_values(df: pd.DataFrame, step: dict):
 EXTENDED_HANDLERS = {
     "standardize_boolean": _action_standardize_boolean,
     "normalize_phone": _action_normalize_phone,
+    "replace_with_null": _action_replace_with_null,
     "map_values": _action_map_values,
     "drop_missing_rows": _action_drop_missing_rows,
     "keep_latest_duplicate": _action_keep_latest_duplicate,

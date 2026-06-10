@@ -290,9 +290,10 @@ class BaseLLMProvider(AIProvider):
         14. CRITICAL: When using `keep_latest_duplicate`, you MUST provide both `column` (the dedup key) AND `timestamp_column` (the datetime column used to determine which record is "latest").
         15. CRITICAL: If a categorical column has inconsistent casing across its values (e.g., "Electronics", "ELECTRONICS", "electronic"), you MUST schedule `normalize_case` for that column. Check the sample_values carefully for mixed casing.
         16. CRITICAL: When `parse_currency` or `cast_type` converts unparseable text values (like "abd" or "four hundred") to NaN, be aware this is DATA LOSS. Flag it in your identified_issues.
+        17. CRITICAL: If the data profile identifies `suspected_sentinels` for a column (e.g., "ERROR", "UNKNOWN"), you MUST schedule `replace_with_null` for that column passing those values in a `values` array as your VERY FIRST step before parsing or filling.
 
         Available DSL Actions include:
-        - Cat 1: fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
+        - Cat 1: replace_with_null, fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
         - Cat 2: remove_duplicates, keep_latest_duplicate
         - Cat 3: cast_type (int64, float64, str, datetime, bool, category)
         - Cat 4: parse_datetime, extract_year, extract_month, extract_day
