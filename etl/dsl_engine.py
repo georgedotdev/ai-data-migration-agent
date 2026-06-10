@@ -220,6 +220,8 @@ def _action_cast_type(df: pd.DataFrame, step: dict):
         elif target_type in ("str", "string"):
             df[column] = df[column].astype(str)
         elif target_type == "bool":
+            if df[column].dtype == object or isinstance(df[column].dtype, pd.StringDtype):
+                df[column] = df[column].replace({'False': False, 'false': False, '0': False, 'True': True, 'true': True, '1': True})
             df[column] = df[column].astype(bool)
         elif target_type == "category":
             df[column] = df[column].astype('category')

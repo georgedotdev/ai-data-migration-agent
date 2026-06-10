@@ -162,7 +162,7 @@ def _action_parse_percentage(df: pd.DataFrame, step: dict):
         if pd.isna(val): return val
         val_str = str(val).replace("%", "").strip()
         try:
-            return float(val_str)
+            return float(val_str) / 100.0
         except:
             return np.nan
 
