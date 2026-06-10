@@ -155,11 +155,11 @@ if not st.session_state.workflow_started:
                     source_config = {"file_path": file_path}
             elif source_type == "PostgreSQL":
                 source_config = {
-                    "host": st.text_input("Host", os.environ.get("DB_HOST", "127.0.0.1"), key="s_pg_h"),
+                    "host": st.text_input("Host", os.environ.get("DB_HOST", "postgres.railway.internal"), key="s_pg_h"),
                     "port": st.number_input("Port", int(os.environ.get("DB_PORT", "5432")), key="s_pg_p"),
-                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="s_pg_d"),
-                    "username": st.text_input("User", os.environ.get("DB_USER", "migration"), key="s_pg_u"),
-                    "password": st.text_input("Password", os.environ.get("DB_PASSWORD", "migration123"), type="password", key="s_pg_pw"),
+                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "railway"), key="s_pg_d"),
+                    "username": st.text_input("User", os.environ.get("DB_USER", "postgres"), key="s_pg_u"),
+                    "password": st.text_input("Password", os.environ.get("DB_PASSWORD", "xrmfThYabPbnYjqTEtsiyipXUGohdwFy"), type="password", key="s_pg_pw"),
                     "table_name": st.text_input("Table", "enterprise", key="s_pg_t")
                 }
             elif source_type == "MongoDB":
@@ -187,11 +187,11 @@ if not st.session_state.workflow_started:
                 target_config = {"db_path": "migration.duckdb", "table_name": table_name}
             elif target_type == "PostgreSQL":
                 target_config = {
-                    "host": st.text_input("Host", os.environ.get("DB_HOST", "127.0.0.1"), key="t_pg_h"),
+                    "host": st.text_input("Host", os.environ.get("DB_HOST", "postgres.railway.internal"), key="t_pg_h"),
                     "port": st.number_input("Port", int(os.environ.get("DB_PORT", "5432")), key="t_pg_p"),
-                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="t_pg_d"),
-                    "username": st.text_input("User", os.environ.get("DB_USER", "migration"), key="t_pg_u"),
-                    "password": st.text_input("Password", os.environ.get("DB_PASSWORD", "migration123"), type="password", key="t_pg_pw"),
+                    "database": st.text_input("Database", os.environ.get("DB_DATABASE", "railway"), key="t_pg_d"),
+                    "username": st.text_input("User", os.environ.get("DB_USER", "postgres"), key="t_pg_u"),
+                    "password": st.text_input("Password", os.environ.get("DB_PASSWORD", "xrmfThYabPbnYjqTEtsiyipXUGohdwFy"), type="password", key="t_pg_pw"),
                     "table_name": table_name
                 }
             elif target_type == "MongoDB":
