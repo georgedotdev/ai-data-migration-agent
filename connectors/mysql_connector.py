@@ -47,7 +47,19 @@ class MySQLConnector(BaseConnector):
                 f"mysql+pymysql://{auth}@{self.host}:{self.port}/{self.database}"
             )
 
-        self.engine = create_engine(self.connection_string)
+        connect_args = {}
+        # TiDB Cloud and cloud MySQL databases require TLS/SSL encryption
+        if self.host not in ("127.0.0.1", "localhost"):
+            import ssl
+            try:
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                connect_args["ssl"] = ctx
+            except Exception:
+                connect_args["ssl"] = {}
+
+        self.engine = create_engine(self.connection_string, connect_args=connect_args)
 
     def write_data(self, df: pd.DataFrame, table_name: str = None, if_exists: str = "replace") -> dict:
         """Write a Pandas DataFrame to a named table, creating it if it doesn't exist."""
