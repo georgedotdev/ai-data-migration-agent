@@ -17,13 +17,16 @@ from connectors.csv_connector import CSVConnector
 from connectors.duckdb_connector import DuckDBConnector
 from connectors.postgres_connector import PostgreSQLConnector
 from connectors.mongodb_connector import MongoDBConnector
+from connectors.mysql_connector import MySQLConnector
 
 
 CONNECTOR_REGISTRY = {
     "csv": CSVConnector,
     "duckdb": DuckDBConnector,
     "postgresql": PostgreSQLConnector,
+    "postgres": PostgreSQLConnector,
     "mongodb": MongoDBConnector,
+    "mysql": MySQLConnector,
 }
 
 

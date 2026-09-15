@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: ai-data-migration-agent
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: PG_HOST
+        sync: false
+      - key: PG_PORT
+        sync: false
+      - key: PG_USER
+        sync: false
+      - key: PG_PASSWORD
+        sync: false
+      - key: PG_DATABASE
+        sync: false
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_PORT
+        sync: false
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        sync: false

@@ -11,6 +11,7 @@ psycopg2-binary==2.9.10
 psycopg==3.3.4
 psycopg-pool==3.3.1
 pymongo==4.11.1
+pymysql>=1.1.0
 
 # AI & Orchestration
 openai==2.36.0
