@@ -7,6 +7,10 @@ the deterministic ETL pipeline and the LangGraph workflow.
 
 import os
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from connectors.postgres_connector import PostgreSQLConnector
 from connectors.mysql_connector import MySQLConnector
 from etl.transform import run_deterministic_pipeline

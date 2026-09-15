@@ -34,10 +34,10 @@ def seed_postgres(table_name="enterprise", csv_filename="messy_ecommerce_sales_d
     try:
         connector = PostgreSQLConnector(table_name=table_name)
         connector.write_data(df, table_name=table_name)
-        print(f"✅ Successfully seeded table '{table_name}' with {len(df)} rows in PostgreSQL!")
+        print(f"[OK] Successfully seeded table '{table_name}' with {len(df)} rows in PostgreSQL!")
         return True
     except Exception as e:
-        print(f"❌ Failed to seed PostgreSQL: {e}")
+        print(f"[ERROR] Failed to seed PostgreSQL: {e}")
         return False
 
 
