@@ -125,20 +125,33 @@ with tab_demo:
     st.markdown('<div class="section-header">PostgreSQL → MySQL Deterministic Migration</div>', unsafe_allow_html=True)
     st.markdown("Extract data from **PostgreSQL**, apply **deterministic rule-based cleaning**, and load cleaned data into **MySQL**.")
 
+    dataset_preset = st.radio(
+        "📁 **Select Demo Dataset Preset:**",
+        [
+            "🛒 Messy E-Commerce Sales (103 rows)",
+            "👥 Ultra-Dirty Employee & Payroll (130 rows — Max Dirt & 10 Rules Active)"
+        ],
+        horizontal=True,
+        key="demo_dataset_preset"
+    )
+
+    default_src = "dirty_employees" if "Ultra-Dirty" in dataset_preset else "enterprise"
+    default_tgt = f"{default_src}_migrated"
+
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("#### 🐘 PostgreSQL (Source)")
         source_table = st.text_input(
             "Source Table Name (PostgreSQL)",
-            value=os.environ.get("PG_TABLE", "enterprise"),
-            key="demo_src_tbl"
+            value=default_src,
+            key=f"demo_src_tbl_{default_src}"
         )
     with col2:
         st.markdown("#### 🐬 MySQL (Target)")
         target_table = st.text_input(
             "Target Table Name (MySQL)",
-            value=os.environ.get("MYSQL_TABLE", "enterprise_migrated"),
-            key="demo_tgt_tbl"
+            value=default_tgt,
+            key=f"demo_tgt_tbl_{default_tgt}"
         )
 
     with st.expander("⚙️ Database Connection Settings (Environment Overrides)", expanded=False):
@@ -159,21 +172,21 @@ with tab_demo:
             my_pw = st.text_input("Password", value=os.environ.get("MYSQL_PASSWORD", ""), type="password", key="demo_my_pw")
 
         st.markdown("---")
-        if st.button("🌱 Populate Sample Table in PostgreSQL (For Demo)", use_container_width=True, key="btn_seed_sample_pg"):
+        if st.button("🌱 Populate Sample Tables in PostgreSQL (For Demo)", use_container_width=True, key="btn_seed_sample_pg"):
             try:
-                from connectors.postgres_connector import PostgreSQLConnector
-                p_conn = PostgreSQLConnector(
-                    host=pg_host,
-                    port=int(pg_port),
-                    database=pg_db,
-                    username=pg_user,
-                    password=pg_pw,
-                    table_name=source_table
-                )
-                csv_p = os.path.join(os.path.dirname(__file__), "data", "messy_ecommerce_sales_data.csv")
-                s_df = pd.read_csv(csv_p)
-                p_conn.write_data(s_df, table_name=source_table)
-                st.success(f"✅ Successfully seeded '{source_table}' with {len(s_df)} rows in PostgreSQL!")
+                from data.seed_postgres import seed_postgres
+                # Set environment variables for host/port/creds if user edited them in the expander
+                os.environ["PG_HOST"] = str(pg_host)
+                os.environ["PG_PORT"] = str(pg_port)
+                os.environ["PG_DATABASE"] = str(pg_db)
+                os.environ["PG_USER"] = str(pg_user)
+                os.environ["PG_PASSWORD"] = str(pg_pw)
+                
+                success = seed_postgres()
+                if success:
+                    st.success("✅ Successfully seeded BOTH 'enterprise' (103 rows) and 'dirty_employees' (130 rows) into PostgreSQL!")
+                else:
+                    st.warning("⚠️ Seeding completed with some warnings. Check logs.")
             except Exception as seed_err:
                 st.error(f"❌ Could not seed PostgreSQL: {seed_err}")
 

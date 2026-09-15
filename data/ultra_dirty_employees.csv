@@ -1,0 +1,131 @@
+ Employee ID ,  Full Name  ,Age ,Department / Region , Annual Salary ,Bonus Amount, Join Date ,Employment Status,Job Role ,Performance Rating ,Audit Notes
+1.0,Employee_1,30.0,HR," 132,000 ",75000.0,2022/09/30,Active ,Designer,4.0,ERROR
+2.0,Employee_2,30.0, marketing ," 114,000 ",115000.0,11-05-2020,Inactive,DevOps,,UNKNOWN
+3.0,  Employee_3  ,42.0,Engineering," 77,000 ",60000.0,11-05-2020,Active ,Developer,2.9,UNKNOWN
+4.0,Employee_4,,Finance," 147,000 ",45000.0,2021-03-15,Inactive,Analyst,4.2,UNKNOWN
+5.0,Employee_5,42.0,HR," 119,000 ",,1/2/2024,NONE,DevOps,4.8,N/A
+6.0,  Employee_6  ,30.0,HR," 103,000 ",45000.0,2023.08.19,Active ,Analyst,4.2,Verified
+7.0,Employee_7,22.0,Marketing," 57,000 ",92000.0,2021-03-15,UNKNOWN,DevOps,4.0,UNKNOWN
+8.0,Employee_8,22.0,Sales," 92,000 ",60000.0,11-05-2020,UNKNOWN,Designer,2.9,UNKNOWN
+9.0,  Employee_9  ,42.0,Finance," 47,000 ",75000.0,1/2/2024,Active,Director,4.0,N/A
+10.0,Employee_10,28.0,Engineering," 45,000 ",,04/12/2022,UNKNOWN,DevOps,,UNKNOWN
+11.0,Employee_11,28.0,Sales," 83,000 ",60000.0,04/12/2022, active,Director,5.0,UNKNOWN
+12.0,  Employee_12  ,30.0,sales," 117,000 ",92000.0,2021-03-15, active,ERROR,,UNKNOWN
+13.0,Employee_13,30.0,Finance," 63,000 ",60000.0,2021-03-15,UNKNOWN,Director,2.9,Verified
+14.0,Employee_14,22.0,Finance," 54,000 ",115000.0,2021-03-15,Active,Designer,3.5,N/A
+,  Employee_15  ,42.0,sales," 127,000 ",75000.0,2023.08.19,Active,Analyst,4.8,N/A
+16.0,Employee_16,35.0,Finance," 145,000 ",60000.0,2021-03-15,UNKNOWN,Designer,3.5,N/A
+17.0,Employee_17,28.0, Engineering ," 87,000 ",,2022/09/30,Inactive,Director,5.0,ERROR
+18.0,  Employee_18  ,35.0, Engineering ," 138,000 ",115000.0,2020-12-01, active,Analyst,3.5,Verified
+19.0,Employee_19,28.0,Marketing," 53,000 ",75000.0,2021-03-15,NONE,Designer,4.0,UNKNOWN
+20.0,Employee_20,42.0,Finance," 90,000 ",45000.0,11-05-2020,Active ,Director,5.0,Verified
+21.0,  Employee_21  ,30.0,Marketing," 148,000 ",75000.0,2022/09/30,UNKNOWN,ERROR,4.2,ERROR
+22.0,Employee_22,35.0,Engineering," 67,000 ",60000.0,04/12/2022,Active ,DevOps,3.5,Verified
+23.0,Employee_23,,HR," 67,000 ",92000.0,11-05-2020,UNKNOWN,DevOps,5.0,ERROR
+24.0,  Employee_24  ,28.0,Marketing," 131,000 ",45000.0,2020-12-01, active,Developer,3.5,N/A
+25.0,Employee_25,35.0,Engineering," 116,000 ",45000.0,2023.08.19,NONE,DevOps,4.8,N/A
+26.0,Employee_26,,Finance," 136,000 ",75000.0,04/12/2022,UNKNOWN,Designer,4.8,N/A
+27.0,  Employee_27  ,22.0,HR," 101,000 ",45000.0,04/12/2022,UNKNOWN,Director,5.0,UNKNOWN
+28.0,Employee_28,28.0, marketing ," 140,000 ",45000.0,2021-03-15,Inactive,Developer,4.0,UNKNOWN
+29.0,Employee_29,42.0,Engineering," 126,000 ",115000.0,2021-03-15,Active,Analyst,5.0,UNKNOWN
+30.0,  Employee_30  ,50.0,HR," 129,000 ",,2020-12-01,UNKNOWN,Designer,4.8,ERROR
+31.0,Employee_31,22.0,Marketing," 77,000 ",115000.0,11-05-2020,Pending,DevOps,5.0,ERROR
+32.0,Employee_32,30.0,sales," 55,000 ",45000.0,2021-03-15,UNKNOWN,Analyst,5.0,Verified
+33.0,  Employee_33  ,35.0,HR," 98,000 ",92000.0,2023.08.19,Pending,Analyst,4.2,ERROR
+34.0,Employee_34,42.0,sales," 110,000 ",92000.0,2021-03-15,Active,Designer,4.0,N/A
+35.0,Employee_35,35.0,HR," 96,000 ",45000.0,04/12/2022,NONE,Designer,5.0,UNKNOWN
+36.0,  Employee_36  ,35.0,Marketing," 55,000 ",60000.0,2021-03-15,UNKNOWN,Director,3.5,UNKNOWN
+37.0,Employee_37,22.0,sales," 51,000 ",115000.0,2022/09/30,Inactive,Designer,3.5,N/A
+38.0,Employee_38,35.0, marketing ," 87,000 ",75000.0,11-05-2020, active,Developer,2.9,ERROR
+39.0,  Employee_39  ,22.0,sales," 75,000 ",,11-05-2020, active,Analyst,5.0,N/A
+40.0,Employee_40,35.0, Engineering ," 132,000 ",60000.0,1/2/2024,Pending,Manager,5.0,ERROR
+41.0,Employee_41,50.0, Engineering ," 139,000 ",45000.0,11-05-2020,Active,DevOps,,N/A
+,  Employee_42  ,30.0, marketing ," 56,000 ",45000.0,11-05-2020,Inactive,Analyst,5.0,UNKNOWN
+43.0,Employee_43,,Engineering," 69,000 ",,1/2/2024,Active ,Analyst,5.0,ERROR
+44.0,Employee_44,35.0,Sales," 60,000 ",,2021-03-15,UNKNOWN,Designer,3.5,Verified
+45.0,  Employee_45  ,42.0,Finance," 87,000 ",75000.0,11-05-2020,Inactive,Developer,3.5,N/A
+46.0,Employee_46,42.0,Engineering," 132,000 ",,2022/09/30, active,Analyst,2.9,N/A
+47.0,Employee_47,50.0,sales," 132,000 ",45000.0,1/2/2024,Active ,Designer,4.8,N/A
+48.0,  Employee_48  ,22.0,HR," 102,000 ",115000.0,2022/09/30,NONE,Developer,4.8,UNKNOWN
+49.0,Employee_49,22.0,Sales," 134,000 ",,04/12/2022,Inactive,DevOps,4.0,UNKNOWN
+50.0,Employee_50,,Marketing," 105,000 ",75000.0,04/12/2022,Pending,Manager,3.5,N/A
+51.0,  Employee_51  ,22.0, marketing ," 87,000 ",115000.0,04/12/2022,NONE,Manager,4.8,UNKNOWN
+52.0,Employee_52,22.0,sales," 52,000 ",92000.0,04/12/2022,NONE,Developer,2.9,Verified
+53.0,Employee_53,42.0, Engineering ," 47,000 ",,1/2/2024,UNKNOWN,Analyst,4.2,UNKNOWN
+54.0,  Employee_54  ,42.0,Sales," 105,000 ",,2023.08.19,Active,Manager,4.2,N/A
+55.0,Employee_55,50.0,Engineering," 97,000 ",60000.0,1/2/2024,Active,Director,4.0,N/A
+56.0,Employee_56,30.0,Engineering," 146,000 ",92000.0,2022/09/30,Active,ERROR,2.9,N/A
+57.0,  Employee_57  ,42.0,Finance," 142,000 ",92000.0,1/2/2024,Active ,Director,5.0,UNKNOWN
+58.0,Employee_58,35.0,Marketing," 79,000 ",92000.0,2022/09/30,Pending,Director,4.0,N/A
+59.0,Employee_59,35.0, Engineering ," 102,000 ",75000.0,11-05-2020,Pending,Designer,4.0,Verified
+60.0,  Employee_60  ,28.0,Finance," 101,000 ",45000.0,11-05-2020,Active ,Developer,4.0,UNKNOWN
+61.0,Employee_61,22.0,Marketing," 73,000 ",,1/2/2024,Active,ERROR,,N/A
+62.0,Employee_62,50.0,Marketing," 103,000 ",115000.0,1/2/2024,Active ,Designer,4.8,N/A
+63.0,  Employee_63  ,28.0,sales," 90,000 ",115000.0,1/2/2024,Active,ERROR,5.0,N/A
+64.0,Employee_64,50.0,Marketing," 133,000 ",,1/2/2024,UNKNOWN,ERROR,2.9,UNKNOWN
+65.0,Employee_65,28.0,sales," 124,000 ",92000.0,2021-03-15, active,DevOps,,UNKNOWN
+66.0,  Employee_66  ,28.0,Sales," 108,000 ",92000.0,04/12/2022,UNKNOWN,Designer,4.0,UNKNOWN
+67.0,Employee_67,35.0,Sales," 135,000 ",45000.0,2022/09/30,Active ,Director,4.2,UNKNOWN
+68.0,Employee_68,22.0,HR," 71,000 ",75000.0,11-05-2020,UNKNOWN,Manager,4.8,N/A
+69.0,  Employee_69  ,22.0, Engineering ," 100,000 ",75000.0,2023.08.19,Active ,Director,4.8,N/A
+70.0,Employee_70,22.0,sales," 113,000 ",75000.0,11-05-2020,Active ,ERROR,2.9,UNKNOWN
+71.0,Employee_71,,Sales," 74,000 ",45000.0,04/12/2022,Active ,Manager,4.0,UNKNOWN
+72.0,  Employee_72  ,,Sales," 144,000 ",92000.0,04/12/2022,Active ,Manager,,ERROR
+73.0,Employee_73,50.0,sales," 75,000 ",45000.0,2022/09/30,Active ,Developer,2.9,UNKNOWN
+74.0,Employee_74,50.0, Engineering ," 63,000 ",75000.0,2021-03-15,Inactive,Director,4.0,N/A
+75.0,  Employee_75  ,30.0,sales," 63,000 ",,2022/09/30,UNKNOWN,Developer,4.2,Verified
+76.0,Employee_76,30.0, Engineering ," 138,000 ",45000.0,1/2/2024,Active,Developer,5.0,N/A
+77.0,Employee_77,22.0,Engineering," 52,000 ",75000.0,2023.08.19,Active,Director,2.9,Verified
+78.0,  Employee_78  ,22.0, marketing ," 115,000 ",45000.0,2020-12-01,UNKNOWN,DevOps,4.2,N/A
+79.0,Employee_79,35.0,Sales," 55,000 ",115000.0,2022/09/30,Inactive,Director,3.5,N/A
+80.0,Employee_80,35.0,Finance," 9,500,000 ",92000.0,2022/09/30,NONE,Developer,4.2,Verified
+81.0,  Employee_81  ,50.0,Sales," 97,000 ",,2020-12-01,Pending,ERROR,4.8,UNKNOWN
+82.0,Employee_82,50.0, marketing ," 114,000 ",60000.0,2020-12-01,UNKNOWN,Developer,4.0,UNKNOWN
+83.0,Employee_83,42.0, Engineering ," 141,000 ",,2022/09/30,Pending,Developer,4.0,ERROR
+84.0,  Employee_84  ,28.0,Sales," 44,000 ",115000.0,2022/09/30, active,Analyst,,N/A
+85.0,Employee_85,,HR," 56,000 ",45000.0,2022/09/30,UNKNOWN,Director,5.0,N/A
+86.0,Employee_86,30.0, marketing ," 100,000 ",92000.0,1/2/2024,NONE,Analyst,4.0,UNKNOWN
+87.0,  Employee_87  ,35.0,Marketing," 106,000 ",115000.0,2022/09/30,Pending,Director,5.0,UNKNOWN
+88.0,Employee_88,42.0,HR," 111,000 ",115000.0,2020-12-01,Active,Designer,3.5,ERROR
+89.0,Employee_89,50.0,HR," 101,000 ",45000.0,2020-12-01,UNKNOWN,Developer,3.5,N/A
+90.0,  Employee_90  ,,Finance," 45,000 ",60000.0,11-05-2020,Active ,ERROR,,UNKNOWN
+91.0,Employee_91,50.0,sales," 124,000 ",75000.0,11-05-2020,Active ,Director,4.8,ERROR
+92.0,Employee_92,42.0, Engineering ," 57,000 ",45000.0,2021-03-15, active,Designer,4.2,N/A
+93.0,  Employee_93  ,50.0,Engineering," 42,000 ",45000.0,2023.08.19,UNKNOWN,Manager,5.0,N/A
+94.0,Employee_94,42.0,Finance," 47,000 ",60000.0,11-05-2020,UNKNOWN,Manager,4.0,N/A
+95.0,Employee_95,28.0,HR," 131,000 ",115000.0,2021-03-15,UNKNOWN,Analyst,5.0,UNKNOWN
+96.0,  Employee_96  ,22.0, Engineering ," 72,000 ",115000.0,11-05-2020,Active ,Director,,Verified
+97.0,Employee_97,, marketing ," 45,000 ",60000.0,2023.08.19,Active ,Designer,3.5,UNKNOWN
+98.0,Employee_98,28.0,sales," 69,000 ",60000.0,2023.08.19,Active ,ERROR,4.2,N/A
+99.0,  Employee_99  ,, Engineering ," 57,000 ",45000.0,2023.08.19,Active ,Manager,4.2,N/A
+100.0,Employee_100,, marketing ," 66,000 ",45000.0,2022/09/30,Active,Manager,3.5,ERROR
+101.0,Employee_101,30.0, Engineering ," 60,000 ",,11-05-2020,Active,ERROR,4.2,Verified
+102.0,  Employee_102  ,, marketing ," 92,000 ",115000.0,2022/09/30,Active ,Manager,4.0,ERROR
+103.0,Employee_103,22.0,Finance," 117,000 ",45000.0,1/2/2024,Active,Analyst,,Verified
+104.0,Employee_104,42.0,Engineering," 104,000 ",45000.0,04/12/2022,UNKNOWN,Designer,4.2,UNKNOWN
+105.0,  Employee_105  ,28.0,Sales," 93,000 ",,2023.08.19,Inactive,Manager,2.9,N/A
+106.0,Employee_106,,HR," 44,000 ",,1/2/2024,Inactive,Developer,3.5,UNKNOWN
+107.0,Employee_107,30.0,Marketing," 118,000 ",115000.0,2022/09/30, active,Manager,4.8,ERROR
+108.0,  Employee_108  ,30.0,Engineering," 103,000 ",92000.0,04/12/2022, active,Manager,4.0,UNKNOWN
+109.0,Employee_109,,Marketing," 130,000 ",75000.0,2020-12-01,Pending,Director,3.5,N/A
+110.0,Employee_110,22.0,sales," 118,000 ",92000.0,1/2/2024,NONE,Manager,4.8,N/A
+111.0,  Employee_111  ,50.0,Finance," 43,000 ",60000.0,2021-03-15,Pending,Developer,2.9,N/A
+112.0,Employee_112,50.0,Sales," 45,000 ",115000.0,04/12/2022,Active ,DevOps,4.8,ERROR
+113.0,Employee_113,35.0, marketing ," 62,000 ",75000.0,1/2/2024,UNKNOWN,Director,3.5,ERROR
+114.0,  Employee_114  ,35.0, marketing ," 132,000 ",60000.0,2022/09/30,Pending,Analyst,4.8,Verified
+115.0,Employee_115,50.0,Sales," 131,000 ",60000.0,2022/09/30, active,ERROR,5.0,N/A
+116.0,Employee_116,50.0, Engineering ," 51,000 ",60000.0,1/2/2024,Pending,Developer,5.0,UNKNOWN
+117.0,  Employee_117  ,50.0, marketing ," 112,000 ",60000.0,2021-03-15,NONE,Developer,5.0,UNKNOWN
+118.0,Employee_118,, marketing ," 102,000 ",115000.0,2021-03-15,Pending,Director,3.5,N/A
+119.0,Employee_119,35.0,Finance," 91,000 ",,1/2/2024,Pending,Director,4.2,N/A
+120.0,  Employee_120  ,28.0,Finance," 65,000 ",,2023.08.19,Inactive,Designer,4.8,UNKNOWN
+1.0,Employee_1,30.0,HR," 132,000 ",75000.0,2022/09/30,Active ,Designer,4.0,ERROR
+2.0,Employee_2,30.0, marketing ," 114,000 ",115000.0,11-05-2020,Inactive,DevOps,,UNKNOWN
+3.0,  Employee_3  ,42.0,Engineering," 77,000 ",60000.0,11-05-2020,Active ,Developer,2.9,UNKNOWN
+4.0,Employee_4,,Finance," 147,000 ",45000.0,2021-03-15,Inactive,Analyst,4.2,UNKNOWN
+5.0,Employee_5,42.0,HR," 119,000 ",,1/2/2024,NONE,DevOps,4.8,N/A
+6.0,  Employee_6  ,30.0,HR," 103,000 ",45000.0,2023.08.19,Active ,Analyst,4.2,Verified
+7.0,Employee_7,22.0,Marketing," 57,000 ",92000.0,2021-03-15,UNKNOWN,DevOps,4.0,UNKNOWN
+8.0,Employee_8,22.0,Sales," 92,000 ",60000.0,11-05-2020,UNKNOWN,Designer,2.9,UNKNOWN
+9.0,  Employee_9  ,42.0,Finance," 47,000 ",75000.0,1/2/2024,Active,Director,4.0,N/A
+10.0,Employee_10,28.0,Engineering," 45,000 ",,04/12/2022,UNKNOWN,DevOps,,UNKNOWN
