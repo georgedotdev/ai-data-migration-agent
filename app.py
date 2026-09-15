@@ -236,6 +236,41 @@ with tab_demo:
                     st.dataframe(res["target_preview"], use_container_width=True)
                 else:
                     st.caption("No target preview data available.")
+
+            # Live Target Database Verification Section
+            st.markdown('<div class="section-header">Live Target Database Verification</div>', unsafe_allow_html=True)
+            st.markdown(
+                f"Data has been physically written into **MySQL** on host `{my_host}`, database `{my_db}`."
+            )
+            v1, v2 = st.columns([3, 1])
+            with v1:
+                st.info(f"✓ Target Table: `{res.get('target_table')}` | ✓ Verified Rows: **{res.get('target_rows', 0)}**")
+            with v2:
+                if "target_preview" in res and isinstance(res["target_preview"], pd.DataFrame):
+                    csv_data = res["target_preview"].to_csv(index=False)
+                    st.download_button(
+                        "📥 Download Cleaned CSV",
+                        data=csv_data,
+                        file_name=f"{res.get('target_table')}.csv",
+                        mime="text/csv",
+                        use_container_width=True
+                    )
+
+            with st.expander("🔍 Live Target Database Explorer (Query MySQL Directly)", expanded=False):
+                try:
+                    from connectors.mysql_connector import MySQLConnector
+                    m_conn = MySQLConnector(**mysql_config)
+                    tables = m_conn.list_tables()
+                    st.write("**Tables in MySQL target database:**", tables)
+                    if tables:
+                        default_idx = tables.index(res.get('target_table')) if res.get('target_table') in tables else 0
+                        chosen_tbl = st.selectbox("Select table to inspect directly from MySQL", options=tables, index=default_idx, key="sel_inspect_tbl")
+                        if st.button("Query MySQL Table Live", key="btn_inspect_mysql"):
+                            live_df = m_conn.read_data(chosen_tbl)
+                            st.write(f"Live query result from MySQL `{chosen_tbl}` ({len(live_df)} rows):")
+                            st.dataframe(live_df, use_container_width=True)
+                except Exception as ex:
+                    st.caption(f"Note: Live explorer connects using configured credentials ({ex})")
         else:
             st.error(f"❌ **Migration Failed:** {res.get('message', 'Database connection or migration error.')}")
             if res.get("transformation_log"):
