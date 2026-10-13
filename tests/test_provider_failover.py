@@ -40,7 +40,7 @@ def test_specific_provider_failover(mock_get_provider, sample_profile):
     mock_gemini = MagicMock()
     mock_gemini.generate_plan.return_value = {"planning_method": "GeminiProvider", "transformations": []}
     
-    def side_effect(provider_name, model_name):
+    def side_effect(provider_name, model_name, api_key=None):
         if provider_name == "Groq":
             return mock_groq
         return mock_gemini

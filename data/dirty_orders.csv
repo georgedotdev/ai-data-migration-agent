@@ -1,0 +1,249 @@
+Order ID, Customer Name,Customer Email,Order Date,Product,Category ,Quantity,Unit Price,Discount,Payment Method,Order Status,Total Amount
+ORD-50077,David Martin,david.martin@mail.com,2025-01-11,Biography,Books,4,19.50,15%,UPI,Delivered,66.30
+ORD-50070,David Brown,david.brown@mail.com,6/25/2025,Basketball,Sports,4,29.99,0%,PayPal,Returned,119.96
+ORD-50001,Sneha Wilson,sneha.wilson@mail.com,2025/09/09,Yoga Mat,Sports,1,34.00,15%,Cash on Delivery,Delivered,28.90
+ORD-50176,Barbara Wilson,barbara.wilson@mail.com,2025-01-06,Smartwatch,Electronics,,199.00,0%,UPI,UNKNOWN,398.00
+ORD-50126,  Rohan Wang ,rohan.wang@mail.com,Jan 08 2025,Science Fiction,Books,2,14.99,0%,PayPal,Delivered,29.98
+ORD-50144,Olivia Jackson,olivia.jackson@mail.com,2025-01-24,Headphones,electronics,4,89.99,0.10,Cash on Delivery,Shipped,323.96
+ORD-50221,Richard Williams,richard.williams@mail.com,2025-06-06,Smartwatch,Electronics,4,199.00,10%,PayPal,Delivered,716.40
+ORD-50238,James Sharma,james.sharma@mail.com,2025/03/13,Tennis Racket,Sports,2,$119.00,5%,UPI,Shipped,226.10
+ORD-50130,Vikram Wang,vikram.wang@mail.com,2025-05-25,Tennis Racket,Sport,5,119.00,0%,CREDIT CARD,Delivered,595.00
+ORD-50030,Patricia Moore,patricia.moore@mail.com,Apr 03 2025,Biography,Books,4,19.50,0 %,Credit Card,Delivered,78.00
+ORD-50142,David Chen,david.chen@mail.com,2025-08-18,Desk Lamp,Home,two,Rs. 24.99,5%,PayPal,Cancelled,94.96
+ORD-50108,Jessica Martinez,jessica.martinez@mail.com,2025-03-04,Basketball,Sports,3,29.99,15%,PayPal,Shipped,76.47
+ORD-50078,Emma Jackson,emma.jackson@mail.com,2025-06-06,Basketball,Sports,5,Rs. 29.99,0%,PayPal,Shipped,149.95
+ORD-50016,Meera Johnson,meera.johnson@mail.com,2025-03-18,Cookbook,Books,1,29.00,0 %,UPI,Delivered,29.00
+ORD-50112,Mei Miller,mei.miller@mail.com,2025-07-25,Cookbook,books,2,29.00,0%,COD ,Shipped,58.00
+ORD-50206,Omar Nair,omar.nair@mail.com,2025-09-23,Laptop,Electronics,3,1099.00,0%,UPI,Cancelled,3297.00
+ORD-50055,Ananya Lee,ananya.lee@mail.com,7/1/2025,Smartphone,Electronics,5,499.00 USD,15%,Cash on Delivery,Delivered,2120.75
+ORD-50153,Patricia Rossi,patricia.rossi@mail.com,3/4/2025,Biography,Books,4,Rs. 19.50,0%,Cash on Delivery,Delivered,78.00
+ORD-50027,Robert Lee,robert.lee@mail.com,2025-05-06,Smartwatch,Electronics,4,Rs. 199.00,0%,Cash on Delivery,Shipped,796.00
+ORD-50170,Hiroshi Brown,hiroshi.brown@mail.com,6/5/2025,Cookbook,Book,4,Rs. 29.00,15%,credit card,SHIPPED,
+ORD-50132,Michael Reddy,michael.reddy@mail.com,2025-02-24,Smartwatch,electronics,4,199.00,0%,Credit Card,Delivered,796.00
+ORD-50033,Susan Patel,susan.patel@mail.com,9/28/2025,Smartphone,Electronics,5,499.00 USD,,Credit Card,Delivered,2120.75
+ORD-50096,Ananya Jones,ananya.jones@mail.com,2025-02-09,Cookbook,Books,5,29.00,0.00,Cash on Delivery,Returned,145.00
+ORD-50164,Sofia Jackson,sofia.jackson@mail.com,9/5/2025,Air Fryer,Home,3,$129.00,10%,Cash on Delivery,Returned,348.30
+ORD-50209,Rahul Chen,rahul.chen@mail.com,Jan 06 2025,Science Fiction,Books,2,14.99 USD,0%,Credit Card,Shipped,29.98
+ORD-50166,Barbara Jackson,barbara.jackson@mail.com,2/12/2025,Air Fryer,HOME ,1,$129.00,0%,UPI,Returned,129.00
+ORD-50071,Hiroshi Tanaka,hiroshi.tanaka@mail.com,2025-08-08,Basketball,Sports,1,29.99 USD,15 %,PayPal,Delivered,25.49
+ORD-50127,Hiroshi Moore,hiroshi.moore@mail.com,Aug 16 2025,Smartphone,Electronics,2,499.00,,Cash on Delivery,Cancelled,998.00
+ORD-50158,Omar Lee,omar.lee@mail.com,3/16/2025,Biography,Books,5,19.50,10%,PAYPAL,pending?,87.75
+ORD-50080,Yuki Chen,yuki.chen@mail.com,2025-01-03,Air Fryer,Home,3,129.00,0%,UPI,Delivered,387.00
+ORD-50150,Rohan Thompson,rohan@,2025/08/16,Smartphone,Electronics,5,499.00,0%,Credit  Card,Cancelled,2495.00
+ORD-50225,Noah Johnson,noah.johnsonmail.com,2025/09/20,Desk Lamp,Home,-2,24.99,5%,Credit Card,Shipped,94.96
+ORD-50099,  Rahul Thomas ,rahul.thomasmail.com,2025-07-30,Smartwatch,Electronics,3,Rs. 199.00,0%,UPI,Delivered,597.00
+ORD-50212,Omar Lee,omar.lee@mail.com,7/28/2025,Air Fryer,Home,1,$129.00,0%,UPI,delivered,129.00
+ORD-50116,Ananya Johnson,ananya.johnson@mail.com,Jul 04 2025,Air Fryer,Home,3,129.00,15%,Cash on Delivery,Cancelled,328.95
+ORD-50064,Linda Martin,linda.martin@mail.com,Jun 22 2025,Blender,Home,-2,49.50,5%,Cash on Delivery,Cancelled,94.05
+ORD-50154,Joseph Reddy,joseph.reddy@mail.com,3/26/2025,Tennis Racket,Sport,2,119.00,0%,UPI,Delivered,238.00
+ORD-50174,Susan Martin,susan.martin@mail.com,2025/02/09,Yoga Mat,Sports,1,34.00,0%,Credit Card,Shipped,34.00
+ORD-50089,Rahul Garcia,rahul@,2025-03-07,Science Fiction,books,two,14.99,0%,PayPal,SHIPPED,14.99
+ORD-50017,Jennifer Martin,jennifer.martin@mail.com,2025-07-24,Smartwatch,Electronics,3,199.00,0%,COD ,Delivered,597.00
+ORD-50149,Rahul Iyer,rahul.iyer@mail.com,5/6/2025,Cookbook,Books,,$29.00,0%,UPI,Cancelled,116.00
+ORD-50121,Susan Garcia,susan.garcia@mail.com,2025/03/20,Basketball,Sports,3,29.99,15%,Credit Card,Delivered,76.47
+ORD-50106,Olivia Chen,olivia.chen@mail.com,3/4/2025,Biography,Books,1,19.50,0%,UPI,Shipped,19.50
+ORD-50143,Noah Iyer,noah.iyer@mail.com,2/13/2025,Cookbook,Books,-2,29.00,15%,PayPal,Delivered,24.65
+ORD-50177,  Meera Chen ,meera.chen@mail.com,2025-04-13,Blender,Home,3,49.50,0%,credit card,Delivered,148.50
+ORD-50057,Linda Reddy,linda.reddy@mail.com,7/12/2025,Smartphone,Electronics,5,Rs. 499.00,0%,PayPal,Delivered,2495.00
+ORD-50218,Robert Garcia,robert.garcia@mail.com,2025/08/04,Air Fryer,Home,3,129.00,0%,Cash on Delivery,Delivered,387.00
+ORD-50084,Sarah Moore,sarah.moore@mail.com,2025-03-12,Desk Lamp,Home,4,24.99,15%,PayPal,Processing,84.97
+ORD-50110,  Ananya Jackson ,ananya.jackson@mail.com,2025-08-16,Smartphone,electronics,2,499.00,,PayPal,Cancelled,848.30
+ORD-50164,Sofia Jackson,sofia.jackson@mail.com,9/5/2025,Air Fryer,Home,3,$129.00,10%,Cash on Delivery,Returned,348.30
+ORD-50155,Patricia Tanaka,patricia.tanaka@mail.com,8/13/2025,Cookbook,Books,2,29.00,0%,Credit Card,Delivered,58.00
+ORD-50223,Vikram Khan,vikram.khan@mail.com,2025-07-16,Science Fiction,books,3,14.99,0%,CREDIT CARD,Cancelled,44.97
+ORD-50200,William Smith,william.smith@mail.com,2025-08-31,Basketball,Sports,4,29.99,15 %,UPI,Processing,101.97
+ORD-50234,Thomas Wang,thomas.wang@mail.com,2025-03-17,Smartphone,Electronics,2,499.00,15%,Upi,Shipped,848.30
+ORD-50191,Susan Lee,susan.lee@mail.com,2025-05-17,Smartwatch,Electronics,5,199.00,10%,Cash on Delivery,Shipped,895.50
+ORD-50097,Wei Anderson,wei.anderson@mail.com,Jan 17 2025,Basketball,Sports,4,29.99 USD,0%,Pay Pal,Delivered,119.96
+ORD-50079,Barbara Tanaka,barbara.tanaka@mail.com,2025-01-22,Blender,home,2,49.50,0%,UPI,Shipped,
+ORD-50131,William Garcia,william.garcia@mail.com,2025-02-28,Smartphone,Electronics,3,499.00,5%,PayPal,Delivered,1422.15
+ORD-50171,Ananya Rossi,ananya.rossi@mail.com,2025-03-08,Basketball,sports,2,29.99,0%,Cash on Delivery,Delivered,59.98
+ORD-50031,  Fatima Jackson ,fatima.jackson@mail.com,5/23/2025,Smartphone,electronics,2,499.00,10 %,PayPal,Delivered,898.20
+ORD-50068,Mei Johnson,mei.johnson@mail.com,2025-03-22,Smartphone,Electronics,5,499.00,0%,Credit Card,Delivered,2495.00
+ORD-50185,Meera Thompson,meera.thompson@mail.com,2025-08-29,Tennis Racket,Sports,3,119.00,0%,PayPal,Delivered,357.00
+ORD-50035,John Wilson,unknown,2025-01-04,Cookbook,Books,5,Rs. 29.00,0%,credit card,Cancelled,145.00
+ORD-50005,Susan Martin,susan.martin@mail.com,3/23/2025,Yoga Mat,Sports,3,$34.00,,Credit Card,pending?,102.00
+ORD-50059,Michael Jackson,michael.jackson@mail.com,2025-02-06,Science Fiction,books,1,14.99,0%,UPI,Shipped,14.99
+ORD-50137,Jessica Tanaka,jessica.tanaka@mail.com,2025-02-26,Cookbook,Books,4,29.00,10 %,Credit  Card,Processing,104.40
+ORD-50015,Barbara Martin,barbara.martin@mail.com,Jul 15 2025,Headphones,Electronics,1,89.99,15%,Credit Card,Shipped,
+ORD-50061,Rahul Williams,rahul.williams@mail.com,2025-01-21,Basketball,Sports,2,29.99,0%,Cash on Delivery,Shipped,59.98
+ORD-50028,Patricia Reddy,patricia.reddy@mail.com,9/14/2025,Air Fryer,HOME ,4,Rs. 129.00,0%,Credit Card,Processing,516.00
+ORD-50063,Luca Jones,luca.jones@mail.com,3/14/2025,Blender,home,1,49.50,15%,cash on delivery,Cancelled,42.07
+ORD-50152,Noah Garcia,noah.garciamail.com,2025/05/13,Laptop,Electronic,1,1099.00,0%,PAYPAL,Delivered,1099.00
+ORD-50205,Susan Nair,susan.nair@mail.com,2025/04/03,Laptop,Electronic,5,"1,099.00 USD",0.15,Credit Card,Delivered,4670.75
+ORD-50009,Meera Miller,meera.miller@mail.com,2025-05-25,Yoga Mat,Sports,2,$34.00,,upi,Delivered,61.20
+ORD-50043,Ananya Jackson,ananya.jackson@mail.com,2025/02/27,Tennis Racket,Sports,1,$119.00,,UPI,Delivered,113.05
+ORD-50107,Patricia Martin,patricia.martin@mail.com,Aug 05 2025,Cookbook,Books,1,abc,0%,Cash on Delivery,Delivered,29.00
+ORD-50214,Robert Patel,robert.patel@mail.com,2025-03-31,Tennis Racket,Sports,5,119.00,0%,Credit Card,Shipped,595.00
+ORD-50192,  Rahul Wang ,rahul.wang@mail.com,7/25/2025,Smartphone,Electronics,4,499.00,15%,PayPal,Delivered,1696.60
+ORD-50051,Patricia Silva,patricia.silva@mail.com,2025-08-21,Cookbook,Books,1,$29.00,5%,Cash on Delivery,Shipped,27.55
+ORD-50082,Wei Nair,wei.nair@mail.com,2025-06-12,Smartwatch,Electronics,2,,5%,Credit Card,Delivered,378.10
+ORD-50195,William Chen,william.chen@mail.com,2025-01-15,Smartphone,Electronics,4,Rs. 499.00,15%,PayPal,Shipped,1696.60
+ORD-50120,Robert Iyer,robert.iyer@mail.com,2025-04-19,Basketball,Sports,5,29.99,0%,Credit Card,Delivered,
+ORD-50172,Mei Martinez,mei.martinez@mail.com,2025-02-02,Blender,Home,2,49.50,5%,Cash on Delivery,Shipped,94.05
+ORD-50104,William Martinez   ,william.martinez@mail.com,2025-03-18,Air Fryer,Home,2,four hundred,0 %,PayPal,Shipped,258.00
+ORD-50238,James Sharma,james.sharma@mail.com,2025/03/13,Tennis Racket,Sports,2,$119.00,5%,UPI,Returned,226.10
+ORD-50135,Elizabeth Silva,elizabeth.silva@mail.com,2025-06-05,Headphones,Electronics,4,Rs. 89.99,5%,UPI,Delivered,341.96
+ORD-50178,Emma Iyer,emma.iyer@mail.com,2025-07-22,Desk Lamp,Home,2,$24.99,10%,COD ,Shipped,44.98
+ORD-50165,William Tanaka,william.tanaka@mail.com,3/10/2025,Biography,Books,5,19.50,0%,Credit Card,Delivered,97.50
+ORD-50045,Yuki Brown,yuki.brown@mail.com,2025-08-16,Basketball,SPORTS,5,29.99,0.00,PayPal,Cancelled,149.95
+ORD-50239,Omar Nair,omar.nair@mail.com,2025-09-14,Yoga Mat,Sports,3,34.00,10%,Upi,Delivered,91.80
+ORD-50086,Linda Taylor,linda.taylor@mail.com,Jan 30 2025,Headphones,Electronics,2,89.99,10%,Pay Pal,Delivered,161.98
+ORD-50226,Thomas Wilson,thomas.wilson@mail.com,3/2/2025,Air Fryer,home,3,$129.00,10%,PayPal,Delivered,348.30
+ORD-50228,Barbara Martinez,barbara.martinez@mail.com,2025-05-12,Smartphone,Electronics,4,499.00,15%,PayPal,Delivered,1696.60
+ORD-50029,William Reddy   ,william.reddy@mail.com,2025/08/19,Smartphone,Electronics,1,$499.00,15%,Upi,Processing,424.15
+ORD-50233,Rahul Brown,rahul.brown@mail.com,2025-03-19,Science Fiction,Books,1,14.99,10%,PAYPAL,Delivered,13.49
+ORD-50052,Olivia Garcia   ,olivia.garcia@mail.com,May 27 2025,Headphones,Electronics,5,abc,0%,Cash on Delivery,Delivered,449.95
+ORD-50231,Jennifer Miller,jennifer.miller@mail.com,2025-03-25,Air Fryer,Home,5,abc,5%,UPI,Delivered,612.75
+ORD-50197,Olivia Miller,olivia.miller@mail.com,7/14/2025,Headphones,Electronics,2,89.99,0%,Credit Card,Delivered,179.98
+ORD-50049,David Iyer,david.iyer@mail.com,4/3/2025,Basketball,Sports,5,N/A,5%,Cash on Delivery,Shipped,142.45
+ORD-50038,Robert Chen,robert.chen@mail.com,2025-01-13,Blender,Home,4,49.50,10%,Cash on Delivery,Shipped,178.20
+ORD-50014,  Mary Chen ,mary.chen@mail.com,2025-03-21,Cookbook,Books,5,Rs. 29.00,10%,Credit Card,Shipped,130.50
+ORD-50183,Barbara Sharma,barbara.sharma@mail.com,2025/08/07,Blender,Home,5,49.50,0%,Cash on Delivery,Delivered,247.50
+ORD-50002,Meera Davis,meera.davis@mail.com,2025/05/03,Science Fiction,Books,4,Rs. 14.99,15%,UPI,Delivered,50.97
+ORD-50148,Sneha Tanaka,sneha.tanaka@mail.com,1/24/2025,Desk Lamp,home,5,24.99,0%,PayPal,Delivered,124.95
+ORD-50090,Hiroshi Brown,hiroshi.brown@mail.com,Jan 06 2025,Science Fiction,Books,1,four hundred,0%,Credit Card,Delivered,14.99
+ORD-50136,Rohan Chen,rohan.chen@mail.com,2025/06/21,Air Fryer,Home,1,129.00 USD,0%,Cash on Delivery,SHIPPED,129.00
+ORD-50230,Sofia Jones,sofia.jones@mail.com,2025/01/11,Smartphone,Electronics,4,499.00 USD,0.05,credit card,Returned,1896.20
+ORD-50095,Rohan Taylor,rohan.taylor@mail.com,9/6/2025,Yoga Mat,Sports,5,34.00,0.05,UPI,N/A,161.50
+ORD-50008,Mei Martinez,mei.martinez@mail.com,8/19/2025,Blender,HOME ,5,49.50,0%,UPI,Shipped,247.50
+ORD-50083,Wei Khan,wei.khan@mail.com,8/6/2025,Basketball,Sport,3,29.99,0%,Cash on Delivery,Delivered,89.97
+ORD-50240,Emma Patel,emma.patel@mail.com,2025/07/27,Smartwatch,Electronics,4,Rs. 199.00,0 %,Cash on Delivery,Returned,796.00
+ORD-50006,Rohan Wang,rohan.wang@mail.com,2025-09-01,Blender,Home,1,49.50,10 %,PayPal,Delivered,44.55
+ORD-50198,Rohan Smith,rohan.smith@mail.com,2025-04-23,Basketball,SPORTS,2,,0%,Cash on Delivery,Delivered,59.98
+ORD-50138,Noah Reddy,noah.reddy@mail.com,2025-03-13,Air Fryer,Home,3,129.00,0%,COD ,Shipped,387.00
+ORD-50216,James Patel,,2025/02/24,Basketball,Sports,3,29.99 USD,0 %,CREDIT CARD,Shipped,89.97
+ORD-50224,Elizabeth Johnson,elizabeth.johnson@mail.com,2025-05-10,Blender,Home,4,49.50,10%,Upi,Delivered,178.20
+ORD-50058,William Chen,william.chen@mail.com,2025-07-18,Headphones,electronics,1,89.99,5%,UPI,Delivered,85.49
+ORD-50065,Vikram Thompson   ,vikram.thompson@mail.com,1/21/2025,Air Fryer,HOME ,2,$129.00,10%,paypal,Delivered,232.20
+ORD-50053,Barbara Martinez,barbara.martinez@mail.com,Jan 17 2025,Air Fryer,Home,2,129.00,10%,Upi,Cancelled,232.20
+ORD-50181,David Taylor,david.taylormail.com,2025-07-12,Basketball,Sports,2,29.99,0%,PayPal,Cancelled,59.98
+ORD-50182,Mary Davis,unknown,1/28/2025,Biography,Books,two,19.50,0.00,PayPal,Delivered,39.00
+ORD-50048,Meera Thomas,meera.thomas@mail.com,3/30/2025,Basketball,Sports,5,$29.99,0%,cash on delivery,Shipped,149.95
+ORD-50041,  Rahul Thompson ,rahul.thompson@mail.com,2025-08-30,Tennis Racket,Sports,2,119.00,0%,Credit Card,Delivered,238.00
+ORD-50140,David Reddy,david.reddy@mail.com,2025-01-17,Laptop,Electronics,4,"1,099.00 USD",5 %,PayPal,Delivered,4176.20
+ORD-50159,Richard Iyer,unknown,2025-09-01,Blender,Home,3,Rs. 49.50,0%,Cash on Delivery,Cancelled,148.50
+ORD-50109,Ananya Silva,ananya.silva@mail.com,Sep 09 2025,Tennis Racket,Sports,3,119.00,0%,Cash on Delivery,Shipped,357.00
+ORD-50139,Susan Jackson,susan.jackson@mail.com,9/23/2025,Headphones,Electronics,5,89.99,5%,Cash on Delivery,Returned,427.45
+ORD-50047,Jennifer Sharma,jennifer.sharma@mail.com,Feb 01 2025,Smartwatch,Electronics,2,199.00,0%,UPI,Delivered,398.00
+ORD-50113,Sarah Wilson,sarah.wilson@mail.com,2025-04-16,Basketball,sports,2,Rs. 29.99,5%,PayPal,Returned,56.98
+ORD-50179,Susan Moore,susan.moore@mail.com,3/29/2025,Cookbook,Books,4,29.00,0%,UPI,Returned,116.00
+ORD-50217,Arjun Taylor,arjun.taylormail.com,2025-02-25,Tennis Racket,Sports,5,119.00,0%,Cash on Delivery,Delivered,595.00
+ORD-50103,Mei Martinez,mei.martinez@mail.com,2025-04-13,Yoga Mat,Sports,1,34.00,10%,UPI,Returned,30.60
+ORD-50074,Rahul Khan,rahul.khan@mail.com,2025-07-16,Headphones,Electronic,1,89.99,0%,UPI,Shipped,89.99
+ORD-50147,Carlos Miller,carlos.miller@mail.com,5/6/2025,Air Fryer,HOME ,5,129.00,0 %,Cash on Delivery,Delivered,645.00
+ORD-50220,Linda Rossi,unknown,2025/08/08,Cookbook,Books,2,29.00 USD,15 %,PayPal,Delivered,49.30
+ORD-50125,Michael Moore,michael.moore@mail.com,1/7/2025,Smartphone,Electronics,4,499.00,0%,PayPal,Shipped,1996.00
+ORD-50032,Noah Wang,noah.wang@mail.com,2025-01-19,Air Fryer,Home,5,129.00,0 %,Credit Card,Shipped,645.00
+ORD-50036,Luca Silva,luca.silva@mail.com,1/29/2025,Biography,Books,4,19.50,15%,UPI,Processing,
+ORD-50114,Jennifer Smith,jennifer.smith@mail.com,2025/07/23,Tennis Racket,Sports,3,$119.00,15%,paypal,Cancelled,303.45
+ORD-50066,David Miller,david.miller@mail.com,2025-08-19,Desk Lamp,Home,3,24.99,10%,Cash on Delivery,Delivered,67.47
+ORD-50122,Omar Williams   ,omar.williams@mail.com,Aug 11 2025,Basketball,Sports,5,Rs. 29.99,0 %,Cash on Delivery,Returned,149.95
+ORD-50067,Sofia Brown,sofia.brown@mail.com,2025-08-26,Cookbook,Books,5,29.00,,PayPal,Delivered,145.00
+ORD-50118,Elizabeth Brown,elizabeth.brown@mail.com,2025/04/03,Science Fiction,Books,2,14.99,0%,PayPal,Cancelled,29.98
+ORD-50046,James Chen,james.chen@mail.com,2025-05-30,Desk Lamp,Home,2,24.99,5%,Cash on Delivery,Delivered,47.48
+ORD-50019,Elizabeth Chen   ,elizabeth.chen@mail.com,2025-03-17,Smartphone,Electronics,1,499.00,0%,UPI,Shipped,499.00
+ORD-50169,Rohan Chen,rohan.chen@mail.com,Jan 17 2025,Biography,Books,5,19.50,0%,PayPal,Shipped,97.50
+ORD-50091,Carlos Chen,carlos.chen@mail.com,2025/02/20,Desk Lamp,home,5,$24.99,0%,Credit Card,Delivered,124.95
+ORD-50094,Linda Jones,linda.jones@mail.com,2025-03-28,Basketball,Sports,5,Rs. 29.99,0%,Credit Card,Delivered,149.95
+ORD-50072,Rohan Martin,rohan.martin@mail.com,2025-02-12,Smartwatch,ELECTRONICS,4,,0%,Credit Card,Delivered,796.00
+ORD-50018,Ananya Nair,ananya.nair@mail.com,2025-07-07,Smartphone,ELECTRONICS,4,499.00,0.05,Upi,Returned,1896.20
+ORD-50187,Vikram Iyer,vikram.iyer@mail.com,8/22/2025,Laptop,Electronics,3,1099.00,10%,paypal,Returned,2967.30
+ORD-50076,Vikram Wang,vikram.wang@mail.com,2025-02-11,Laptop,ELECTRONICS,4,1099.00,0%,cash on delivery,Delivered,4396.00
+ORD-50044,Rohan Sharma,rohan.sharma@mail.com,2025-03-23,Tennis Racket,Sports,5,119.00,0%,Cash on Delivery,Cancelled,595.00
+ORD-50227,James Iyer,james.iyer@mail.com,Jun 16 2025,Cookbook,Books,5,29.00,0%,Credit Card,Delivered,145.00
+ORD-50117,Wei Johnson,wei.johnson@mail.com,2025-04-04,Blender,Home,1,49.50,0%,Credit Card,Shipped,49.50
+ORD-50162,Vikram Wang   ,vikram.wang@mail.com,2025-08-11,Cookbook,Book,2,29.00,10%,Credit Card,Delivered,52.20
+ORD-50163,Priya Wang,priya.wang@mail.com,May 24 2025,Air Fryer,Home,2,129.00,0%,Pay Pal,Shipped,258.00
+ORD-50023,Rahul Jackson,rahul.jackson@mail.com,2025/04/14,Blender,Home,2,49.50,10%,PayPal,Processing,89.10
+ORD-50141,Elizabeth Jones,elizabeth.jones@mail.com,4/21/2025,Tennis Racket,Sports,3,119.00,0%,paypal,Delivered,357.00
+ORD-50235,Omar Martin,omar.martin@mail.com,5/6/2025,Yoga Mat,Sports,3,$34.00,0%,Cash on Delivery,Processing,102.00
+ORD-50189,Yuki Smith,yuki.smith@mail.com,2025-08-02,Smartphone,electronics,4,499.00,10%,upi,Shipped,1796.40
+ORD-50004,Elizabeth Johnson,elizabeth.johnson@mail.com,2025/08/29,Biography,Books,1,Rs. 19.50,10%,PAYPAL,Shipped,17.55
+ORD-50219,Mary Jones,mary.jones@mail.com,2025-05-02,Air Fryer,Home,5,Rs. 129.00,0%,Credit Card,Cancelled,645.00
+ORD-50128,Olivia Patel,olivia.patel@mail.com,2025-09-06,Science Fiction,Books,4,14.99 USD,5%,Cash on Delivery,Delivered,56.96
+ORD-50196,Rahul Rossi,rahul.rossi@mail.com,2025/06/25,Desk Lamp,Home,5,24.99,0%,Cash on Delivery,Shipped,124.95
+ORD-50052,Olivia Garcia   ,olivia.garcia@mail.com,May 27 2025,Headphones,Electronics,5,abc,0%,Cash on Delivery,Delivered,449.95
+ORD-50040,Richard Miller,richard.miller@mail.com,2025-08-14,Biography,books,5,19.50,0%,Credit Card,Delivered,97.50
+ORD-50020,Mary Thomas,mary.thomas@mail.com,5/26/2025,Headphones,Electronics,2,89.99 USD,0%,PayPal,delivered,179.98
+ORD-50188,Omar Garcia,omar.garcia@mail.com,2025/07/15,Basketball,SPORTS,3,29.99,10%,UPI,Delivered,80.97
+ORD-50157,Mary Jackson,mary.jackson@mail.com,2025-02-22,Cookbook,Books,2,Rs. 29.00,0%,Credit  Card,N/A,58.00
+ORD-50054,Sneha Johnson,sneha.johnson@mail.com,8/26/2025,Science Fiction,Books,1,14.99,0%,Cash on Delivery,Processing,14.99
+ORD-50009,Meera Miller,meera.miller@mail.com,2025-05-25,Yoga Mat,Sports,2,$34.00,,upi,Returned,61.20
+ORD-50100,Sarah Smith,sarah.smith@mail.com,2025-07-13,Yoga Mat,SPORTS,1,34.00,0%,Cash on Delivery,Shipped,34.00
+ORD-50011,  Patricia Tanaka ,patricia.tanaka@mail.com,2/6/2025,Cookbook,Books,1,29.00 USD,15%,UPI,Delivered,24.65
+ORD-50111,Hiroshi Rossi,hiroshi.rossi@mail.com,2025-06-17,Air Fryer,Home,,129.00,15%,UPI,Delivered,219.30
+ORD-50160,Joseph Jackson,joseph.jackson@mail.com,2025-06-19,Blender,Home,4,49.50,15%,cash on delivery,Delivered,168.30
+ORD-50093,Mei Patel,mei.patel@mail.com,2025-07-28,Cookbook,Books,two,29.00,0%,UPI,Delivered,116.00
+ORD-50202,Michael Taylor,michael.taylor@mail.com,Sep 21 2025,Tennis Racket,Sports,1,Rs. 119.00,0%,UPI,Returned,119.00
+ORD-50087,Barbara Chen,barbara.chen@mail.com,6/11/2025,Laptop,Electronic,5,"$1,099.00",0%,UPI,Shipped,5495.00
+ORD-50222,Robert Smith,robert.smith@mail.com,2025-08-30,Headphones,Electronics,2,89.99,0%,UPI,Delivered,179.98
+ORD-50115,Robert Smith,robert.smith@mail.com,2025-06-04,Cookbook,books,5,29.00,5 %,Cash on Delivery,Processing,137.75
+ORD-50088,Elizabeth Lee,elizabeth.lee@mail.com,Sep 27 2025,Blender,Home,5,49.50,10%,Credit Card,Delivered,222.75
+ORD-50134,Joseph Jones,joseph.jones@mail.com,2025-09-22,Basketball,Sports,4,Rs. 29.99,5%,UPI,Delivered,113.96
+ORD-50167,Sarah Miller,sarah.miller@mail.com,2025-01-05,Desk Lamp,Home,5,four hundred,0%,UPI,Shipped,124.95
+ORD-50156,Omar Williams,omar.williams@mail.com,5/31/2025,Smartphone,Electronics,5,N/A,0%,Cash on Delivery,Shipped,2495.00
+ORD-50133,Vikram Anderson,vikram.anderson@mail.com,2025/08/01,Blender,Home,2,49.50,5%,CREDIT CARD,Shipped,94.05
+ORD-50213,  David Martin ,david.martin@mail.com,2025/03/05,Yoga Mat,Sports,5,34.00,15%,Cash on Delivery,Delivered,144.50
+ORD-50201,Arjun Jackson,arjun.jackson@mail.com,2025-09-05,Desk Lamp,Home,2,24.99,5%,upi,Delivered,47.48
+,Richard Reddy,richard.reddy@mail.com,2025/09/16,Desk Lamp,Home,5,24.99,15%,Credit Card,Delivered,106.21
+ORD-50037,Meera Iyer,meera.iyer@mail.com,2025/04/06,Desk Lamp,Home,5,$24.99,5%,Credit Card,Shipped,118.70
+ORD-50168,Olivia Wang,,2025-02-13,Yoga Mat,Sports,4,34.00,,UPI,Shipped,136.00
+ORD-50211,Elizabeth Nair,elizabeth.nair@mail.com,5/17/2025,Blender,Home,4,49.50,10%,Credit Card,Shipped,178.20
+ORD-50056,  Sofia Anderson ,sofia.anderson@mail.com,2025-01-05,Air Fryer,Home,5,abc,0%,Credit Card,Shipped,645.00
+ORD-50060,Yuki Martin,yuki.martin@mail.com,4/26/2025,Basketball,SPORTS,1,29.99,10%,Credit Card,Shipped,26.99
+ORD-50184,Vikram Thomas,vikram.thomas@mail.com,2025/08/05,Tennis Racket,Sport,4,Rs. 119.00,5%,Cash on Delivery,Shipped,452.20
+ORD-50236,Jessica Taylor,jessica.taylor@mail.com,2025-08-31,Laptop,Electronics,1,1099.00,0%,PayPal,Shipped,1099.00
+ORD-50161,Richard Miller,richard.miller@mail.com,2025-03-31,Science Fiction,Book,2,14.99 USD,0%,UPI,Delivered,29.98
+ORD-50021,Meera Lee,,Feb 15 2025,Headphones,Electronics,4,89.99,10%,paypal,Processing,323.96
+ORD-50119,Michael Silva,michael.silva@mail.com,Mar 04 2025,Science Fiction,Books,3,14.99,15%,cash on delivery,Delivered,38.22
+ORD-50175,Richard Thomas,richard.thomas@mail.com,3/11/2025,Smartphone,Electronic,3,499.00,0%,UPI,Shipped,1497.00
+ORD-50210,Priya Thompson,priya.thompson@mail.com,2025-03-29,Cookbook,Books,1,29.00,0%,UPI,Shipped,29.00
+ORD-50042,Luca Williams,luca.williams@mail.com,8/28/2025,Yoga Mat,Sports,2,34.00 USD,0%,Credit Card,Shipped,68.00
+ORD-50075,Olivia Rossi,olivia.rossi@mail.com,2025-06-30,Desk Lamp,HOME ,2,24.99,0%,UPI,Delivered,49.98
+ORD-50010,Olivia Martinez,olivia.martinez@mail.com,2025-02-06,Headphones,Electronics,2,89.99,10%,Credit Card,Shipped,161.98
+ORD-50208,Susan Williams,susan.williams@mail.com,2025-07-10,Cookbook,Books,2,Rs. 29.00,15%,PayPal,Shipped,49.30
+ORD-50123,Elizabeth Jones,elizabeth.jones@mail.com,Jun 01 2025,Science Fiction,Book,5,14.99,5%,Credit Card,Processing,
+ORD-50098,Hiroshi Martin,hiroshi.martin@mail.com,2025-05-15,Desk Lamp,Home,1,abc,5%,Cash on Delivery,Returned,23.74
+ORD-50204,Omar Wilson,omar.wilson@mail.com,2025-04-05,Blender,Home,3,49.50,0%,Cash on Delivery,Processing,148.50
+ORD-50151,  Sneha Miller ,sneha.miller@mail.com,2025/09/10,Headphones,Electronics,2,Rs. 89.99,0%,Upi,Cancelled,179.98
+ORD-50007,David Martin,david.martin@mail.com,2025-06-27,Air Fryer,Home,5,129.00,15%,cash on delivery,Shipped,548.25
+ORD-50039,David Miller   ,,9/25/2025,Smartwatch,Electronics,4,199.00,15%,Credit Card,Cancelled,676.60
+ORD-50199,Hiroshi Iyer,hiroshi.iyer@mail.com,2025-07-12,Air Fryer,Home,3,129.00 USD,15%,Credit Card,Delivered,328.95
+ORD-50207,Robert Miller,robert.miller@mail.com,2025/04/21,Air Fryer,HOME ,2,129.00,0%,UPI,Shipped,258.00
+ORD-50215,Linda Wilson,linda.wilson@mail.com,4/20/2025,Biography,Books,3,19.50,0%,Credit Card,Delivered,58.50
+ORD-50026,Joseph Khan,joseph.khan@mail.com,Aug 13 2025,Blender,Home,1,49.50,0%,Cash on Delivery,Delivered,49.50
+ORD-50229,Yuki Garcia,yuki.garcia@mail.com,2025-09-09,Tennis Racket,Sports,2,119.00,0%,PayPal,Delivered,238.00
+ORD-50190,Richard Martinez,richard.martinez@mail.com,2025-03-27,Basketball,sports,5,29.99,0.00,Credit Card,Delivered,149.95
+ORD-50105,Yuki Wang,yuki.wang@mail.com,2025-06-02,Smartphone,Electronics,1,499.00,0%,Credit Card,Shipped,499.00
+ORD-50085,Arjun Iyer,arjun.iyer@mail.com,4/2/2025,Tennis Racket,Sport,3,119.00,5%,Cash on Delivery,Delivered,339.15
+ORD-50025,Joseph Patel,joseph@,2025/02/10,Blender,Home,1,49.50,0%,Cash on Delivery,Shipped,49.50
+ORD-50173,Arjun Thomas,arjun.thomas@mail.com,8/10/2025,Air Fryer,home,2,129.00,0%,Cash on Delivery,Cancelled,258.00
+ORD-50180,Hiroshi Williams,hiroshi.williams@mail.com,2025/08/18,Science Fiction,Books,5,14.99 USD,10%,Cash on Delivery,Processing,67.45
+ORD-50034,Barbara Silva   ,unknown,2025-01-01,Desk Lamp,Home,3,24.99,0%,Credit Card,Delivered,74.97
+ORD-50233,Rahul Brown,rahul.brown@mail.com,2025-03-19,Science Fiction,Books,1,14.99,10%,PAYPAL,Delivered,13.49
+ORD-50186,Olivia Williams,olivia.williams@mail.com,Mar 25 2025,Tennis Racket,Sports,1,119.00,5%,PayPal,Shipped,
+ORD-50101,John Tanaka,john.tanaka@mail.com,6/2/2025,Air Fryer,Home,3,129.00,0%,Cash on Delivery,Delivered,387.00
+ORD-50232,Joseph Smith,joseph.smith@mail.com,Jun 30 2025,Air Fryer,Home,4,129.00,0%,UPI,Shipped,516.00
+ORD-50237,Susan Tanaka,,3/15/2025,Blender,Home,2,49.50,0%,Cash on Delivery,Shipped,99.00
+ORD-50050,Vikram Johnson,vikram.johnson@mail.com,2025/09/04,Smartwatch,Electronics,3,Rs. 199.00,0%,Credit  Card,Delivered,597.00
+ORD-50129,Mary Garcia,mary.garcia@mail.com,2025-06-26,Cookbook,Books,2,29.00,5%,Cash on Delivery,Returned,55.10
+ORD-50102,Arjun Lee,arjun.lee@mail.com,4/13/2025,Biography,Books,5,19.50,0%,Cash on Delivery,Shipped,97.50
+ORD-50073,Mei Chen,mei.chen@mail.com,2025-07-09,Desk Lamp,HOME ,4,Rs. 24.99,0%,Cash on Delivery,Returned,99.96
+ORD-50193,Mary Iyer,mary.iyer@mail.com,2025-08-16,Science Fiction,Books,3,14.99,15%,PayPal,Cancelled,38.22
+ORD-50092,Michael Garcia,michael.garcia@mail.com,2025/09/21,Biography,books,4,19.50,0%,PayPal,Shipped,78.00
+,Elizabeth Johnson,elizabeth.johnson@mail.com,2025/05/18,Laptop,electronics,1,1099.00,0%,PayPal,Delivered,1099.00
+ORD-50080,Yuki Chen,yuki.chen@mail.com,2025-01-03,Air Fryer,Home,3,129.00,0%,UPI,Delivered,387.00
+ORD-50024,Linda Garcia,linda.garcia@mail.com,2025/07/31,Science Fiction,Books,1,14.99,0%,Cash on Delivery,Returned,14.99
+ORD-50081,Hiroshi Silva,hiroshi.silva@mail.com,2025/06/07,Laptop,Electronics,5,1099.00,0%,Credit Card,Shipped,5495.00
+ORD-50013,Ananya Patel,ananya.patel@mail.com,7/12/2025,Desk Lamp,home,5,24.99,0%,UPI,Shipped,124.95
+ORD-50049,David Iyer,david.iyer@mail.com,4/3/2025,Basketball,Sports,5,N/A,5%,Cash on Delivery,Shipped,142.45
+ORD-50124,Mei Garcia,mei.garcia@mail.com,2025/08/02,Air Fryer,Home,1,129.00,0%,UPI,Returned,129.00
+ORD-50203,  Jennifer Chen ,jennifer.chen@mail.com,2025-08-16,Yoga Mat,Sports,4,34.00 USD,0%,UPI,Returned,136.00
+ORD-50142,David Chen,david.chen@mail.com,2025-08-18,Desk Lamp,Home,two,Rs. 24.99,5%,PayPal,Cancelled,94.96
+ORD-50012,Noah Taylor,noah.taylor@mail.com,3/27/2025,Yoga Mat,SPORTS,4,34.00,0%,PayPal,Returned,136.00
+ORD-50145,  Elizabeth Wilson ,elizabeth.wilson@mail.com,2025-06-16,Yoga Mat,Sport,2,34.00,0%,PayPal,Shipped,68.00
+ORD-50146,  Carlos Thomas ,carlos.thomas@mail.com,8/26/2025,Headphones,Electronics,1,89.99,0%,Cash on Delivery,Delivered,89.99
+ORD-50022,Carlos Martinez,carlos.martinez@mail.com,May 24 2025,Headphones,Electronic,4,89.99,0%,PayPal,Returned,359.96
+ORD-50069,  Fatima Rossi ,fatima.rossi@mail.com,2025-08-30,Air Fryer,Home,2,129.00 USD,0%,Cash on Delivery,SHIPPED,258.00
+ORD-50062,Olivia Davis,olivia.davis@mail.com,2025/06/07,Basketball,Sports,1,29.99 USD,10%,COD ,Shipped,26.99

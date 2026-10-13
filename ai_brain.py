@@ -316,27 +316,44 @@ class BaseLLMProvider(AIProvider):
         return prompt
 
 
+# Default model per provider (checked against provider deprecation pages, Oct 2026).
+# Override with GROQ_MODEL / GEMINI_MODEL / OPENAI_MODEL when a provider retires one.
+DEFAULT_MODELS = {
+    "Groq": os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"),
+    "Gemini": os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"),
+    "OpenAI": os.environ.get("OPENAI_MODEL", "gpt-4o"),
+}
+MODEL_OPTIONS = {
+    "Groq": ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.6-27b"],
+    "Gemini": ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3.6-flash"],
+    "OpenAI": ["gpt-4o", "gpt-4o-mini"],
+}
+
+
 class GeminiProvider(BaseLLMProvider):
-    def __init__(self, model: str = "gemini-2.5-flash"):
+    def __init__(self, model: str = DEFAULT_MODELS["Gemini"], api_key: str | None = None):
         from langchain_google_genai import ChatGoogleGenerativeAI
         print(f"[AI Brain] Initializing GeminiProvider with model: {model}")
-        llm = ChatGoogleGenerativeAI(model=model, temperature=0.0)
+        kwargs = {"google_api_key": api_key} if api_key else {}
+        llm = ChatGoogleGenerativeAI(model=model, temperature=0.0, **kwargs)
         super().__init__(llm)
 
 
 class OpenAIProvider(BaseLLMProvider):
-    def __init__(self, model: str = "gpt-4o"):
+    def __init__(self, model: str = DEFAULT_MODELS["OpenAI"], api_key: str | None = None):
         from langchain_openai import ChatOpenAI
         print(f"[AI Brain] Initializing OpenAIProvider with model: {model}")
-        llm = ChatOpenAI(model=model, temperature=0.0)
+        kwargs = {"api_key": api_key} if api_key else {}
+        llm = ChatOpenAI(model=model, temperature=0.0, **kwargs)
         super().__init__(llm)
 
 
 class GroqProvider(BaseLLMProvider):
-    def __init__(self, model: str = "llama-3.3-70b-versatile"):
+    def __init__(self, model: str = DEFAULT_MODELS["Groq"], api_key: str | None = None):
         from langchain_groq import ChatGroq
         print(f"[AI Brain] Initializing GroqProvider with model: {model}")
-        llm = ChatGroq(model=model, temperature=0.0)
+        kwargs = {"api_key": api_key} if api_key else {}
+        llm = ChatGroq(model=model, temperature=0.0, **kwargs)
         super().__init__(llm)
 
 
@@ -571,13 +588,14 @@ class DeterministicProvider(AIProvider):
 # Factory and Entry Point
 # ─────────────────────────────────────────────
 
-def get_ai_provider(provider_name: str, model_name: str) -> AIProvider:
+def get_ai_provider(provider_name: str, model_name: str, api_key: str | None = None) -> AIProvider:
+    model_name = model_name or DEFAULT_MODELS.get(provider_name, "")
     if provider_name == "Groq":
-        return GroqProvider(model=model_name)
+        return GroqProvider(model=model_name, api_key=api_key)
     elif provider_name == "Gemini":
-        return GeminiProvider(model=model_name)
+        return GeminiProvider(model=model_name, api_key=api_key)
     elif provider_name == "OpenAI":
-        return OpenAIProvider(model=model_name)
+        return OpenAIProvider(model=model_name, api_key=api_key)
     else:
         return DeterministicProvider()
 
@@ -587,17 +605,17 @@ def generate_transformation_dsl(
     user_request: str | None = None,
     normalize_columns: bool = True,
     requested_provider: str = "Auto",
-    requested_model: str = ""
+    requested_model: str = "",
+    api_keys: dict | None = None
 ) -> dict:
     """
     Build an executable DSL plan from a data profile using the best available provider.
     Implements a failover chain to ensure robust execution.
     """
-    DEFAULT_CHAIN = [
-        ("Groq", "llama-3.3-70b-versatile"),
-        ("Gemini", "gemini-2.5-flash"),
-        ("OpenAI", "gpt-4o"),
-    ]
+    # api_keys: per-session keys from the UI ({"Gemini": "..."}); providers
+    # without one fall back to the server's environment variables.
+    api_keys = api_keys or {}
+    DEFAULT_CHAIN = [(p, DEFAULT_MODELS[p]) for p in ("Groq", "Gemini", "OpenAI")]
     
     chain_traversed = []
     providers_to_try = []
@@ -616,7 +634,7 @@ def generate_transformation_dsl(
         chain_traversed.append(provider_name)
         try:
             print(f"[AI Brain] Attempting {provider_name} with {model_name}...")
-            provider = get_ai_provider(provider_name, model_name)
+            provider = get_ai_provider(provider_name, model_name, api_keys.get(provider_name))
             result = provider.generate_plan(profile, user_request, normalize_columns)
             
             result["_metadata"] = {

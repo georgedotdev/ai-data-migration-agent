@@ -9,6 +9,7 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine, text
 from connectors.base_connector import BaseConnector
+from etl.sql_schema import safe_ident
 
 
 class MySQLConnector(BaseConnector):
@@ -48,27 +49,29 @@ class MySQLConnector(BaseConnector):
             )
 
         connect_args = {}
-        # TiDB Cloud and cloud MySQL databases require TLS/SSL encryption
-        if self.host not in ("127.0.0.1", "localhost"):
+        # TiDB Cloud and other hosted MySQL services require TLS. The server
+        # certificate is verified against the system CA store (or MYSQL_SSL_CA).
+        # MYSQL_SSL_VERIFY=false disables verification for self-signed test servers only.
+        if self.host not in ("127.0.0.1", "localhost", "mysql"):
             import ssl
-            try:
-                ctx = ssl.create_default_context()
+            ctx = ssl.create_default_context(cafile=os.environ.get("MYSQL_SSL_CA") or None)
+            if os.environ.get("MYSQL_SSL_VERIFY", "true").lower() == "false":
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
-                connect_args["ssl"] = ctx
-            except Exception:
-                connect_args["ssl"] = {}
+            connect_args["ssl"] = ctx
 
-        self.engine = create_engine(self.connection_string, connect_args=connect_args)
+        self.engine = create_engine(self.connection_string, connect_args=connect_args, pool_pre_ping=True)
 
     def write_data(self, df: pd.DataFrame, table_name: str = None, if_exists: str = "replace") -> dict:
         """Write a Pandas DataFrame to a named table, creating it if it doesn't exist."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         df.to_sql(
             target_table,
             self.engine,
             if_exists=if_exists,
-            index=False
+            index=False,
+            chunksize=1000,
+            method="multi"
         )
         print(f"[MySQL] Wrote {len(df)} rows to {self.database}.{target_table}")
         return {
@@ -79,7 +82,7 @@ class MySQLConnector(BaseConnector):
 
     def read_data(self, table_name: str = None) -> pd.DataFrame:
         """Extract a full table as a Pandas DataFrame."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         query = f'SELECT * FROM `{target_table}`'
         return pd.read_sql(query, self.engine)
 
@@ -109,7 +112,7 @@ class MySQLConnector(BaseConnector):
 
     def drop_table(self, table_name: str = None):
         """Drop the table — used for rollback."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         with self.engine.connect() as conn:
             conn.execute(text(f"DROP TABLE IF EXISTS `{target_table}`"))
             conn.commit()
@@ -117,7 +120,7 @@ class MySQLConnector(BaseConnector):
 
     def count_rows(self, table_name: str = None) -> int:
         """Return row count for validation."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         query = f"SELECT COUNT(*) FROM `{target_table}`"
         with self.engine.connect() as conn:
             result = conn.execute(text(query))

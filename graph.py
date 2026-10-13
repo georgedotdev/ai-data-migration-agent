@@ -14,6 +14,7 @@ import sqlalchemy.exc
 from typing import TypedDict, Any
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
+from langchain_core.runnables import RunnableConfig
 
 from connectors.connector_factory import get_connector
 from etl.transform import transform_data_dsl, transform_data
@@ -137,7 +138,7 @@ def data_profiler(state: AgentState):
         "timings": timings
     }
 
-def migration_analyst(state: AgentState):
+def migration_analyst(state: AgentState, config: RunnableConfig = None):
     """Invokes the AI Brain to assess and plan."""
     start = time.time()
     
@@ -156,7 +157,9 @@ def migration_analyst(state: AgentState):
         profile=profile, 
         user_request=full_request,
         requested_provider=ai_provider_req,
-        requested_model=ai_model_req
+        requested_model=ai_model_req,
+        # API keys travel in the per-run config, never in checkpointed state
+        api_keys=((config or {}).get("configurable") or {}).get("api_keys")
     )
     
     metadata = dsl.get("_metadata", {})

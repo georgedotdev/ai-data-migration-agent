@@ -1,6 +1,7 @@
 import duckdb
 
 from connectors.base_connector import BaseConnector
+from etl.sql_schema import safe_ident
 
 
 class DuckDBConnector(BaseConnector):
@@ -12,7 +13,7 @@ class DuckDBConnector(BaseConnector):
     ):
 
         self.db_path = db_path
-        self.table_name = table_name
+        self.table_name = safe_ident(table_name)
 
     def read_data(self):
 

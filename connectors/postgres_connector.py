@@ -9,6 +9,7 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine, text
 from connectors.base_connector import BaseConnector
+from etl.sql_schema import safe_ident
 
 
 class PostgreSQLConnector(BaseConnector):
@@ -48,7 +49,12 @@ class PostgreSQLConnector(BaseConnector):
                 f"postgresql://{auth}@{self.host}:{self.port}/{self.database}"
             )
 
-        self.engine = create_engine(self.connection_string)
+        # Hosted Postgres (Neon, Supabase, ...) requires TLS: set PG_SSLMODE=require
+        connect_args = {}
+        sslmode = kwargs.get("sslmode") or os.environ.get("PG_SSLMODE")
+        if sslmode and "sslmode=" not in self.connection_string:
+            connect_args["sslmode"] = sslmode
+        self.engine = create_engine(self.connection_string, connect_args=connect_args, pool_pre_ping=True)
 
     def list_tables(self) -> list:
         """List available user tables in the public schema."""
@@ -64,7 +70,7 @@ class PostgreSQLConnector(BaseConnector):
 
     def read_data(self, table_name: str = None) -> pd.DataFrame:
         """Read entire table into a DataFrame."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         query = f'SELECT * FROM "{target_table}"'
         df = pd.read_sql(query, self.engine)
         return df
@@ -75,12 +81,14 @@ class PostgreSQLConnector(BaseConnector):
 
     def write_data(self, df: pd.DataFrame, table_name: str = None, if_exists: str = "replace") -> dict:
         """Write DataFrame to PostgreSQL table (replace if exists)."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         df.to_sql(
             target_table,
             self.engine,
             if_exists=if_exists,
-            index=False
+            index=False,
+            chunksize=1000,
+            method="multi"
         )
         print(
             f"[PostgreSQL] Wrote {len(df)} rows "
@@ -98,7 +106,7 @@ class PostgreSQLConnector(BaseConnector):
         query = text("""
             SELECT column_name, data_type, is_nullable
             FROM information_schema.columns
-            WHERE table_name = :table
+            WHERE table_schema = 'public' AND table_name = :table
             ORDER BY ordinal_position
         """)
 
@@ -110,7 +118,7 @@ class PostgreSQLConnector(BaseConnector):
 
     def drop_table(self, table_name: str = None):
         """Drop the table — used for rollback."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         with self.engine.connect() as conn:
             conn.execute(
                 text(
@@ -126,7 +134,7 @@ class PostgreSQLConnector(BaseConnector):
 
     def count_rows(self, table_name: str = None) -> int:
         """Return row count for validation."""
-        target_table = table_name or self.table_name
+        target_table = safe_ident(table_name or self.table_name)
         query = f'SELECT COUNT(*) FROM "{target_table}"'
         with self.engine.connect() as conn:
             result = conn.execute(text(query))

@@ -1,0 +1,191 @@
+ Employee ID ,Full Name,Email Address,Phone,Age,Department,Region, Annual Salary ,Join Date,Is Remote,Performance Rating,Status
+1119,Yuki Johnson,yuki at acme-corp.com,(934) 854-1776,26,Sales,West,109000,2014/06/29,No,5.0,Active
+1071,Ananya Khan,ananya.khan4@acme-corp.com,9497864507,29,Marketing,North,"$140,000",2022-07-13,0,3.0,Active
+1139,Michael Martin,michael.martin72@acme-corp.com,9449113269,38,Engineering,East,"$124,000",3/8/2021,No,3.8,Active
+1001,Linda Smith   ,linda.smith31@acme-corp.com,9890779946,35,MARKETING ,North,100000,7/26/2015,Y,2.5,Active
+1159,Joseph Garcia,n/a,9546602768,53,Human Resources,West,55k,2015-10-15,Yes,3.8,Active
+1062,Hiroshi Johnson,hiroshi.johnson92@acme-corp.com,9117439966,37,Finanse,North,133000,2022-05-20,Yes,4.2,Active
+1164,Noah Rossi   ,noah.rossi0@acme-corp.com,9690197884,50,ENGINEERING,East,"$178,000",2021-03-25,No,4.2,Active
+1026,Sarah Thompson,sarah.thompson56@acme-corp.com,9359154084,33,Engineering,West,"USD 170,000",12/17/2014,Yes,5.0,Terminated
+1028,David Iyer,david.iyer58@acme-corp.com,9405307028,999,finance,West,64000,2020-06-09,false,4.0,Terminated
+1005,Mei Lee   ,mei.lee35@acme-corp.com,+91 98738 69166,21,Marketing,East,179000,2021/08/18,No,3.0,Active
+1008,Susan Thompson,n/a,9607850824,36,Sales,South,159000,2022-10-19,false,4.2,On Leave
+1151,Meera Thomas,meera.thomas@,9960347752,50,Sales,North,TBD,Dec 25 2018,No,4.2,Active
+1068,Rohan Reddy,rohan.reddy1@acme-corp.com,9539625898,47,Finance,North,172000,2022-08-17,Y,3.0,Terminated
+1064,Vikram Wang   ,vikram.wang94@acme-corp.com,(955) 580-3043,26,Human Resources,South,106k,2/26/2022,No,3.0,Active
+1131,Jennifer Martin,jennifer.martin64@acme-corp.com,9625163699,46,Engineering,East,116000,2019-04-13,N,3.5,Active
+1168,Vikram Thomas,vikram.thomas4@acme-corp.com,9796348146,23,Finance,East,154000,2014/06/13,No,3.5,On Leave
+1012,Jessica Taylor,jessica.taylor42@acme-corp.com,9683275843,49,Marketing,North,78000,5/9/2023,No,3.0,Active
+1055,Elizabeth Johnson,n/a,+91 91905 47712,42,Finance,South,64000,2022-01-04,No,5.0,Active
+1101,Rahul Wang,rahul.wang34@acme-corp.com,9377818215,21,Finance,South,"$65,000",2015-02-08,No,5.0,Active
+1085,James Chen,james.chen18@acme-corp.com,9872121274,50,ENGINEERING,West,114000,2021/07/21,Yes,4.5/5,?
+1069,William Anderson,william.anderson2@acme-corp.com,9404994549,54,Sales,East,"126,000",2024-01-14,No,3.5,ACTIVE 
+1179,Rahul Williams,rahul.williams15@acme-corp.com,+91 94796 08458,51,Human Resources,East,"USD 83,000",2017-07-09,N,5.0,Active
+1134,Priya Rossi,priya.rossi67@acme-corp.com,(951) 128-9794,47,Human Resources,West,126000,2016-12-17,No,4.5,ACTIVE 
+1112,Susan Iyer,susan.iyer45@acme-corp.com,9575006056,60,Sales,North,143000,Sep 13 2021,Yes,3.0,On Leave
+1120,Ananya Anderson,ananya.anderson53@acme-corp.com,+91 93176 61025,35,Finance,North,"USD 107,000",2014-11-02,Yes,5.0,Terminated
+1171,Elizabeth Wang,elizabeth.wang7@acme-corp.com,9648472597,60,Human Resources,East,"84,000",May 25 2021,Y,3.8,On Leave
+1092,James Thompson,james.thompson25@acme-corp.com,9668457864,21,Human Resources,East,143000,2014-03-10,yes,3.5,Active
+1132,Olivia Davis,olivia.davis65@acme-corp.com,9661118447,45,HUMAN RESOURCES,West,"53,000",3/7/2023,Yes,5.0,Active
+1080,  David Rossi ,david.rossi13@acme-corp.com,9968457290,38,Human Resources,West,157000,2/29/2016,Yes,2.5,Active
+1091,Sneha Garcia,sneha.garcia24@acme-corp.com,968.211.5008,0,Sales,North,177000,1/24/2016,Yes,2.5,Active
+1036,  Michael Rossi ,michael.rossi66@acme-corp.com,9590622789,54,Finance,South,63000,2024-03-18,No,4.2,UNKNOWN
+1043,Yuki Patel,yuki.patel73@acme-corp.com,9497853519,23,Finance,West,109000,Sep 28 2021,No,3.0,Active
+1124,Patricia Wang,patricia.wang57@acme-corp.com,9727053322,43,Finance,South,173000,2022-08-07,false,4.0,Active
+1018,William Nair,,9779615069,53,Engineering,North,"$110,000",2021/06/12,Yes,4.0,Active
+1118,Mei Smith,,9942358213,thirty,Markting,South,"USD 89,000",4/28/2020,No,3.8,Active
+1075,Olivia Sharma,olivia.sharma8@acme-corp.com,9283085932,58,SALES,West,"51,000",2019-05-22,Yes,2.5,Active
+1097,Ananya Rossi,ananya.rossi30@acme-corp.com,(951) 639-6603,39,Finanse,South,"41,000",8/22/2018,Yes,4.5,Active
+1023,Mary Khan   ,mary.khan53@acme-corp.com,9798086909,43,Human Resources,North,51k,2016/07/07,N,3.8,Active
+1153,Fatima Brown,fatima.brown86@acme-corp.com,9521869399,33,Marketing,South,88000,2015/05/10,NO,,Active
+1002,Sarah Jones   ,sarah.jones32@acme-corp.com,+91 95079 43839,27,SALES,East,124000,2015/01/15,No,3.0,On Leave
+1073,Rohan Taylor,rohan.taylor6@acme-corp.com,970.324.6271,24,engineering,East,140000,2020-05-24,No,,Active
+1121,Susan Tanaka,susan.tanaka54@acme-corp.com,9366522892,26,Markting,West,75000,12/22/2021,Y,4.0,Active
+1149,Hiroshi Wang,hiroshi.wang82@acme-corp.com,9507754288,0,Human Resource,North,150000,Nov 08 2020,Yes,5.0,Terminated
+1107,Olivia Reddy,olivia.reddy40@acme-corp.com,9249502403,31,Marketing,South,147000,2020/11/28,yes,4.0,Active
+1136,Carlos Thomas,carlos.thomas69@acme-corp.com,+91 92865 49068,57,SALES,South,172000,2014/04/29,NO,2.5,Terminated
+1029,Joseph Chen,,9575368059,49,Human Resources,West,"$135,000",2024-03-10,Yes,9,Active
+1157,Jessica Lee,jessica.lee90@acme-corp.com,9547284589,45,Markting,East,50000,May 07 2018,Yes,2.5,Active
+1048,Linda Moore,linda.moore78@acme-corp.com,9389274886,24,Marketing,North,"USD 146,000",3/24/2017,Yes,3.5,Terminated
+1145,Luca Patel,luca.patel78@acme-corp.com,9801762883,63,Enginering,North,50000,3/19/2015,No,5.0,On Leave
+1015,Michael Thomas,michael.thomas45@acme-corp.com,9976803188,35,Engineering,East,158000,2016-03-28,Yes,3.8,Active
+1020,William Khan,william.khan50@acme-corp.com,(936) 547-1644,37,Finance,East,153000,2022/06/07,No,3.8,null
+1141,Rahul Iyer,rahul.iyer74@acme-corp.com,9899089320,43,Engineering,West,94000,2016/07/03,No,4.2,Active
+1123,Priya Martin,priya.martin56@acme-corp.com,9194190297,51,Finance,South,178000,2014-09-07,0,2.5,ACTIVE 
+,Joseph Rossi,joseph.rossi9@acme-corp.com,9683826742,59,Engineering,South,"USD 110,000",2023-11-01,Yes,3.0,Active
+1099,Yuki Sharma,yuki.sharma32@acme-corp.com,9976704309,45,Sales,East,121000,2017-02-22,Yes,3.5,Active
+1040,Robert Wilson,robert.wilson70@acme-corp.com,9886365312,58,Finanse,East,46000,2018-02-03,No,3.5,Active
+1068,Rohan Reddy,rohan.reddy1@acme-corp.com,9758293983,47,Finance,North,172000,2022-08-17,Y,3.0,Terminated
+1152,Mei Anderson,mei.anderson85@acme-corp.com,9587972689,35,MARKETING ,West,"USD 51,000",2023/06/21,TRUE,5.0,Active
+1157,Jessica Lee,jessica.lee90@acme-corp.com,9547284589,45,Markting,East,50000,May 07 2018,Yes,2.5,Active
+1140,Fatima Thomas,fatima.thomas73@acme-corp.com,(971) 422-5883,58,Finance,East,47000,2021/12/10,Yes,5.0,Active
+1175,Emma Patel,emma.patel11@acme-corp.com,9105680775,45,Engineering,South,79000,2/17/2021,Y,3.0,Active
+1176,Wei Smith,wei.smith12@acme-corp.com,9136087763,39,Sales,South,170000,3/8/2016,Y,4.2,UNKNOWN
+1050,Patricia Jones,patricia.jones80@acme-corp.com,9575788930,26,Sales,West,50k,1/19/2017,Y,9,Active
+,Ananya Miller,ananya.miller34@acme-corp.com,+91 92534 07200,62,Finance,South,139000,2019/02/23,No,4.5,null
+1007,Omar Miller,omar.miller@,9821218382,40,Human Resources,West,-89000,Jun 23 2018,No,3.0,Active
+1170,Mary Davis,mary.davis6@acme-corp.com,927.301.1097,thirty,Engineering,North,70k,Aug 23 2020,Yes,2.5,Active
+1009,Sarah Jackson   ,sarah.jackson39@acme-corp.com,9690907304,,Sales,North,57k,Jan 23 2023,Yes,3.5,On Leave
+1149,Hiroshi Wang,hiroshi.wang82@acme-corp.com,9507754288,0,Human Resource,North,150000,Nov 08 2020,Yes,5.0,Terminated
+1014,Susan Nair,susan.nair44@acme-corp.com,9701170349,43,Sales,West,-64000,Oct 01 2022,Yes,3.8,Active
+1142,Sofia Wilson,sofia.wilson75@acme-corp.com,9315066828,30,Finance,West,51000,2015-07-17,Yes,3.0,Terminated
+1174,Rohan Chen,rohan.chen10@acme-corp.com,969.867.8367,56,Sales,East,143000,10/16/2022,No,4.0,Active
+1027,Mei Martinez,mei.martinez57@acme-corp.com,9874473159,35,Marketing,North,"USD 102,000",2015/05/10,Yes,3.8,UNKNOWN
+1167,Rohan Taylor,rohan.taylor3@acme-corp.com,(996) 601-5789,63,HUMAN RESOURCES,South,40000,2016/09/05,1,5.0,N/A
+1033,Susan Martinez,susan.martinez63@acme-corp.com,+91 98497 40261,39,Human Resources,North,71000,Nov 30 2018,Yes,3.5,Active
+1031,Luca Martin,luca.martin61@acme-corp.com,9563887247,59,Finance,East,58000,2014-06-13,Yes,2.5,Active
+1017,Arjun Lee,arjun.lee47@acme-corp.com,9848621833,41,Marketing,South,142000,2018-07-07,No,3.5,Active
+1162,Meera Nair,meera.nair95@acme-corp.com,9873400862,21,Engineering,North,174000,2021/03/12,TRUE,4.2,Active
+1024,Olivia Smith,olivia.smith54@acme-corp.com,9867741192,46,Marketing,South,134000,2024-07-23,0,3.0,Active
+1160,Ananya Thomas,ananya.thomas93@acme-corp.com,9877362892,37,Engineering,East,136000,1/22/2020,No,5.0,Active
+1053,Elizabeth Davis,elizabeth.davis83@acme-corp.com,9286293158,37,Engineering,North,75000,2016-03-19,No,5.0,Terminated
+1117,Elizabeth Garcia,elizabeth.garcia50@acme-corp.com,(934) 107-1485,62,Engineering,West,"$179,000",Sep 14 2018,No,4.0,Active
+1138,Hiroshi Jones,hiroshi.jones71@acme-corp.com,9753204271,35,Sales,East,40000,2016/10/30,0,4.5,On Leave
+1076,Emma Anderson,emma.anderson9@acme-corp.com,928.595.3213,45,Finance,East,"USD 172,000",7/9/2017,No,5.0,Active
+1177,Emma Sharma,emma.sharma13@acme-corp.com,9751077748,38,Marketing,West,"$126,000",Jul 15 2016,Yes,4.0,Active
+1057,Barbara Miller,barbara.miller87@acme-corp.com,9247709679,33,Marketing,East,162000,2016/07/16,Yes,2.5,-
+1130,Rahul Miller,rahul.miller63@acme-corp.com,9883803621,56,Sales,East,142000,2022-02-05,Yes,2.5,N/A
+1129,Joseph Garcia,joseph.garcia62@acme-corp.com,9121558591,23,Finance,North,56000,2017-04-22,TRUE,4.5,Active
+1083,Sofia Jackson,sofia.jackson16@acme-corp.com,9197647841,thirty,Engineering,West,90k,2019/06/26,No,9,On Leave
+1078,Sofia Davis,sofia.davis11@acme-corp.com,9454650074,27,Sales,North,51000,8/20/2018,Yes,2.5,Active
+1158,  Barbara Nair ,n/a,9651738859,32,Engineering ,East,85000,3/30/2022,Yes,3.5,Active
+1165,Omar Garcia,omar.garcia1@acme-corp.com,9337861414,36,Engineering,West,118000,2022-10-24,No,3.5,Active
+1084,Patricia Silva,patricia.silva17@acme-corp.com,(953) 901-7530,23,Engineering,South,158000,2017/03/21,yes,4.2,On Leave
+1098,Mei Brown,mei.brown31@acme-corp.com,9524871030,21,Sales,West,115000,2024/08/22,No,5.0,Active
+1041,John Jones,john.jones71@acme-corp.com,+91 91969 61971,56,Sales,North,139000,2018-02-07,Yes,5.0,Active
+1030,Mei Williams,mei.williams60@acme-corp.com,9809939880,61,Sales,South,"105,000",2020-08-12,Yes,3.5,Active
+1105,Wei Patel,wei.patel38@acme-corp.com,9246603034,999,Engineering,West,129000,Jun 08 2019,No,4.5,Terminated
+1021,Mei Moore,mei.moore51@acme-corp.com,9926561919,47,Engineering,North,90k,May 15 2018,No,5.0,Active
+1115,John Wilson,john.wilson48@acme-corp.com,9192570281,24,finance,North,99000,9/28/2016,TRUE,4.0,Active
+1010,Emma Nair,emma.nair40@acme-corp.com,9333754555,33,Finance,North,77000,2017/04/30,Yes,2.5,Terminated
+1052,Ananya Garcia,ananya.garcia82@acme-corp.com,9568915703,44,Human Resources,South,155000,2014-12-27,0,3.0,On Leave
+1074,Hiroshi Lee,hiroshi.lee7@acme-corp.com,9653520069,59,Finance,East,"$76,000",2024-01-07,No,4.2,null
+1113,Arjun Miller,arjun.miller46@acme-corp.com,952.063.9451,thirty,Human Resource,North,168000,2022/05/22,Yes,5.0,On Leave
+1110,Mei Smith,mei.smith43@acme-corp.com,979.792.9178,29,Finance,East,89000,2023-11-23,N,N/A,?
+1093,Arjun Nair,arjun.nair26@acme-corp.com,9507231644,26,Engineering,West,46000,2018-07-19,false,3.5,Active
+1044,Mary Johnson,mary.johnson74@acme-corp.com,9706210987,29,Marketing,South,100000,10/29/2022,Y,4.2,Active
+1104,Barbara Tanaka,barbara.tanaka37@acme-corp.com,9226552991,29,Marketing,North,59000,2017-07-06,TRUE,4.5,On Leave
+1082,Priya Taylor,priya.taylor15@acme-corp.com,9613443905,35,Human Resources,East,94000,2015-07-02,false,3.8,Active
+1022,Mary Thomas,mary.thomas52@acme-corp.com,9601856351,31,Markting,North,"USD 141,000",Jun 05 2023,Yes,3.0,On Leave
+1019,Elizabeth Iyer,elizabeth.iyer49@acme-corp.com,9288856883,48,Engineering ,West,65000,2016-06-15,Yes,3.0,Terminated
+1155,Emma Rossi,emma.rossi88@acme-corp.com,9315703009,61,Marketing,East,179000,6/9/2016,Yes,3.5,Active
+1060,Michael Tanaka,michael.tanaka90@acme-corp.com,9408034406,29,Marketing,West,N/A,6/6/2014,1,5.0,Terminated
+1154,Olivia Martin,olivia.martin87@acme-corp.com,9884362665,58,Human Resources,North,83000,2015-12-13,yes,4.5,On Leave
+1079,Luca Khan,luca.khan12@acme-corp.com,9999371401,0,Engineering,North,82000,Nov 23 2023,No,5.0,Active
+1049,Sarah Smith,sarah.smith79@acme-corp.com,(946) 488-3950,40,Sales,South,107000,May 02 2024,No,3.0,Active
+1011,Jessica Sharma,jessica.sharma@,+91 95501 39320,60,Human Resources,East,"USD 48,000",Dec 02 2014,Yes,4.2,Active
+1114,  John Smith ,john.smith47@acme-corp.com,9331652222,21,HUMAN RESOURCES,West,55000,12/9/2016,0,4.5,On Leave
+1058,Jessica Jackson,jessica.jackson88@acme-corp.com,9673390109,49,Human Resources,West,110k,Aug 16 2016,Yes,N/A,Terminated
+1095,Sneha Johnson,sneha.johnson28@acme-corp.com,9181623972,35,Engineering,West,149000,May 29 2023,No,2.5,Active
+1127,Olivia Tanaka,olivia.tanaka60@acme-corp.com,983.926.9574,40,Sales,South,134000,2022/03/26,0,2.5,Active
+1063,Priya Miller,priya.miller93@acme-corp.com,9432941445,23,Engineering,West,"USD 89,000",2017-07-16,Yes,4.0,Active
+1135,Arjun Martinez,arjun.martinez68@acme-corp.com,9422638422,35,Finance,West,63k,2015/07/05,No,4.0,On Leave
+1087,Barbara Iyer,barbara.iyer20@acme-corp.com,9790755362,24,Finance,East,164000,11/11/2017,No,3.5,Active
+1150,Sofia Reddy,sofia.reddy83@acme-corp.com,9880236611,48,human resources,East,62000,6/3/2021,No,3.5,Active
+1161,Susan Rossi,susan at acme-corp.com,9989862107,34,Finance,West,"$64,000",1/12/2020,Yes,3.5,Active
+1037,Priya Davis,priya.davis67@acme-corp.com,9780481547,27,Engineering,North,"USD 149,000",2022-07-12,N,2.5,Active
+1100,Jessica Martinez,jessica.martinez33@acme-corp.com,9582181718,45,Sales,West,146000,10/30/2014,Y,2.5,Active
+1126,Linda Rossi,linda.rossi59@acme-corp.com,9856491925,25,human resources,West,131000,3/11/2018,No,4.0,Active
+1045,Olivia Anderson,olivia.anderson75@acme-corp.com,9236105947,37,Engineering,North,"82,000",2014/08/03,No,5.0,null
+1166,Thomas Khan,thomas.khan2@acme-corp.com,9644578566,22,Engineering,West,57000,2023/07/12,Yes,2.5,Active
+1090,Fatima Johnson,fatima.johnson23@acme-corp.com,9380004069,30,Human Resources,West,94000,2014-03-08,Yes,4.2,Active
+1032,Fatima Anderson,fatima.anderson62@acme-corp.com,954.200.0551,0,Markting,East,64k,9/12/2017,No,2.5,Terminated
+1106,Yuki Thompson,yuki.thompson39@acme-corp.com,9387643522,57,Human Resources,East,"66,000",4/13/2015,Yes,5.0,Active
+1006,Elizabeth Taylor,elizabeth.taylor36@acme-corp.com,9100614068,54,Saless,West,176000,2024-04-20,NO,4.0,Active
+1089,James Miller,james.miller22@acme-corp.com,936.048.2447,51,Sales,South,68000,2024-04-03,Yes,4.2,Active
+1169,Hiroshi Silva,hiroshi.silva5@acme-corp.com,924.921.6081,53,Human Resource,South,39000,2023-11-22,No,3.8,Active
+1156,James Lee,james.lee89@acme-corp.com,9156978109,,engineering,South,44000,2015-08-19,Yes,4.0,Active
+1093,Arjun Nair,arjun.nair26@acme-corp.com,9507231644,26,Engineering,West,46000,2018-07-19,false,3.5,Active
+1067,Ananya Nair,ananya.nair0@acme-corp.com,9411774120,56,marketing,South,54000,2020/01/30,Yes,4.2,Active
+1086,Patricia Davis,patricia.davis19@acme-corp.com,9679562681,49,Engineering,North,140000,2016-08-17,No,3.8,Active
+1178,Meera Sharma,meera.sharma14@acme-corp.com,9592684748,42,Finance,North,100000,9/12/2022,1,3.0,On Leave
+1025,Omar Garcia,omar.garcia55@acme-corp.com,(967) 785-8758,60,Human Resources,West,107k,2023-01-24,false,4.2,Active
+1163,Luca Wilson,luca.wilson96@acme-corp.com,9111972445,62,Sales,South,114000,2018-03-09,false,4.5,Active
+1066,Ananya Iyer,ananya.iyer96@acme-corp.com,+91 98899 24866,28,Marketing,West,"USD 101,000",Apr 17 2014,Yes,4.0,Active
+1056,Elizabeth Anderson,elizabeth.anderson86@acme-corp.com,9804433388,43,Engineering,West,"74,000",2017-06-24,Yes,4.0,On Leave
+1016,Thomas Garcia,thomas.garcia46@acme-corp.com,(974) 056-3507,23,Human Resources,East,,2015-03-21,0,4.5,Active
+1042,John Iyer,john.iyer72@acme-corp.com,9225279834,62,Finance,North,115000,2018-07-31,No,3.0,Active
+1172,Jennifer Martin,jennifer.martin8@acme-corp.com,9932010779,21,Sales,West,176000,1/22/2024,No,2.5,On Leave
+1102,Sneha Martin,sneha.martin35@acme-corp.com,9172127903,49,Engineering,North,150000,2017-07-30,No,3.0,Active
+1013,Patricia Williams,patricia.williams43@acme-corp.com,9458153605,23,finance,East,108000,2014-01-15,No,4.5,Active
+1146,  Michael Lee ,michael.lee79@acme-corp.com,+91 99426 29710,39,Human Resources,South,68k,2015/04/12,Yes,4.2,On Leave
+1144,Robert Wilson,robert.wilson77@acme-corp.com,(966) 276-7039,54,Markting,South,"154,000",2020-09-08,No,4.2,Active
+1065,Patricia Williams,patricia.williams95@acme-corp.com,9905196831,53,Finanse,North,131000,2022-12-26,No,2.5,Active
+1077,Sarah Wilson,sarah.wilson10@acme-corp.com,9523625992,45,Engineering,South,177000,2024-01-18,N,3.0,Active
+1125,Olivia Smith,olivia.smith58@acme-corp.com,930.211.4356,57,marketing,West,-74000,8/20/2024,0,4.5/5,Active
+1081,David Martin,david.martin14@acme-corp.com,9511859868,21,Marketing,East,101000,Dec 04 2016,No,2.5,Active
+1137,Olivia Thompson,olivia.thompson70@acme-corp.com,9377733976,31,Marketing,North,126000,2023-05-25,No,2.5,Active
+1133,Omar Miller,omar.miller66@acme-corp.com,9880720904,41,Sales,North,,2024-03-19,N,4.2,Active
+1035,Emma Chen,emma.chen65@acme-corp.com,9445505799,50,Human Resources,South,134000,6/17/2024,Y,4.5,Active
+1067,Ananya Nair,ananya.nair0@acme-corp.com,9354626229,56,marketing,South,54000,2020/01/30,Yes,4.2,Active
+1084,Patricia Silva,patricia.silva17@acme-corp.com,(953) 901-7530,23,Engineering,South,158000,2017/03/21,yes,4.2,On Leave
+1046,Omar Nair,omar.nair76@acme-corp.com,9186748119,49,Engineering,South,163000,2014-10-29,No,4.2,On Leave
+1003,Meera Martinez,meera.martinez33@acme-corp.com,(948) 146-9012,31,Finanse,East,"131,000",2018/02/25,Yes,3.5,Active
+1122,Rohan Taylor,rohan.taylor55@acme-corp.com,+91 91692 26321,,Engineering ,West,104k,2014/03/31,NO,4.2,?
+1039,Sneha Sharma,sneha.sharma69@acme-corp.com,9806768884,22,Marketing,North,"USD 113,000",4/23/2023,Yes,5.0,Active
+1038,Yuki Sharma,yuki.sharma68@acme-corp.com,9372706093,50,SALES,North,97000,Feb 25 2021,No,4.0,Active
+1051,Thomas Wilson,thomas.wilson81@acme-corp.com,9902100304,21,Marketing,South,68000,2019-07-31,Yes,4.2,Active
+1098,Mei Brown,mei.brown31@acme-corp.com,9524871030,21,Sales,West,115000,2024/08/22,No,5.0,Active
+1111,Wei Smith,wei.smith44@acme-corp.com,9553456129,28,Enginering,West,125000,2023-08-25,Y,3.0,Active
+1143,David Patel,david.patel76@acme-corp.com,9612604642,46,Finance,North,N/A,10/24/2018,yes,2.5,Active
+1061,Mei Williams,mei.williams91@acme-corp.com,9117647321,59,Engineering,South,165k,2020/01/05,No,4.5,Active
+1070,Robert Iyer,robert.iyer3@acme-corp.com,9923515952,62,Human Resources,North,105000,5/13/2016,No,4.0,Terminated
+1026,Sarah Thompson,sarah.thompson56@acme-corp.com,9359154084,33,Engineering,West,"USD 170,000",12/17/2014,Yes,5.0,Terminated
+1059,Michael Reddy,michael.reddy89@acme-corp.com,9919390458,39,Human Resources,West,69k,Dec 10 2014,Yes,4.5,Active
+1148,Wei Patel,wei.patel81@acme-corp.com,9467995726,44,Marketing,West,61000,2023-02-21,No,4.0,On Leave
+1034,Hiroshi Martin,hiroshi.martin64@acme-corp.com,9511872350,56,Sales,South,154000,Aug 16 2015,No,4.5,Active
+1147,Jennifer Chen,jennifer.chen80@acme-corp.com,+91 93747 62050,27,human resources,West,57000,Feb 23 2024,TRUE,4.0,Terminated
+1047,Wei Silva,wei.silva77@acme-corp.com,9586940738,42,Sales,North,143000,2023-04-13,No,4.0,?
+1116,Linda Chen   ,linda.chen49@acme-corp.com,966.248.4182,48,Engineering,North,"123,000",1/19/2017,Y,2.5,Terminated
+1072,William Martin,william.martin5@acme-corp.com,9431292818,52,Human Resources,North,"USD 157,000",Nov 10 2023,No,3.8,Active
+1103,Rohan Smith,rohan.smith36@acme-corp.com,9561228852,49,Human Resources,South,"$88,000",2020-08-22,Yes,3.0,Active
+1141,Rahul Iyer,rahul.iyer74@acme-corp.com,9606103226,43,Engineering,West,94000,2016/07/03,No,4.2,Active
+1096,John Williams,john.williams29@acme-corp.com,9941695782,45,Marketing,West,77000,2021-12-25,Yes,3.0,Active
+1180,Luca Johnson,luca.johnson16@acme-corp.com,9628646448,60,Finance,East,133k,7/15/2017,N,4.5,Active
+1108,David Reddy,david.reddy41@acme-corp.com,9445848708,30,Sales,West,101000,not recorded,No,4.5,On Leave
+,Olivia Johnson,olivia.johnson84@acme-corp.com,9595792218,25,Marketing,North,167000,2017-06-25,No,3.0,Active
+1109,Jennifer Khan,jennifer.khan42@acme-corp.com,+91 96738 33903,25,Finance,West,"129,000",2022/12/04,No,4.0,ACTIVE 
+1128,Jennifer Tanaka,jennifer.tanaka61@acme-corp.com,9325146786,21,Marketing,North,152000,2016-12-22,NO,2.5,Active
+1048,Linda Moore,linda.moore78@acme-corp.com,9744685429,24,Marketing,North,"USD 146,000",3/24/2017,Yes,3.5,Terminated
+1094,Sarah Johnson   ,sarah.johnson27@acme-corp.com,9806639422,55,Engineering,East,"109,000",2020-04-27,Yes,3.5,On Leave
+1088,  David Thomas ,david.thomas21@acme-corp.com,9794395127,34,Sales,East,N/A,2017-09-14,Yes,2.5,Active

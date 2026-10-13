@@ -2,7 +2,7 @@
 AI Data Migration Agent — Streamlit Dashboard
 
 Includes:
-1. PostgreSQL → MySQL Deterministic Migration (Demo)
+1. PostgreSQL → MySQL migration with schema design, transactional load and SQL verification
 2. LangGraph V2 Agentic Workflow (Observe → Analyze → Recommend → Review → Execute → Validate)
 """
 
@@ -15,7 +15,10 @@ import uuid
 from dotenv import load_dotenv
 load_dotenv()
 
-from migration_service import start_migration, get_agent_state, resume_migration, run_migration
+from migration_service import start_migration, get_agent_state, resume_migration
+from ai_brain import MODEL_OPTIONS
+from etl.cleaning import snake_case
+from ui_demo import render_demo_tab
 
 # ─────────────────────────────────────────────
 # Page Config & Styles
@@ -64,38 +67,27 @@ if "demo_migration_result" not in st.session_state:
     st.session_state.demo_migration_result = None
 
 # ─────────────────────────────────────────────
-# Sidebar: Developer Mode & Reset
+# Sidebar: API keys, Developer Mode & Reset
 # ─────────────────────────────────────────────
 
+if "api_keys" not in st.session_state:
+    st.session_state.api_keys = {}
+
 with st.sidebar:
-    st.markdown("### 🔑 API Configuration")
-    st.caption("Leave blank to use Deterministic Fallback")
-    
-    provider_choice = st.selectbox("AI Provider", ["Gemini", "OpenAI"])
-    api_key = st.text_input(f"{provider_choice} API Key", type="password")
-    
-    if api_key:
-        if provider_choice == "Gemini":
-            os.environ["GOOGLE_API_KEY"] = api_key
-            if "OPENAI_API_KEY" in os.environ:
-                del os.environ["OPENAI_API_KEY"]
-            st.success("✅ Gemini API Key Registered in Session!")
+    st.markdown("### 🔑 API keys (optional)")
+    st.caption("Only the Agentic tab uses AI. Keys stay in your browser session and are never written to the server "
+               "environment. Leave blank to use the server's keys or the deterministic fallback.")
+    for prov in ("Groq", "Gemini", "OpenAI"):
+        key = st.text_input(f"{prov} API key", type="password", key=f"key_{prov}")
+        if key:
+            st.session_state.api_keys[prov] = key
         else:
-            os.environ["OPENAI_API_KEY"] = api_key
-            if "GOOGLE_API_KEY" in os.environ:
-                del os.environ["GOOGLE_API_KEY"]
-            st.success("✅ OpenAI API Key Registered in Session!")
-    else:
-        # Clear keys to force fallback if empty
-        if "GOOGLE_API_KEY" in os.environ:
-            del os.environ["GOOGLE_API_KEY"]
-        if "OPENAI_API_KEY" in os.environ:
-            del os.environ["OPENAI_API_KEY"]
+            st.session_state.api_keys.pop(prov, None)
 
     st.markdown("---")
     st.markdown("### 🛠️ Developer Options")
     dev_mode = st.toggle("Enable Developer Mode", value=False)
-    
+
     if st.button("🔄 Reset Session", use_container_width=True):
         st.session_state.thread_id = str(uuid.uuid4())
         st.session_state.workflow_started = False
@@ -105,190 +97,24 @@ with st.sidebar:
 
 st.markdown(
     '<div class="dashboard-header">'
-    '<h1>🤖 AI Data Migration Consultant</h1>'
-    '<p>PostgreSQL ➔ MySQL Migration Pipeline & Deterministic Data Cleaner</p>'
+    '<h1>🤖 AI Data Migration Agent</h1>'
+    '<p>Dirty legacy PostgreSQL ➔ clean, constrained, verified MySQL</p>'
     '</div>',
     unsafe_allow_html=True
 )
 
 tab_demo, tab_agentic = st.tabs([
-    "🚀 PostgreSQL → MySQL Migration (Demo)",
-    "🤖 Agentic LangGraph Workflow (V2)"
+    "🚀 PostgreSQL → MySQL Migration",
+    "🤖 Agentic LangGraph Workflow"
 ])
 
 
 # ═════════════════════════════════════════════
-# TAB 1: PostgreSQL → MySQL Migration (Demo)
+# TAB 1: PostgreSQL → MySQL Migration
 # ═════════════════════════════════════════════
 
 with tab_demo:
-    st.markdown('<div class="section-header">PostgreSQL → MySQL Deterministic Migration</div>', unsafe_allow_html=True)
-    st.markdown("Extract data from **PostgreSQL**, apply **deterministic rule-based cleaning**, and load cleaned data into **MySQL**.")
-
-    dataset_preset = st.radio(
-        "📁 **Select Demo Dataset Preset:**",
-        [
-            "🛒 Messy E-Commerce Sales (103 rows)",
-            "👥 Ultra-Dirty Employee & Payroll (130 rows — Max Dirt & 10 Rules Active)"
-        ],
-        horizontal=True,
-        key="demo_dataset_preset"
-    )
-
-    default_src = "dirty_employees" if "Ultra-Dirty" in dataset_preset else "enterprise"
-    default_tgt = f"{default_src}_migrated"
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("#### 🐘 PostgreSQL (Source)")
-        source_table = st.text_input(
-            "Source Table Name (PostgreSQL)",
-            value=default_src,
-            key=f"demo_src_tbl_{default_src}"
-        )
-    with col2:
-        st.markdown("#### 🐬 MySQL (Target)")
-        target_table = st.text_input(
-            "Target Table Name (MySQL)",
-            value=default_tgt,
-            key=f"demo_tgt_tbl_{default_tgt}"
-        )
-
-    with st.expander("⚙️ Database Connection Settings (Environment Overrides)", expanded=False):
-        c_pg, c_my = st.columns(2)
-        with c_pg:
-            st.markdown("##### PostgreSQL Credentials")
-            pg_host = st.text_input("Host", value=os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "127.0.0.1"), key="demo_pg_h")
-            pg_port = st.number_input("Port", value=int(os.environ.get("PG_PORT") or os.environ.get("DB_PORT", 5432)), key="demo_pg_p")
-            pg_db = st.text_input("Database", value=os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "migration_db"), key="demo_pg_d")
-            pg_user = st.text_input("User", value=os.environ.get("PG_USER") or os.environ.get("DB_USER", "postgres"), key="demo_pg_u")
-            pg_pw = st.text_input("Password", value=os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", ""), type="password", key="demo_pg_pw")
-        with c_my:
-            st.markdown("##### MySQL Credentials")
-            my_host = st.text_input("Host", value=os.environ.get("MYSQL_HOST", "127.0.0.1"), key="demo_my_h")
-            my_port = st.number_input("Port", value=int(os.environ.get("MYSQL_PORT", 3306)), key="demo_my_p")
-            my_db = st.text_input("Database", value=os.environ.get("MYSQL_DATABASE", "migration_db"), key="demo_my_d")
-            my_user = st.text_input("User", value=os.environ.get("MYSQL_USER", "root"), key="demo_my_u")
-            my_pw = st.text_input("Password", value=os.environ.get("MYSQL_PASSWORD", ""), type="password", key="demo_my_pw")
-
-        st.markdown("---")
-        if st.button("🌱 Populate Sample Tables in PostgreSQL (For Demo)", use_container_width=True, key="btn_seed_sample_pg"):
-            try:
-                from data.seed_postgres import seed_postgres
-                # Set environment variables for host/port/creds if user edited them in the expander
-                os.environ["PG_HOST"] = str(pg_host)
-                os.environ["PG_PORT"] = str(pg_port)
-                os.environ["PG_DATABASE"] = str(pg_db)
-                os.environ["PG_USER"] = str(pg_user)
-                os.environ["PG_PASSWORD"] = str(pg_pw)
-                
-                success = seed_postgres()
-                if success:
-                    st.success("✅ Successfully seeded BOTH 'enterprise' (103 rows) and 'dirty_employees' (130 rows) into PostgreSQL!")
-                else:
-                    st.warning("⚠️ Seeding completed with some warnings. Check logs.")
-            except Exception as seed_err:
-                st.error(f"❌ Could not seed PostgreSQL: {seed_err}")
-
-    if st.button("🚀 Run Migration", type="primary", use_container_width=True, key="btn_run_demo_migration"):
-        pg_config = {
-            "host": pg_host,
-            "port": int(pg_port),
-            "database": pg_db,
-            "username": pg_user,
-            "password": pg_pw,
-        }
-        mysql_config = {
-            "host": my_host,
-            "port": int(my_port),
-            "database": my_db,
-            "username": my_user,
-            "password": my_pw,
-        }
-        with st.spinner(f"Extracting '{source_table}' from PostgreSQL, cleaning data, and loading into MySQL '{target_table}'..."):
-            res = run_migration(
-                source_table=source_table,
-                target_table=target_table,
-                pg_config=pg_config,
-                mysql_config=mysql_config
-            )
-            st.session_state.demo_migration_result = res
-
-    res = st.session_state.get("demo_migration_result")
-    if res:
-        if res.get("status") == "success":
-            st.success(
-                f"✅ **Migration Successful!** "
-                f"Source Rows: **{res.get('source_rows', 0)}** | Target Rows: **{res.get('target_rows', 0)}** | "
-                f"Table: `{res.get('source_table')}` ➔ `{res.get('target_table')}`"
-            )
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric("Source Rows Extracted", res.get("source_rows", 0))
-            m2.metric("Target Rows Loaded", res.get("target_rows", 0))
-            m3.metric("Transformations Applied", len(res.get("transformation_log", [])))
-            m4.metric("Status", "SUCCESS")
-
-            st.markdown('<div class="section-header">Transformation Log</div>', unsafe_allow_html=True)
-            log_entries = res.get("transformation_log", [])
-            if log_entries:
-                st.dataframe(pd.DataFrame(log_entries), use_container_width=True, hide_index=True)
-            else:
-                st.info("No transformation steps recorded.")
-
-            st.markdown('<div class="section-header">Before / After Data Preview (First 10 Rows)</div>', unsafe_allow_html=True)
-            prev1, prev2 = st.columns(2)
-            with prev1:
-                st.markdown(f"**Raw Source Data (PostgreSQL: `{res.get('source_table')}`)**")
-                if "source_preview" in res and isinstance(res["source_preview"], pd.DataFrame):
-                    st.dataframe(res["source_preview"], use_container_width=True)
-                else:
-                    st.caption("No source preview data available.")
-            with prev2:
-                st.markdown(f"**Cleaned Target Data (MySQL: `{res.get('target_table')}`)**")
-                if "target_preview" in res and isinstance(res["target_preview"], pd.DataFrame):
-                    st.dataframe(res["target_preview"], use_container_width=True)
-                else:
-                    st.caption("No target preview data available.")
-
-            # Live Target Database Verification Section
-            st.markdown('<div class="section-header">Live Target Database Verification</div>', unsafe_allow_html=True)
-            st.markdown(
-                f"Data has been physically written into **MySQL** on host `{my_host}`, database `{my_db}`."
-            )
-            v1, v2 = st.columns([3, 1])
-            with v1:
-                st.info(f"✓ Target Table: `{res.get('target_table')}` | ✓ Verified Rows: **{res.get('target_rows', 0)}**")
-            with v2:
-                if "target_preview" in res and isinstance(res["target_preview"], pd.DataFrame):
-                    csv_data = res["target_preview"].to_csv(index=False)
-                    st.download_button(
-                        "📥 Download Cleaned CSV",
-                        data=csv_data,
-                        file_name=f"{res.get('target_table')}.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-
-            with st.expander("🔍 Live Target Database Explorer (Query MySQL Directly)", expanded=False):
-                try:
-                    from connectors.mysql_connector import MySQLConnector
-                    m_conn = MySQLConnector(**mysql_config)
-                    tables = m_conn.list_tables()
-                    st.write("**Tables in MySQL target database:**", tables)
-                    if tables:
-                        default_idx = tables.index(res.get('target_table')) if res.get('target_table') in tables else 0
-                        chosen_tbl = st.selectbox("Select table to inspect directly from MySQL", options=tables, index=default_idx, key="sel_inspect_tbl")
-                        if st.button("Query MySQL Table Live", key="btn_inspect_mysql"):
-                            live_df = m_conn.read_data(chosen_tbl)
-                            st.write(f"Live query result from MySQL `{chosen_tbl}` ({len(live_df)} rows):")
-                            st.dataframe(live_df, use_container_width=True)
-                except Exception as ex:
-                    st.caption(f"Note: Live explorer connects using configured credentials ({ex})")
-        else:
-            st.error(f"❌ **Migration Failed:** {res.get('message', 'Database connection or migration error.')}")
-            if res.get("transformation_log"):
-                st.markdown("#### Partial Transformation Log")
-                st.dataframe(pd.DataFrame(res["transformation_log"]), use_container_width=True, hide_index=True)
+    render_demo_tab()
 
 
 # ═════════════════════════════════════════════
@@ -306,19 +132,7 @@ with tab_agentic:
             with ap_col1:
                 ai_provider = st.selectbox("AI Provider", ["Auto", "Groq", "Gemini", "OpenAI", "Deterministic"], key="v2_ai_prov")
             with ap_col2:
-                model_options = [""]
-                if ai_provider == "Groq":
-                    model_options = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "deepseek-r1-distill-llama-70b"]
-                elif ai_provider == "Gemini":
-                    model_options = [
-                        "gemini-2.5-flash",
-                        "gemini-2.5-pro",
-                        "gemini-2.5-flash-lite",
-                        "gemini-2.0-flash",
-                        "gemini-2.0-flash-lite",
-                    ]
-                elif ai_provider == "OpenAI":
-                    model_options = ["gpt-4o"]
+                model_options = MODEL_OPTIONS.get(ai_provider, [""])
                 ai_model = st.selectbox("AI Model", model_options, disabled=(ai_provider in ["Auto", "Deterministic"]), key="v2_ai_model")
                 
             user_request = st.text_area("What is your migration goal?", placeholder="E.g., Migrate this MongoDB collection to PostgreSQL and clean the data.", key="v2_user_goal")
@@ -334,7 +148,7 @@ with tab_agentic:
                         import tempfile
                         temp_dir = os.environ.get("DATA_DIR", tempfile.gettempdir())
                         os.makedirs(temp_dir, exist_ok=True)
-                        file_path = os.path.join(temp_dir, uploaded_file.name)
+                        file_path = os.path.join(temp_dir, f"{uuid.uuid4().hex}_{os.path.basename(uploaded_file.name)}")
                         with open(file_path, "wb") as f:
                             f.write(uploaded_file.getbuffer())
                         source_config = {"file_path": file_path}
@@ -361,7 +175,7 @@ with tab_agentic:
                 
                 table_name = "enterprise_migrated"
                 if source_type == "CSV" and "uploaded_file" in locals() and uploaded_file:
-                    table_name = uploaded_file.name.split(".")[0]
+                    table_name = snake_case(os.path.splitext(uploaded_file.name)[0])[:48]
                 elif source_type in ("PostgreSQL", "MongoDB"):
                     table_name = source_config.get("table_name") or source_config.get("collection", "enterprise")
                     table_name += "_migrated"
@@ -411,7 +225,7 @@ with tab_agentic:
                 }
                 try:
                     with st.spinner("Analyzing source data..."):
-                        start_migration(st.session_state.thread_id, initial_state)
+                        start_migration(st.session_state.thread_id, initial_state, api_keys=st.session_state.api_keys)
                     st.session_state.workflow_started = True
                     st.rerun()
                 except Exception as e:
@@ -571,7 +385,7 @@ with tab_agentic:
                 if col1.button("✅ Approve Plan & Execute", use_container_width=True, type="primary"):
                     with st.spinner("Executing migration..."):
                         rej_list = list(st.session_state.get("rejected_steps", set()))
-                        resume_migration(st.session_state.thread_id, plan_approved=True, human_feedback=feedback, rejected_steps=rej_list)
+                        resume_migration(st.session_state.thread_id, plan_approved=True, human_feedback=feedback, rejected_steps=rej_list, api_keys=st.session_state.api_keys)
                     st.rerun()
                     
                 if col2.button("🔄 Modify Plan & Re-Analyze", use_container_width=True):
@@ -580,7 +394,7 @@ with tab_agentic:
                     else:
                         with st.spinner("Re-analyzing..."):
                             rej_list = list(st.session_state.get("rejected_steps", set()))
-                            resume_migration(st.session_state.thread_id, plan_approved=False, human_feedback=feedback, rejected_steps=rej_list)
+                            resume_migration(st.session_state.thread_id, plan_approved=False, human_feedback=feedback, rejected_steps=rej_list, api_keys=st.session_state.api_keys)
                         st.rerun()
                         
                 if col3.button("❌ Reject Plan & Reset", use_container_width=True):

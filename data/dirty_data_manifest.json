@@ -1,0 +1,498 @@
+{
+  "seed": 42,
+  "datasets": {
+    "dirty_employees": {
+      "file": "dirty_employees.csv",
+      "rows": 190,
+      "defects": {
+        "currency_formatting": {
+          "count": 59,
+          "examples": [
+            {
+              "row": "emp 1003",
+              "detail": "131,000"
+            },
+            {
+              "row": "emp 1007",
+              "detail": "89,000"
+            },
+            {
+              "row": "emp 1009",
+              "detail": "57k"
+            }
+          ]
+        },
+        "duplicate_primary_key": {
+          "count": 4,
+          "examples": [
+            {
+              "row": "emp 1067",
+              "detail": "same Employee ID, different phone"
+            },
+            {
+              "row": "emp 1048",
+              "detail": "same Employee ID, different phone"
+            },
+            {
+              "row": "emp 1141",
+              "detail": "same Employee ID, different phone"
+            }
+          ]
+        },
+        "exact_duplicate_row": {
+          "count": 6,
+          "examples": [
+            {
+              "row": "emp 1098",
+              "detail": "row appears twice"
+            },
+            {
+              "row": "emp 1149",
+              "detail": "row appears twice"
+            },
+            {
+              "row": "emp 1026",
+              "detail": "row appears twice"
+            }
+          ]
+        },
+        "inconsistent_boolean": {
+          "count": 55,
+          "examples": [
+            {
+              "row": "emp 1001",
+              "detail": "Y"
+            },
+            {
+              "row": "emp 1006",
+              "detail": "NO"
+            },
+            {
+              "row": "emp 1008",
+              "detail": "false"
+            }
+          ]
+        },
+        "inconsistent_category": {
+          "count": 41,
+          "examples": [
+            {
+              "row": "emp 1001",
+              "detail": "Department 'MARKETING ' (canonical 'Marketing')"
+            },
+            {
+              "row": "emp 1002",
+              "detail": "Department 'SALES' (canonical 'Sales')"
+            },
+            {
+              "row": "emp 1003",
+              "detail": "Department 'Finanse' (canonical 'Finance')"
+            }
+          ]
+        },
+        "invalid_age": {
+          "count": 13,
+          "examples": [
+            {
+              "row": "emp 1009",
+              "detail": "<blank>"
+            },
+            {
+              "row": "emp 1028",
+              "detail": "999"
+            },
+            {
+              "row": "emp 1032",
+              "detail": "0"
+            }
+          ]
+        },
+        "invalid_date": {
+          "count": 1,
+          "examples": [
+            {
+              "row": "emp 1108",
+              "detail": "not recorded"
+            }
+          ]
+        },
+        "invalid_email": {
+          "count": 12,
+          "examples": [
+            {
+              "row": "emp 1007",
+              "detail": "omar.miller@"
+            },
+            {
+              "row": "emp 1008",
+              "detail": "n/a"
+            },
+            {
+              "row": "emp 1011",
+              "detail": "jessica.sharma@"
+            }
+          ]
+        },
+        "invalid_rating": {
+          "count": 9,
+          "examples": [
+            {
+              "row": "emp 1029",
+              "detail": "9"
+            },
+            {
+              "row": "emp 1050",
+              "detail": "9"
+            },
+            {
+              "row": "emp 1058",
+              "detail": "N/A"
+            }
+          ]
+        },
+        "missing_or_sentinel_salary": {
+          "count": 7,
+          "examples": [
+            {
+              "row": "emp 1016",
+              "detail": "<blank>"
+            },
+            {
+              "row": "emp 1060",
+              "detail": "N/A"
+            },
+            {
+              "row": "emp 1088",
+              "detail": "N/A"
+            }
+          ]
+        },
+        "missing_primary_key": {
+          "count": 3,
+          "examples": [
+            {
+              "row": "Ananya Miller",
+              "detail": "Employee ID blank"
+            },
+            {
+              "row": "Joseph Rossi",
+              "detail": "Employee ID blank"
+            },
+            {
+              "row": "Olivia Johnson",
+              "detail": "Employee ID blank"
+            }
+          ]
+        },
+        "mixed_date_format": {
+          "count": 106,
+          "examples": [
+            {
+              "row": "emp 1001",
+              "detail": "7/26/2015"
+            },
+            {
+              "row": "emp 1002",
+              "detail": "2015/01/15"
+            },
+            {
+              "row": "emp 1003",
+              "detail": "2018/02/25"
+            }
+          ]
+        },
+        "negative_salary": {
+          "count": 3,
+          "examples": [
+            {
+              "row": "emp 1007",
+              "detail": "-89000"
+            },
+            {
+              "row": "emp 1014",
+              "detail": "-64000"
+            },
+            {
+              "row": "emp 1125",
+              "detail": "-74000"
+            }
+          ]
+        },
+        "phone_formatting": {
+          "count": 42,
+          "examples": [
+            {
+              "row": "emp 1002",
+              "detail": "+91 95079 43839"
+            },
+            {
+              "row": "emp 1003",
+              "detail": "(948) 146-9012"
+            },
+            {
+              "row": "emp 1004",
+              "detail": "+91 92534 07200"
+            }
+          ]
+        },
+        "status_sentinel_or_case": {
+          "count": 18,
+          "examples": [
+            {
+              "row": "emp 1004",
+              "detail": "null"
+            },
+            {
+              "row": "emp 1020",
+              "detail": "null"
+            },
+            {
+              "row": "emp 1027",
+              "detail": "UNKNOWN"
+            }
+          ]
+        },
+        "whitespace_padding": {
+          "count": 15,
+          "examples": [
+            {
+              "row": "emp 1001",
+              "detail": "Full Name"
+            },
+            {
+              "row": "emp 1002",
+              "detail": "Full Name"
+            },
+            {
+              "row": "emp 1005",
+              "detail": "Full Name"
+            }
+          ]
+        }
+      }
+    },
+    "dirty_orders": {
+      "file": "dirty_orders.csv",
+      "rows": 248,
+      "defects": {
+        "currency_formatting": {
+          "count": 70,
+          "examples": [
+            {
+              "row": "ORD-50002",
+              "detail": "Rs. 14.99"
+            },
+            {
+              "row": "ORD-50004",
+              "detail": "Rs. 19.50"
+            },
+            {
+              "row": "ORD-50005",
+              "detail": "$34.00"
+            }
+          ]
+        },
+        "duplicate_primary_key": {
+          "count": 3,
+          "examples": [
+            {
+              "row": "ORD-50164",
+              "detail": "same Order ID, different status"
+            },
+            {
+              "row": "ORD-50238",
+              "detail": "same Order ID, different status"
+            },
+            {
+              "row": "ORD-50009",
+              "detail": "same Order ID, different status"
+            }
+          ]
+        },
+        "exact_duplicate_row": {
+          "count": 5,
+          "examples": [
+            {
+              "row": "ORD-50233",
+              "detail": "row appears twice"
+            },
+            {
+              "row": "ORD-50080",
+              "detail": "row appears twice"
+            },
+            {
+              "row": "ORD-50049",
+              "detail": "row appears twice"
+            }
+          ]
+        },
+        "inconsistent_category": {
+          "count": 102,
+          "examples": [
+            {
+              "row": "ORD-50003",
+              "detail": "Category 'electronics' (canonical 'Electronics')"
+            },
+            {
+              "row": "ORD-50004",
+              "detail": "Payment 'PAYPAL' (canonical 'PayPal')"
+            },
+            {
+              "row": "ORD-50007",
+              "detail": "Payment 'cash on delivery' (canonical 'Cash on Delivery')"
+            }
+          ]
+        },
+        "invalid_email": {
+          "count": 18,
+          "examples": [
+            {
+              "row": "ORD-50021",
+              "detail": "<blank>"
+            },
+            {
+              "row": "ORD-50025",
+              "detail": "joseph@"
+            },
+            {
+              "row": "ORD-50034",
+              "detail": "unknown"
+            }
+          ]
+        },
+        "invalid_quantity": {
+          "count": 10,
+          "examples": [
+            {
+              "row": "ORD-50064",
+              "detail": "-2"
+            },
+            {
+              "row": "ORD-50089",
+              "detail": "two"
+            },
+            {
+              "row": "ORD-50093",
+              "detail": "two"
+            }
+          ]
+        },
+        "missing_primary_key": {
+          "count": 2,
+          "examples": [
+            {
+              "row": "Elizabeth Johnson",
+              "detail": "Order ID blank"
+            },
+            {
+              "row": "Richard Reddy",
+              "detail": "Order ID blank"
+            }
+          ]
+        },
+        "missing_total": {
+          "count": 7,
+          "examples": [
+            {
+              "row": "ORD-50015",
+              "detail": "<blank>"
+            },
+            {
+              "row": "ORD-50036",
+              "detail": "<blank>"
+            },
+            {
+              "row": "ORD-50079",
+              "detail": "<blank>"
+            }
+          ]
+        },
+        "mixed_date_format": {
+          "count": 127,
+          "examples": [
+            {
+              "row": "ORD-50001",
+              "detail": "2025/09/09"
+            },
+            {
+              "row": "ORD-50002",
+              "detail": "2025/05/03"
+            },
+            {
+              "row": "ORD-50003",
+              "detail": "2025/05/18"
+            }
+          ]
+        },
+        "percentage_formatting": {
+          "count": 33,
+          "examples": [
+            {
+              "row": "ORD-50005",
+              "detail": "<blank>"
+            },
+            {
+              "row": "ORD-50006",
+              "detail": "10 %"
+            },
+            {
+              "row": "ORD-50009",
+              "detail": "<blank>"
+            }
+          ]
+        },
+        "status_sentinel_or_case": {
+          "count": 11,
+          "examples": [
+            {
+              "row": "ORD-50005",
+              "detail": "pending?"
+            },
+            {
+              "row": "ORD-50020",
+              "detail": "delivered"
+            },
+            {
+              "row": "ORD-50069",
+              "detail": "SHIPPED"
+            }
+          ]
+        },
+        "unparseable_price": {
+          "count": 13,
+          "examples": [
+            {
+              "row": "ORD-50049",
+              "detail": "N/A"
+            },
+            {
+              "row": "ORD-50052",
+              "detail": "abc"
+            },
+            {
+              "row": "ORD-50056",
+              "detail": "abc"
+            }
+          ]
+        },
+        "whitespace_padding": {
+          "count": 25,
+          "examples": [
+            {
+              "row": "ORD-50011",
+              "detail": "Customer Name"
+            },
+            {
+              "row": "ORD-50014",
+              "detail": "Customer Name"
+            },
+            {
+              "row": "ORD-50019",
+              "detail": "Customer Name"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
