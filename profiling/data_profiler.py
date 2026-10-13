@@ -162,7 +162,9 @@ def _profile_column(series: pd.Series, total_rows: int) -> dict:
     dtype = str(series.dtype)
 
     # ─── Missing values ───
-    missing_count = int(series.isna().sum())
+    # Legacy text tables store "no value" as an empty string, so blanks count as missing too.
+    blank_count = int(series.map(lambda v: isinstance(v, str) and v.strip() == "").sum())
+    missing_count = int(series.isna().sum()) + blank_count
     missing_pct = round(
         (missing_count / total_rows * 100) if total_rows > 0 else 0, 2
     )

@@ -8,6 +8,7 @@ streamlit==1.42.0
 pandas==2.2.3
 numpy>=1.26.0,<3.0.0
 duckdb==1.2.0
+duckdb-engine==0.17.0   # SQLAlchemy dialect for DuckDB
 
 # Database drivers
 SQLAlchemy==2.0.38

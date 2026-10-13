@@ -18,6 +18,7 @@ from connectors.duckdb_connector import DuckDBConnector
 from connectors.postgres_connector import PostgreSQLConnector
 from connectors.mongodb_connector import MongoDBConnector
 from connectors.mysql_connector import MySQLConnector
+from connectors.sqlite_connector import SQLiteConnector
 
 
 CONNECTOR_REGISTRY = {
@@ -27,6 +28,7 @@ CONNECTOR_REGISTRY = {
     "postgres": PostgreSQLConnector,
     "mongodb": MongoDBConnector,
     "mysql": MySQLConnector,
+    "sqlite": SQLiteConnector,
 }
 
 
@@ -35,7 +37,7 @@ def get_connector(connector_type, **kwargs):
     Return the correct connector instance based on type string.
 
     Args:
-        connector_type: One of 'csv', 'duckdb', 'postgresql', 'mongodb'
+        connector_type: One of 'csv', 'duckdb', 'sqlite', 'postgresql', 'mysql', 'mongodb'
         **kwargs: Connection parameters for the connector
 
     Returns:

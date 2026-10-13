@@ -66,6 +66,35 @@ if "workflow_finished" not in st.session_state:
 if "demo_migration_result" not in st.session_state:
     st.session_state.demo_migration_result = None
 
+def agentic_endpoint_inputs(kind, prefix, table):
+    """Connection widgets for the agentic tab; returns kwargs for connectors.get_connector()."""
+    if kind == "CSV":
+        return {"file_path": os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "dirty_employees.csv")}
+    if kind in ("PostgreSQL", "MySQL"):
+        env = "PG" if kind == "PostgreSQL" else "MYSQL"
+        cfg = {
+            "host": st.text_input("Host", os.environ.get(f"{env}_HOST", "127.0.0.1"), key=f"{prefix}_{env}_h"),
+            "port": int(st.number_input("Port", value=int(os.environ.get(f"{env}_PORT", 5432 if env == "PG" else 3306)), key=f"{prefix}_{env}_p")),
+            "database": st.text_input("Database", os.environ.get(f"{env}_DATABASE", "migration_db"), key=f"{prefix}_{env}_d"),
+            "username": st.text_input("User", os.environ.get(f"{env}_USER", "postgres" if env == "PG" else "root"), key=f"{prefix}_{env}_u"),
+            "password": st.text_input("Password", os.environ.get(f"{env}_PASSWORD", ""), type="password", key=f"{prefix}_{env}_pw"),
+        }
+        cfg["table_name"] = table if prefix == "t" else st.text_input("Table", table, key=f"{prefix}_{env}_t")
+        return cfg
+    if kind in ("DuckDB", "SQLite"):
+        ext = kind.lower()
+        role = "source" if prefix == "s" else "target"
+        path = st.text_input("Database file", os.path.join("runtime", f"{role}.{ext}"), key=f"{prefix}_{ext}_path")
+        name = table if prefix == "t" else st.text_input("Table", table, key=f"{prefix}_{ext}_t")
+        return {"db_path": path, "table_name": name}
+    if kind == "MongoDB":
+        cfg = {"connection_string": st.text_input("URI", os.environ.get("MONGO_URI", "mongodb://127.0.0.1:27017"), key=f"{prefix}_m_u"),
+               "database": st.text_input("Database", os.environ.get("MONGO_DATABASE", "migration_db"), key=f"{prefix}_m_d")}
+        cfg["collection"] = table if prefix == "t" else st.text_input("Collection", table, key=f"{prefix}_m_c")
+        return cfg
+    return {}
+
+
 # ─────────────────────────────────────────────
 # Sidebar: API keys, Developer Mode & Reset
 # ─────────────────────────────────────────────
@@ -140,10 +169,10 @@ with tab_agentic:
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown("#### 📥 Source")
-                source_type = st.selectbox("Connector", ["CSV", "PostgreSQL", "MongoDB"], key="src_type")
-                source_config = {}
+                source_type = st.selectbox("Connector", ["CSV", "PostgreSQL", "MySQL", "DuckDB", "SQLite", "MongoDB"], key="src_type")
+                source_config = agentic_endpoint_inputs(source_type, "s", "dirty_employees")
                 if source_type == "CSV":
-                    uploaded_file = st.file_uploader("Upload CSV", type=["csv"], key="v2_csv_up")
+                    uploaded_file = st.file_uploader("Upload CSV (or leave empty for the demo dirty_employees.csv)", type=["csv"], key="v2_csv_up")
                     if uploaded_file:
                         import tempfile
                         temp_dir = os.environ.get("DATA_DIR", tempfile.gettempdir())
@@ -152,62 +181,16 @@ with tab_agentic:
                         with open(file_path, "wb") as f:
                             f.write(uploaded_file.getbuffer())
                         source_config = {"file_path": file_path}
-                elif source_type == "PostgreSQL":
-                    source_config = {
-                        "host": st.text_input("Host", os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "localhost"), key="s_pg_h"),
-                        "port": st.number_input("Port", int(os.environ.get("PG_PORT") or os.environ.get("DB_PORT", "5432")), key="s_pg_p"),
-                        "database": st.text_input("Database", os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "migration_db"), key="s_pg_d"),
-                        "username": st.text_input("User", os.environ.get("PG_USER") or os.environ.get("DB_USER", "postgres"), key="s_pg_u"),
-                        "password": st.text_input("Password", os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", ""), type="password", key="s_pg_pw"),
-                        "table_name": st.text_input("Table", "enterprise", key="s_pg_t")
-                    }
-                elif source_type == "MongoDB":
-                    source_config = {
-                        "connection_string": st.text_input("URI", os.environ.get("MONGO_URI", "mongodb://localhost:27017"), key="s_m_u"),
-                        "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="s_m_d"),
-                        "collection": st.text_input("Collection", "enterprise", key="s_m_c")
-                    }
 
             with col2:
                 st.markdown("#### 📤 Target")
-                target_type = st.selectbox("Connector", ["DuckDB", "PostgreSQL", "MongoDB", "MySQL"], key="tgt_type")
-                target_config = {}
-                
-                table_name = "enterprise_migrated"
-                if source_type == "CSV" and "uploaded_file" in locals() and uploaded_file:
-                    table_name = snake_case(os.path.splitext(uploaded_file.name)[0])[:48]
-                elif source_type in ("PostgreSQL", "MongoDB"):
-                    table_name = source_config.get("table_name") or source_config.get("collection", "enterprise")
-                    table_name += "_migrated"
-                    
-                table_name = st.text_input("Target Table/Collection Name", table_name, key="v2_tgt_tbl")
-                
-                if target_type == "DuckDB":
-                    target_config = {"db_path": "migration.duckdb", "table_name": table_name}
-                elif target_type == "PostgreSQL":
-                    target_config = {
-                        "host": st.text_input("Host", os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "localhost"), key="t_pg_h"),
-                        "port": st.number_input("Port", int(os.environ.get("PG_PORT") or os.environ.get("DB_PORT", "5432")), key="t_pg_p"),
-                        "database": st.text_input("Database", os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "migration_db"), key="t_pg_d"),
-                        "username": st.text_input("User", os.environ.get("PG_USER") or os.environ.get("DB_USER", "postgres"), key="t_pg_u"),
-                        "password": st.text_input("Password", os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", ""), type="password", key="t_pg_pw"),
-                        "table_name": table_name
-                    }
-                elif target_type == "MySQL":
-                    target_config = {
-                        "host": st.text_input("Host", os.environ.get("MYSQL_HOST", "127.0.0.1"), key="t_my_h"),
-                        "port": st.number_input("Port", int(os.environ.get("MYSQL_PORT", 3306)), key="t_my_p"),
-                        "database": st.text_input("Database", os.environ.get("MYSQL_DATABASE", "migration_db"), key="t_my_d"),
-                        "username": st.text_input("User", os.environ.get("MYSQL_USER", "root"), key="t_my_u"),
-                        "password": st.text_input("Password", os.environ.get("MYSQL_PASSWORD", ""), type="password", key="t_my_pw"),
-                        "table_name": table_name
-                    }
-                elif target_type == "MongoDB":
-                    target_config = {
-                        "connection_string": st.text_input("URI", os.environ.get("MONGO_URI", "mongodb://localhost:27017"), key="t_m_u"),
-                        "database": st.text_input("Database", os.environ.get("DB_DATABASE", "migration_db"), key="t_m_d"),
-                        "collection": table_name
-                    }
+                target_type = st.selectbox("Connector", ["DuckDB", "PostgreSQL", "MySQL", "SQLite", "MongoDB"], key="tgt_type")
+                if source_type == "CSV":
+                    base = os.path.splitext(os.path.basename(source_config["file_path"]))[0].split("_", 1)[-1]
+                else:
+                    base = source_config.get("table_name") or source_config.get("collection", "enterprise")
+                table_name = st.text_input("Target Table/Collection Name", snake_case(base)[:38] + "_ai", key="v2_tgt_tbl")
+                target_config = agentic_endpoint_inputs(target_type, "t", table_name)
 
             if st.button("🚀 Start Migration Assessment", use_container_width=True, type="primary"):
                 initial_state = {
@@ -528,14 +511,14 @@ with tab_agentic:
                 rc2.download_button("📥 Download Markdown Report", data=markdown_report, file_name="migration_executive_report.md", mime="text/markdown", use_container_width=True)
                 
                 target_type = state.get("target_type", "")
-                if target_type == "duckdb" and report.get("success") and recon_results.get("overall_success"):
+                if target_type in ("duckdb", "sqlite") and report.get("success") and recon_results.get("overall_success"):
                     duckdb_path = state.get("target_config", {}).get("db_path", "migration.duckdb")
                     if os.path.exists(duckdb_path):
                         file_size_mb = os.path.getsize(duckdb_path) / (1024 * 1024)
-                        st.markdown('<div class="section-header">📦 Download Migrated DuckDB Database</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="section-header">📦 Download Migrated {"DuckDB" if target_type == "duckdb" else "SQLite"} Database</div>', unsafe_allow_html=True)
                         st.markdown(f"**Filename:** `{os.path.basename(duckdb_path)}` | **Size:** `{file_size_mb:.2f} MB`")
                         with open(duckdb_path, "rb") as f:
-                            st.download_button("📥 Download DuckDB", data=f, file_name=os.path.basename(duckdb_path), mime="application/octet-stream", use_container_width=True, type="primary")
+                            st.download_button("📥 Download database file", data=f, file_name=os.path.basename(duckdb_path), mime="application/octet-stream", use_container_width=True, type="primary")
 
                 if report.get('success') and recon_results.get("overall_success"):
                     st.balloons()

@@ -1,3 +1,5 @@
+import os
+
 import duckdb
 
 from connectors.base_connector import BaseConnector
@@ -14,6 +16,7 @@ class DuckDBConnector(BaseConnector):
 
         self.db_path = db_path
         self.table_name = safe_ident(table_name)
+        os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
 
     def read_data(self):
 

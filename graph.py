@@ -290,7 +290,7 @@ def migration_executor(state: AgentState):
         # Fallback to V1
         transformed_df = transform_data(df, transformations=state.get("transformations"))
 
-    print(f"TARGET_TABLE: {target.table_name}")
+    print(f"TARGET_TABLE: {getattr(target, 'table_name', None) or getattr(target, 'collection_name', 'N/A')}")
     conn_str = getattr(target, 'connection_string', 'N/A')
     if '@' in conn_str:
         parts = conn_str.split('@')
@@ -298,7 +298,7 @@ def migration_executor(state: AgentState):
         if len(auth) >= 3:
             auth[-1] = '***'
         conn_str = ':'.join(auth) + '@' + parts[1]
-    print(f"CONNECTING_TO_POSTGRES: {conn_str}")
+    print(f"CONNECTING_TO_TARGET ({state['target_type']}): {conn_str}")
     print("TABLE_CREATE_START")
     print(f"ROWS_TO_INSERT: {len(transformed_df)}")
 

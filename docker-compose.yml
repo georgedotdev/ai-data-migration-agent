@@ -1,7 +1,7 @@
 # One-command local demo:
 #   docker compose up --build        -> http://localhost:8501
 # Databases only (run Streamlit from your venv instead):
-#   docker compose up -d postgres mysql
+#   docker compose up -d postgres mysql mongodb
 services:
   postgres:
     image: postgres:16-alpine
@@ -38,10 +38,25 @@ services:
       timeout: 5s
       retries: 30
 
-  # Loads the dirty demo tables into PostgreSQL, then exits
+  mongodb:
+    image: mongo:7
+    container_name: mongodb_migration
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Loads the dirty demo tables into PostgreSQL, MySQL and MongoDB, then exits
+  # (DuckDB/SQLite sources can be seeded from the app)
   seed:
     build: .
-    command: ["python", "data/seed_postgres.py"]
+    command: ["python", "data/seed_postgres.py", "postgresql", "mysql", "mongodb"]
     environment: &app_env
       PG_HOST: postgres
       PG_PORT: "5432"
@@ -53,8 +68,15 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: rootpassword
       MYSQL_DATABASE: migration_db
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DATABASE: migration_db
+      RUNTIME_DIR: /app/runtime
     depends_on:
       postgres:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
         condition: service_healthy
 
   app:
@@ -67,7 +89,11 @@ services:
         condition: service_healthy
       seed:
         condition: service_completed_successfully
+    volumes:
+      - runtime_data:/app/runtime
 
 volumes:
   postgres_data:
   mysql_data:
+  mongo_data:
+  runtime_data:

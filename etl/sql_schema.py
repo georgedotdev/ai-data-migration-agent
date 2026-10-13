@@ -1,20 +1,21 @@
 """
-Target schema design for MySQL.
+Target schema design.
 
 Instead of letting pandas.to_sql guess column types, the migration derives an
-explicit MySQL schema from the cleaned data and its semantic types:
-data types, PRIMARY KEY, NOT NULL, CHECK and FOREIGN KEY constraints.
+explicit schema from the cleaned data and its semantic types: data types,
+PRIMARY KEY, NOT NULL, CHECK, UNIQUE and FOREIGN KEY constraints. Types and
+rules are canonical; each dialect (etl/dialects.py) renders them, and the
+MongoDB loader turns them into a $jsonSchema validator.
 """
 
 import math
-import re
 from dataclasses import dataclass, field
 
 import pandas as pd
 
-IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,47}$")
+from etl.dialects import DIALECTS, safe_ident  # noqa: F401  (safe_ident re-exported)
 
-# Reference mapping used when the PostgreSQL source column is already typed.
+# Reference mapping used when a PostgreSQL source column is already typed.
 PG_TO_MYSQL = {
     "smallint": "SMALLINT",
     "integer": "INT",
@@ -39,15 +40,15 @@ PG_TO_MYSQL = {
     "ARRAY": "JSON",
 }
 
-# Semantic type -> (MySQL type, CHECK expression template or None)
+# Semantic type -> (canonical type, constraint rule or None)
 SEMANTIC_RULES = {
-    "money": ("DECIMAL(12,2)", "{c} >= 0"),
-    "percentage": ("DECIMAL(5,4)", "{c} BETWEEN 0 AND 1"),
-    "age": ("SMALLINT", "{c} BETWEEN 16 AND 100"),
-    "quantity": ("INT", "{c} > 0"),
-    "rating": ("DECIMAL(3,1)", "{c} BETWEEN 0 AND 5"),
-    "email": ("VARCHAR(255)", "{c} LIKE '%_@_%._%'"),
-    "phone": ("CHAR(10)", "{c} REGEXP '^[0-9]{{10}}$'"),
+    "money": ("DECIMAL(12,2)", ("ge", 0)),
+    "percentage": ("DECIMAL(5,4)", ("between", 0, 1)),
+    "age": ("SMALLINT", ("between", 16, 100)),
+    "quantity": ("INT", ("gt", 0)),
+    "rating": ("DECIMAL(3,1)", ("between", 0, 5)),
+    "email": ("VARCHAR(255)", ("email",)),
+    "phone": ("CHAR(10)", ("digits", 10)),
     "bool": ("BOOLEAN", None),
     "date": ("DATE", None),
     "datetime": ("DATETIME", None),
@@ -55,30 +56,25 @@ SEMANTIC_RULES = {
     "float": ("DOUBLE", None),
 }
 
-
-def safe_ident(name: str) -> str:
-    """Validate a table/column identifier so it can be safely quoted into SQL."""
-    if not isinstance(name, str) or not IDENT_RE.match(name):
-        raise ValueError(
-            f"Invalid identifier {name!r}: use letters, digits and underscores, "
-            "start with a letter or underscore, max 48 characters."
-        )
-    return name
+MYSQL = DIALECTS["mysql"]
 
 
 def q(name: str) -> str:
-    """Quote a validated identifier for MySQL."""
-    return f"`{safe_ident(name)}`"
+    """Quote a validated identifier for MySQL (kept for backwards compatibility)."""
+    return MYSQL.q(name)
 
 
 @dataclass
 class ColumnDef:
     name: str
-    sql_type: str
+    sql_type: str            # canonical type, e.g. DECIMAL(12,2)
     nullable: bool
     semantic: str
-    check: str | None = None
+    rule: tuple | None = None
     references: tuple | None = None   # (table, column)
+
+    def check(self, dialect=MYSQL):
+        return dialect.check_sql(self.rule, self.name)
 
 
 @dataclass
@@ -86,33 +82,42 @@ class TableDef:
     name: str
     columns: list
     primary_key: str | None
-    indexes: list = field(default_factory=list)   # column names
-    uniques: list = field(default_factory=list)   # column names
+    indexes: list = field(default_factory=list)     # column names
+    uniques: list = field(default_factory=list)     # column names
     dependents: list = field(default_factory=list)  # columns moved out by normalization (FD on the lookup key)
 
-    def create_sql(self, physical_name: str | None = None, ref_map: dict | None = None,
-                   include_indexes: bool = True) -> str:
+    def create_sql(self, physical_name=None, ref_map=None, include_indexes=True, dialect=MYSQL) -> str:
         """Render CREATE TABLE. ref_map renames referenced tables (e.g. to staging names)."""
         tname = physical_name or self.name
         ref_map = ref_map or {}
-        lines = []
-        for c in self.columns:
-            line = f"  {q(c.name)} {c.sql_type}{'' if c.nullable else ' NOT NULL'}"
-            lines.append(line)
+        lines = [f"  {dialect.q(c.name)} {dialect.map_type(c.sql_type)}{'' if c.nullable else ' NOT NULL'}"
+                 for c in self.columns]
         if self.primary_key:
-            lines.append(f"  PRIMARY KEY ({q(self.primary_key)})")
+            lines.append(f"  PRIMARY KEY ({dialect.q(self.primary_key)})")
         for col in self.uniques:
-            lines.append(f"  UNIQUE KEY {q('uq_' + col)} ({q(col)})")
+            lines.append(f"  UNIQUE ({dialect.q(col)})")
         for c in self.columns:
-            if c.check:
-                lines.append(f"  CHECK ({c.check})")
+            chk = c.check(dialect)
+            if chk:
+                lines.append(f"  CHECK ({chk})")
         for c in self.columns:
             if c.references:
                 rt, rc = c.references
-                lines.append(f"  FOREIGN KEY ({q(c.name)}) REFERENCES {q(ref_map.get(rt, rt))} ({q(rc)})")
-        for col in (self.indexes if include_indexes else []):
-            lines.append(f"  INDEX {q('idx_' + col)} ({q(col)})")
-        return f"CREATE TABLE {q(tname)} (\n" + ",\n".join(lines) + "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+                lines.append(f"  FOREIGN KEY ({dialect.q(c.name)}) REFERENCES {dialect.q(ref_map.get(rt, rt))} ({dialect.q(rc)})")
+        if include_indexes and dialect.name == "mysql":
+            for col in self.indexes:
+                lines.append(f"  INDEX {dialect.q(index_name(self.name, col))} ({dialect.q(col)})")
+        suffix = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" if dialect.name == "mysql" else ""
+        return f"CREATE TABLE {dialect.q(tname)} (\n" + ",\n".join(lines) + "\n)" + suffix
+
+    def index_sql(self, dialect, physical_name=None):
+        t = physical_name or self.name
+        return [dialect.create_index_sql(t, index_name(self.name, col), col) for col in self.indexes]
+
+
+def index_name(table, col):
+    """Index names are schema-wide in PostgreSQL/SQLite/DuckDB, so include the table."""
+    return f"idx_{table}_{col}"[:60]
 
 
 def _varchar_for(series: pd.Series) -> str:
@@ -151,14 +156,13 @@ def design_table(df: pd.DataFrame, table: str, semantics: dict, primary_key: str
     for name in df.columns:
         safe_ident(name)
         sem = semantics.get(name, "text")
-        rule = SEMANTIC_RULES.get(sem)
-        check = rule[1].format(c=q(name)) if rule and rule[1] else None
+        rule = SEMANTIC_RULES.get(sem, (None, None))[1]
         cols.append(ColumnDef(
             name=name,
             sql_type=column_sql_type(df[name], sem),
             nullable=bool(df[name].isna().any()) and name != primary_key,
             semantic=sem,
-            check=check,
+            rule=rule,
         ))
     return TableDef(name=table, columns=cols, primary_key=primary_key, indexes=list(index_columns))
 

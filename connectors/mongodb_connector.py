@@ -55,8 +55,9 @@ class MongoDBConnector(BaseConnector):
         # Drop existing collection
         self.collection.drop()
 
-        # Convert DataFrame to list of dicts
-        records = df.to_dict(orient="records")
+        # Convert DataFrame to list of dicts; BSON cannot encode NaN/NaT or numpy scalars
+        from etl.sql_schema import to_db_value
+        records = [{k: to_db_value(v) for k, v in rec.items()} for rec in df.to_dict(orient="records")]
 
         if records:
             self.collection.insert_many(records)

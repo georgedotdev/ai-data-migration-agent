@@ -2,7 +2,7 @@
 Migration Service Layer
 
 Provides helper functions for the Streamlit UI to interact with
-the deterministic ETL pipeline and the LangGraph workflow.
+the deterministic migration pipeline and the LangGraph workflow.
 """
 
 import time
@@ -13,16 +13,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from connectors.postgres_connector import PostgreSQLConnector
-from connectors.mysql_connector import MySQLConnector
+from etl import mongo_loader, sql_loader
 from etl.cleaning import clean_for_migration
-from etl.mysql_loader import (LoadError, describe_target, ensure_metadata_tables, record_run,
-                              run_history, staged_load, verify_migration)
+from etl.endpoints import Endpoint, default_config
+from etl.sql_loader import LoadError
 from etl.sql_schema import design_normalized, design_table, safe_ident
 
 
 def _error(message, **extra):
     return {"status": "error", "message": message, "error": message, **extra}
+
+
+def loader_for(endpoint):
+    return mongo_loader if endpoint.kind == "mongodb" else sql_loader
 
 
 def run_migration(
@@ -32,45 +35,58 @@ def run_migration(
     mysql_config: dict = None,
     normalize_column: str = None,
     lookup_table: str = None,
+    source: Endpoint = None,
+    target: Endpoint = None,
 ) -> dict:
     """
-    Deterministic PostgreSQL -> MySQL migration.
+    Deterministic migration between any supported systems
+    (PostgreSQL, MySQL, DuckDB, SQLite, MongoDB; CSV as a source).
 
-    1. Extract the legacy table from PostgreSQL
+    1. Extract the legacy table from the source
     2. Clean, type and validate it (rows that can't be migrated go to quarantine)
-    3. Design an explicit MySQL schema (types, PK, NOT NULL, CHECK, optional 3NF split + FK)
-    4. Load through staging tables in one transaction, then swap atomically
-    5. Record the run in migration_runs / migration_steps / migration_quarantine
-    6. Verify with SQL against both databases and return the evidence
+    3. Design an explicit schema (types, PK, NOT NULL, CHECK, optional 3NF split + FK)
+    4. Load atomically (one transaction with transactional DDL; staging + RENAME on MySQL;
+       staging + renameCollection on MongoDB)
+    5. Record the run in migration metadata tables/collections in the target
+    6. Verify by querying both systems and return the evidence
+
+    pg_config / mysql_config keep the original PostgreSQL -> MySQL call style working.
     """
     started = datetime.now()
     timings = {}
+    source = source or Endpoint("postgresql", {**default_config("postgresql"), **(pg_config or {})})
+    target = target or Endpoint("mysql", {**default_config("mysql"), **(mysql_config or {})})
     source_table = (source_table or "").strip()
     target_table = (target_table or "").strip()
     try:
-        safe_ident(source_table)
+        if source.kind != "csv":
+            safe_ident(source_table)
         safe_ident(target_table)
         if normalize_column:
             safe_ident(lookup_table)
             if lookup_table == target_table:
                 raise ValueError("Lookup table name must differ from the target table name.")
+        if source.kind == target.kind and source.config == target.config and source_table == target_table:
+            raise ValueError("Source and target are the same table; choose a different target name.")
     except ValueError as e:
         return _error(str(e))
 
     # 1. Extract
     t = time.time()
     try:
-        pg = PostgreSQLConnector(table_name=source_table, **(pg_config or {}))
-        raw_df = pg.extract_table(source_table)
-        source_schema = pg.get_schema(source_table)
+        raw_df = source.read_table(source_table)
+        source_types = source.column_types(source_table)
     except Exception as e:
-        return _error(f"Could not extract '{source_table}' from PostgreSQL: {e}")
+        return _error(f"Could not extract '{source_table}' from {source.label}: {getattr(e, 'orig', e)}")
+    if raw_df.empty:
+        return _error(f"Source '{source_table}' in {source.label} is empty or missing. Seed it first.")
     timings["extract"] = time.time() - t
 
-    # 2. Clean
+    # 2. Clean (sources may return typed values; the cleaner works on the legacy text form)
     t = time.time()
     try:
-        cleaned = clean_for_migration(raw_df)
+        as_text = raw_df.astype(object).where(raw_df.notna(), "").astype(str)
+        cleaned = clean_for_migration(as_text)
     except Exception as e:
         return _error(f"Cleaning failed: {e}")
     df = cleaned.df
@@ -82,7 +98,7 @@ def run_migration(
     mode = "flat"
     if normalize_column:
         if normalize_column not in df.columns:
-            return _error(f"Column '{normalize_column}' not found after cleaning.")
+            return _error(f"Column '{normalize_column}' not found after cleaning. Columns: {', '.join(df.columns)}")
         lookup_def, lookup_df, main_def, main_df = design_normalized(
             df, target_table, cleaned.semantics, cleaned.primary_key, normalize_column, lookup_table, index_cols)
         plan = [(lookup_def, lookup_df), (main_def, main_df)]
@@ -97,52 +113,54 @@ def run_migration(
         sample = main_df[index_cols[0]].dropna()
         if len(sample):
             v = sample.iloc[len(sample) // 2]
-            probe = (target_table, index_cols[0], v.date().isoformat() if cleaned.semantics[index_cols[0]] == "date" else str(v))
+            probe = (target_table, index_cols[0],
+                     v.date().isoformat() if cleaned.semantics[index_cols[0]] == "date" else str(v))
 
-    clean_name = {v: k for k, v in cleaned.column_map.items()}
-    pg_types = {r[0]: r[1] for r in source_schema}
+    raw_for = {v: k for k, v in cleaned.column_map.items()}
+    target_dialect = target.dialect if target.is_sql else None
     type_mapping = []
     for td, _ in plan:
         for c in td.columns:
-            raw_name = clean_name.get(c.name, clean_name.get(c.name.removesuffix("_id"), c.name))
+            raw_name = raw_for.get(c.name, raw_for.get(c.name.removesuffix("_id")))
             type_mapping.append({
                 "target_table": td.name,
-                "source_column": raw_name if raw_name in pg_types else "(generated)",
-                "postgres_type": pg_types.get(raw_name, "-"),
-                "mysql_column": c.name,
-                "mysql_type": c.sql_type,
+                "source_column": raw_name if raw_name is not None else "(generated)",
+                "source_type": source_types.get(raw_name, "text") if raw_name is not None else "-",
+                "target_column": c.name,
+                "target_type": (target_dialect.map_type(c.sql_type) if target_dialect
+                                else str(mongo_loader._bson_type(c.sql_type))),
                 "detected_as": c.semantic,
                 "null": "NULL" if c.nullable else "NOT NULL",
                 "constraint": " / ".join(filter(None, [
                     "PRIMARY KEY" if c.name == td.primary_key else None,
-                    f"CHECK ({c.check})" if c.check else None,
+                    (f"CHECK ({c.check(target_dialect)})" if target_dialect else f"validator {c.rule}") if c.rule else None,
                     f"FK -> {c.references[0]}({c.references[1]})" if c.references else None,
                     "UNIQUE" if c.name in td.uniques else None,
                 ])),
             })
 
     # 4. Load
+    loader = loader_for(target)
     t = time.time()
     try:
-        my = MySQLConnector(table_name=target_table, **(mysql_config or {}))
-        ensure_metadata_tables(my.engine)
+        loader.ensure_metadata_tables(target)
     except Exception as e:
-        return _error(f"Could not connect to MySQL: {e}")
+        return _error(f"Could not connect to {target.label}: {getattr(e, 'orig', e)}")
 
     run = {
-        "started_at": started, "source_system": "postgresql", "source_table": source_table,
-        "target_table": target_table, "mode": mode,
+        "started_at": started, "source_system": source.kind, "source_table": source_table or "upload",
+        "target_system": target.kind, "target_table": target_table, "mode": mode,
         "source_rows": cleaned.stats["source_rows"], "loaded_rows": len(main_df),
         "duplicates_removed": cleaned.stats["exact_duplicates_removed"],
         "quarantined_rows": cleaned.stats["quarantined_rows"],
         "steps": cleaned.log, "quarantine": cleaned.quarantine,
     }
     try:
-        load = staged_load(my.engine, plan, explain_probe=probe)
+        load = loader.staged_load(target, plan, explain_probe=probe)
     except LoadError as e:
         run.update(status="failed", finished_at=datetime.now(), loaded_rows=0, error=str(e)[:2000], checksum=None)
         try:
-            record_run(my.engine, run)
+            loader.record_run(target, run)
         except Exception:
             pass
         return _error(str(e), transformation_log=cleaned.log, stats=cleaned.stats)
@@ -150,19 +168,24 @@ def run_migration(
 
     run.update(status="success", finished_at=datetime.now(), error=None,
                checksum=load["tables"][target_table]["expected_checksum"])
-    run_id = record_run(my.engine, run)
+    run_id = loader.record_run(target, run)
 
     # 5. Verify
     t = time.time()
-    checks = verify_migration(my.engine, pg.engine, source_table, plan, load, cleaned.stats)
-    target_info = describe_target(my.engine, [td.name for td, _ in plan])
-    history = run_history(my.engine)
+    checks = loader.verify_migration(target, source, source_table, plan, load, cleaned.stats)
+    target_info = loader.describe_target(target, plan)
+    history = loader.run_history(target)
     timings["verify"] = time.time() - t
 
     return {
         "status": "success" if all(c["passed"] for c in checks) else "verification_failed",
         "run_id": run_id,
         "mode": mode,
+        "source_system": source.label,
+        "target_system": target.label,
+        "target_kind": target.kind,
+        "source_location": source.describe_location(),
+        "target_location": target.describe_location(),
         "source_table": source_table,
         "target_table": target_table,
         "lookup_table": lookup_table if normalize_column else None,
@@ -178,52 +201,55 @@ def run_migration(
         "type_mapping": pd.DataFrame(type_mapping),
         "ddl": load["ddl"],
         "explain": load["explain"],
+        "protocol": load["protocol"],
         "checks": checks,
         "target_info": target_info,
         "history": history,
         "timings": {k: round(v, 3) for k, v in timings.items()},
-        "message": f"Migrated {len(main_df)} rows from PostgreSQL '{source_table}' to MySQL '{target_table}'"
+        "message": f"Migrated {len(main_df)} rows from {source.label} '{source_table}' to {target.label} '{target_table}'"
                    + (f" (+ lookup '{lookup_table}')" if normalize_column else "") + ".",
     }
 
 
 # ─────────────────────────────────────────────
-# LangGraph Workflow Helpers (Preserved)
+# LangGraph Workflow Helpers
 # ─────────────────────────────────────────────
 
 try:
     from graph import graph
+    GRAPH_IMPORT_ERROR = None
+except Exception as _e:   # surface the real reason in the UI instead of hiding it
+    graph = None
+    GRAPH_IMPORT_ERROR = f"{type(_e).__name__}: {_e}"
 
-    def start_migration(thread_id: str, initial_state: dict, api_keys: dict = None):
-        """Start the LangGraph workflow up to the human review breakpoint."""
-        config = {"configurable": {"thread_id": thread_id, "api_keys": api_keys or {}}}
-        return graph.invoke(initial_state, config=config)
 
-    def get_agent_state(thread_id: str):
-        """Retrieve current state snapshot from MemorySaver checkpointer."""
-        config = {"configurable": {"thread_id": thread_id}}
-        return graph.get_state(config)
+def _require_graph():
+    if graph is None:
+        raise RuntimeError(f"LangGraph workflow could not be loaded: {GRAPH_IMPORT_ERROR}")
 
-    def resume_migration(thread_id: str, plan_approved: bool, human_feedback: str = "", rejected_steps: list = None,
-                         api_keys: dict = None):
-        """Resume the LangGraph workflow with human feedback."""
-        if rejected_steps is None:
-            rejected_steps = []
-        config = {"configurable": {"thread_id": thread_id, "api_keys": api_keys or {}}}
-        resume_state = {
-            "plan_approved": plan_approved,
-            "human_feedback": human_feedback,
-            "rejected_steps": rejected_steps
-        }
-        graph.update_state(config, resume_state)
-        return graph.invoke(None, config=config)
 
-except Exception as _e:
-    def start_migration(*args, **kwargs):
-        raise RuntimeError("LangGraph workflow unavailable in deterministic demo mode.")
+def start_migration(thread_id: str, initial_state: dict, api_keys: dict = None):
+    """Start the LangGraph workflow up to the human review breakpoint."""
+    _require_graph()
+    config = {"configurable": {"thread_id": thread_id, "api_keys": api_keys or {}}}
+    return graph.invoke(initial_state, config=config)
 
-    def get_agent_state(*args, **kwargs):
+
+def get_agent_state(thread_id: str):
+    """Retrieve current state snapshot from the checkpointer."""
+    if graph is None:
         return None
+    return graph.get_state({"configurable": {"thread_id": thread_id}})
 
-    def resume_migration(*args, **kwargs):
-        raise RuntimeError("LangGraph workflow unavailable in deterministic demo mode.")
+
+def resume_migration(thread_id: str, plan_approved: bool, human_feedback: str = "", rejected_steps: list = None,
+                     api_keys: dict = None):
+    """Resume the LangGraph workflow with human feedback."""
+    _require_graph()
+    config = {"configurable": {"thread_id": thread_id, "api_keys": api_keys or {}}}
+    graph.update_state(config, {
+        "plan_approved": plan_approved,
+        "human_feedback": human_feedback,
+        "rejected_steps": rejected_steps or [],
+    })
+    return graph.invoke(None, config=config)
