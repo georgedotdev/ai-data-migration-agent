@@ -81,6 +81,9 @@ services:
 
   app:
     build: .
+    env_file:          # API keys (GOOGLE_API_KEY, ...) from your local .env; values below take precedence
+      - path: .env
+        required: false
     environment: *app_env
     ports:
       - "8501:8501"

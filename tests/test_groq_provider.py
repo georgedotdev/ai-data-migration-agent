@@ -14,7 +14,7 @@ def sample_profile():
 @patch("langchain_groq.ChatGroq")
 def test_groq_provider_initialization(mock_chat_groq):
     provider = GroqProvider(model="llama-3.3-70b-versatile")
-    mock_chat_groq.assert_called_once_with(model="llama-3.3-70b-versatile", temperature=0.0)
+    mock_chat_groq.assert_called_once_with(model="llama-3.3-70b-versatile", temperature=0.0, max_retries=2, timeout=60)
 
 @patch("langchain_groq.ChatGroq")
 def test_groq_provider_generate_plan(mock_chat_groq, sample_profile):

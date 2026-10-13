@@ -83,3 +83,31 @@ def test_surrogate_key_generation():
     df = pd.DataFrame({"a": [1, 2, 3]})
     res_df, log, quarantine = execute_dsl(df, {"transformations": [{"action": "generate_surrogate_key", "column": "id"}]})
     assert len(res_df["id"].unique()) == 3
+
+
+def test_replace_with_null_accepts_llm_value_field():
+    """LLMs send sentinels as `value` (string or list); both must work, as must `values`."""
+    df = pd.DataFrame({"a": ["1", "N/A", "3"], "b": ["x", "UNKNOWN", "y"], "c": ["?", "ok", "-"]})
+    res_df, log, _ = execute_dsl(df, {"transformations": [
+        {"action": "replace_with_null", "column": "a", "value": ["N/A"]},
+        {"action": "replace_with_null", "column": "b", "value": "UNKNOWN"},
+        {"action": "replace_with_null", "column": "c", "values": ["?", "-"]},
+    ]})
+    assert [e["status"] for e in log] == ["success"] * 3
+    assert res_df["a"].isna().tolist() == [False, True, False]
+    assert res_df["b"].isna().tolist() == [False, True, False]
+    assert res_df["c"].isna().tolist() == [True, False, True]
+
+
+def test_cast_int64_with_missing_values_uses_nullable_int():
+    df = pd.DataFrame({"age": ["30", None, "41"]})
+    res_df, log, _ = execute_dsl(df, {"transformations": [{"action": "cast_type", "column": "age", "target_type": "int64"}]})
+    assert log[0]["status"] == "success"
+    assert str(res_df["age"].dtype) == "Int64"
+    assert res_df["age"].tolist()[0] == 30 and pd.isna(res_df["age"].tolist()[1])
+
+
+def test_llm_schema_allows_values_list():
+    from ai_brain import DSLStep
+    step = DSLStep(action="replace_with_null", column="status", values=["UNKNOWN", "N/A"])
+    assert step.values == ["UNKNOWN", "N/A"]

@@ -5,6 +5,7 @@ Provides helper functions for the Streamlit UI to interact with
 the deterministic migration pipeline and the LangGraph workflow.
 """
 
+import os
 import time
 from datetime import datetime
 
@@ -58,6 +59,8 @@ def run_migration(
     target = target or Endpoint("mysql", {**default_config("mysql"), **(mysql_config or {})})
     source_table = (source_table or "").strip()
     target_table = (target_table or "").strip()
+    if source.kind == "csv" and not source_table:
+        source_table = os.path.basename(source.config.get("path", "upload.csv"))
     try:
         if source.kind != "csv":
             safe_ident(source_table)
@@ -148,7 +151,7 @@ def run_migration(
         return _error(f"Could not connect to {target.label}: {getattr(e, 'orig', e)}")
 
     run = {
-        "started_at": started, "source_system": source.kind, "source_table": source_table or "upload",
+        "started_at": started, "source_system": source.kind, "source_table": source_table[:64],
         "target_system": target.kind, "target_table": target_table, "mode": mode,
         "source_rows": cleaned.stats["source_rows"], "loaded_rows": len(main_df),
         "duplicates_removed": cleaned.stats["exact_duplicates_removed"],

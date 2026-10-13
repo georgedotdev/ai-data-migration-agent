@@ -30,6 +30,7 @@ class DSLStep(BaseModel):
     action: str = Field(description="The DSL action name (e.g., fill_missing, parse_currency, extract_year, flatten_object, etc.)")
     column: Optional[str] = Field(default=None, description="The target column name")
     value: Optional[Any] = Field(default=None, description="The fallback/fill value")
+    values: Optional[list] = Field(default=None, description="List of sentinel values for replace_with_null (e.g. ['N/A', 'UNKNOWN'])")
     target_type: Optional[str] = Field(default=None, description="The target data type for cast_type")
     new_name: Optional[str] = Field(default=None, description="The new column name")
     prefix: Optional[str] = Field(default=None, description="The prefix for flatten_object")
@@ -335,7 +336,7 @@ class GeminiProvider(BaseLLMProvider):
         from langchain_google_genai import ChatGoogleGenerativeAI
         print(f"[AI Brain] Initializing GeminiProvider with model: {model}")
         kwargs = {"google_api_key": api_key} if api_key else {}
-        llm = ChatGoogleGenerativeAI(model=model, temperature=0.0, **kwargs)
+        llm = ChatGoogleGenerativeAI(model=model, temperature=0.0, max_retries=2, timeout=60, **kwargs)
         super().__init__(llm)
 
 
@@ -344,7 +345,7 @@ class OpenAIProvider(BaseLLMProvider):
         from langchain_openai import ChatOpenAI
         print(f"[AI Brain] Initializing OpenAIProvider with model: {model}")
         kwargs = {"api_key": api_key} if api_key else {}
-        llm = ChatOpenAI(model=model, temperature=0.0, **kwargs)
+        llm = ChatOpenAI(model=model, temperature=0.0, max_retries=2, timeout=60, **kwargs)
         super().__init__(llm)
 
 
@@ -353,7 +354,7 @@ class GroqProvider(BaseLLMProvider):
         from langchain_groq import ChatGroq
         print(f"[AI Brain] Initializing GroqProvider with model: {model}")
         kwargs = {"api_key": api_key} if api_key else {}
-        llm = ChatGroq(model=model, temperature=0.0, **kwargs)
+        llm = ChatGroq(model=model, temperature=0.0, max_retries=2, timeout=60, **kwargs)
         super().__init__(llm)
 
 
@@ -588,6 +589,13 @@ class DeterministicProvider(AIProvider):
 # Factory and Entry Point
 # ─────────────────────────────────────────────
 
+PROVIDER_ENV_KEYS = {"Groq": ("GROQ_API_KEY",), "Gemini": ("GOOGLE_API_KEY", "GEMINI_API_KEY"), "OpenAI": ("OPENAI_API_KEY",)}
+
+
+def _has_env_key(provider):
+    return any(os.environ.get(k) for k in PROVIDER_ENV_KEYS.get(provider, ()))
+
+
 def get_ai_provider(provider_name: str, model_name: str, api_key: str | None = None) -> AIProvider:
     model_name = model_name or DEFAULT_MODELS.get(provider_name, "")
     if provider_name == "Groq":
@@ -618,14 +626,18 @@ def generate_transformation_dsl(
     DEFAULT_CHAIN = [(p, DEFAULT_MODELS[p]) for p in ("Groq", "Gemini", "OpenAI")]
     
     chain_traversed = []
+    provider_errors = []
     providers_to_try = []
     
     if requested_provider != "Auto" and requested_provider != "Deterministic":
-        providers_to_try.append((requested_provider, requested_model))
-        
+        providers_to_try.append((requested_provider, requested_model or DEFAULT_MODELS.get(requested_provider, "")))
+
+    # Every model of each provider is a fallback (e.g. a Gemini model overloaded with 503s -> the next
+    # Gemini model), but only providers with a key are tried, so a missing key costs nothing.
     for p, m in DEFAULT_CHAIN:
-        if p != requested_provider:
-            providers_to_try.append((p, m))
+        for model in [m] + [x for x in MODEL_OPTIONS.get(p, []) if x != m]:
+            if (p, model) not in providers_to_try and (p in api_keys or _has_env_key(p)):
+                providers_to_try.append((p, model))
 
     if requested_provider == "Deterministic":
         providers_to_try = []
@@ -650,15 +662,18 @@ def generate_transformation_dsl(
             raise e
         except Exception as e:
             print(f"[AI Brain] FAIL - {provider_name} failed: {e}")
+            provider_errors.append(f"{provider_name} ({model_name}): {type(e).__name__}: {' '.join(str(e).split())[:240]}")
             continue
 
     if requested_provider != "Auto" and requested_provider != "Deterministic":
-        raise RuntimeError(f"Requested provider {requested_provider} failed: {chain_traversed}")
+        raise RuntimeError(f"Requested provider {requested_provider} failed: " + " | ".join(provider_errors))
 
     print("[AI Brain] Falling back to DeterministicProvider...")
     fallback = DeterministicProvider()
     fallback_dsl = fallback.generate_plan(profile, user_request, normalize_columns)
-    fallback_dsl["fallback_reason"] = "All AI providers failed or Deterministic selected."
+    fallback_dsl["fallback_reason"] = (
+        "Deterministic planner selected." if requested_provider == "Deterministic"
+        else "No AI provider succeeded: " + (" | ".join(provider_errors) or "none configured"))
     chain_traversed.append("Deterministic")
     
     fallback_dsl["_metadata"] = {

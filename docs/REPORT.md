@@ -4,7 +4,7 @@
 
 Organizations moving off legacy systems face two problems at once: the **data is dirty** (inconsistent formats, placeholders, duplicates, broken keys), and the **target schema must be stricter than the source**. A migration that copies rows across with `INSERT ... SELECT` or pandas `to_sql` produces a target with guessed types, no keys and no constraints. It also gives no proof that what arrived matches what left.
 
-This project migrates a legacy **PostgreSQL** table, where every column is `TEXT` and the data is messy, into a **MySQL 8** schema that has:
+This project migrates a legacy table, where every column is text and the data is messy, between **PostgreSQL, MySQL, DuckDB, SQLite and MongoDB** (any one as source, any one as target). The target gets a schema that has:
 
 - explicit data types, primary keys, `NOT NULL`, `CHECK` and `FOREIGN KEY` constraints
 - an optional **3NF decomposition** driven by functional dependencies found in the data
@@ -24,11 +24,11 @@ This project migrates a legacy **PostgreSQL** table, where every column is `TEXT
 
 ```mermaid
 flowchart LR
-    PG[(PostgreSQL 16<br/>source)] --> EX[Extract]
+    PG[(Source: PostgreSQL / MySQL /<br/>DuckDB / SQLite / MongoDB / CSV)] --> EX[Extract]
     EX --> CL[Clean & validate<br/>etl/cleaning.py]
     CL --> SD[Schema design<br/>etl/sql_schema.py]
-    SD --> LD[Staged transactional load<br/>etl/mysql_loader.py]
-    LD --> MY[(MySQL 8<br/>target + metadata)]
+    SD --> LD[Atomic load<br/>etl/sql_loader.py / mongo_loader.py]
+    LD --> MY[(Target: any of the 5<br/>+ metadata)]
     MY --> VF[SQL verification]
     PG --> VF
     UI[Streamlit UI] --- CL & LD & VF
@@ -215,9 +215,33 @@ On any failure the staging tables are dropped, the live tables are untouched, an
 | Isolation | Readers never see staging tables under the live name; the swap is a single statement |
 | Durability | InnoDB commit; run history is persisted in metadata tables |
 
+### 7.1 The same guarantees on every engine
+
+| Target | DDL transactional? | Protocol | Rejection codes seen in the constraint probes |
+|---|---|---|---|
+| PostgreSQL | yes | DROP + CREATE + INSERT + CREATE INDEX in **one** transaction | SQLSTATE 23514 `check_violation`, 23503 `foreign_key_violation` |
+| MySQL | **no** (implicit commit) | staging tables + one INSERT transaction + atomic multi-table `RENAME TABLE` | 3819, 1452 |
+| DuckDB | yes | one transaction | `ConstraintException` (CHECK, FOREIGN KEY) |
+| SQLite | yes (SQLAlchemy emits `BEGIN` itself; `PRAGMA foreign_keys = ON`) | one transaction | `IntegrityError: CHECK/FOREIGN KEY constraint failed` |
+| MongoDB | n/a | validated `__stg` collection + `renameCollection(dropTarget=True)`, atomic per collection | `Document failed validation` (code 121) |
+
+MongoDB has no CHECK or FOREIGN KEY. The same design is expressed as a `$jsonSchema` validator: `required` for NOT NULL, `bsonType` for types (`decimal` for money), `minimum`/`maximum` for range rules, `pattern` for email/phone. The primary key becomes a unique index. References to the lookup collection are not enforced, so verification runs a `$lookup` orphan check instead. This contrast between relational and document integrity is a useful talking point.
+
+A 5×5 integration test migrates every source into every target, and a rollback test injects a constraint violation into the **last** row of a load on each engine and confirms the live table is unchanged.
+
 ## 8. Indexing
 
-The first date column (`join_date`, `order_date`) gets a secondary index. The app captures `EXPLAIN` for an equality lookup before and after `ADD INDEX`. Before, `type = ALL` (full table scan over all rows). After, `type = ref` with `key = idx_join_date`, reading only the matching rows. Foreign key columns are indexed automatically by InnoDB.
+The first date column (`join_date`, `order_date`) gets a secondary index. The app captures the query plan for an equality lookup before and after the index is created. The results differ by engine, and each is a lesson in itself:
+
+| Engine | Before | After | Why |
+|---|---|---|---|
+| MySQL | `type=ALL`, 177 rows | `type=ref`, key `idx_..._join_date`, 1 row | B-tree index lookup |
+| SQLite | `SCAN` | `SEARCH ... USING INDEX` | B-tree index lookup |
+| MongoDB | `COLLSCAN`, 238 docs examined | `IXSCAN`, 3 docs examined | B-tree index lookup |
+| PostgreSQL | `Seq Scan` | `Seq Scan` | cost-based planner: a table of a few pages is cheaper to scan sequentially |
+| DuckDB | `SEQ_SCAN` | `SEQ_SCAN` | columnar engine: vectorized scans with min/max zone maps; ART indexes mainly serve keys and very selective lookups |
+
+Foreign key columns are indexed automatically by InnoDB.
 
 ## 9. Verification
 

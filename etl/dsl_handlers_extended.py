@@ -517,6 +517,10 @@ def _action_normalize_phone(df: pd.DataFrame, step: dict):
 def _action_replace_with_null(df: pd.DataFrame, step: dict):
     column = step.get("column")
     values = step.get("values")
+    if values is None:   # LLMs often send a single sentinel (or a list) in "value"
+        values = step.get("value")
+    if isinstance(values, (str, int, float)):
+        values = [values]
     if not column or column not in df.columns or not isinstance(values, list):
         return df, {"status": "error", "details": {"error": "Requires column and a list of values to replace"}}
         

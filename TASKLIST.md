@@ -47,6 +47,16 @@ Legend: ✅ done · 🙋 needs you
 - 🙋 Add fresh screenshots to the README. The old ones in `screenshots/` show the previous UI.
 - 🙋 Internship check: confirm your employer is fine with you presenting this, and mention its origin if your college requires it.
 
+## Round 2 (2026-10-14)
+
+- ✅ Migrations between **PostgreSQL, MySQL, DuckDB, SQLite and MongoDB** in any direction (CSV upload as an extra source), with the same schema design, atomic load and verification on every engine. The 5×5 matrix is tested (50 runs, all checks pass).
+- ✅ MongoDB target: `$jsonSchema` validator, unique key index, `$lookup` orphan check, staged `renameCollection`.
+- ✅ Agentic (AI) tab: all engines as source/target. Fixed MongoDB target crashes and profiler blind spot for blank values.
+- ✅ **Real AI verified with Gemini**: the LLM recommended 32 steps, 2 bad ones were rejected at human review, and the other 31 executed successfully into SQLite, with reconciliation passing. Fixed: the LLM schema had no `values` field, so `replace_with_null` always failed; `cast_type int64` with NULLs now uses nullable `Int64`.
+- ✅ Model failover (other Gemini models, then other keyed providers, then the rule-based planner), retries capped at 2, 60-second timeout, and the real error shown in the UI.
+- 🙋 Gemini's free tier often returns 503 "high demand". For a reliable demo, add a free Groq key (`GROQ_API_KEY`) as a backup, and run `RUN_LIVE_LLM=1 python -m pytest tests/test_live_llm.py -s` shortly before presenting.
+- 🙋 The Gemini key was pasted into chat. Consider regenerating it in Google AI Studio after the project.
+
 ## Hosting
 
 Recommendation: **demo locally** with `docker compose up --build`. Optional public link:

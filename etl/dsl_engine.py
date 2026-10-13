@@ -214,7 +214,12 @@ def _action_cast_type(df: pd.DataFrame, step: dict):
 
     try:
         if target_type in ("int64", "float64"):
-            df[column] = pd.to_numeric(df[column], errors="coerce").astype(target_type)
+            numeric = pd.to_numeric(df[column], errors="coerce")
+            # Plain int64 cannot hold NULLs; use pandas' nullable Int64 instead of failing the step
+            if target_type == "int64" and numeric.isna().any():
+                df[column] = numeric.round().astype("Int64")
+            else:
+                df[column] = numeric.astype(target_type)
         elif target_type == "datetime":
             df[column] = pd.to_datetime(df[column], errors="coerce")
         elif target_type in ("str", "string"):
