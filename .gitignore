@@ -1,4 +1,18 @@
+# Environments and secrets
 venv/
-__pycache__/
+.venv/
 .env
+.streamlit/secrets.toml
+
+# Python caches
+__pycache__/
+.pytest_cache/
 .ipynb_checkpoints/
+
+# Runtime outputs (recreated when the app runs)
+*.duckdb
+*.duckdb.wal
+*.sqlite
+reports/
+generated/
+benchmark/runs/*.duckdb

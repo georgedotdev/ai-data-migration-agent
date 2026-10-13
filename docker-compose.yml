@@ -1,8 +1,12 @@
-﻿services:
+# One-command local demo:
+#   docker compose up --build        -> http://localhost:8501
+# Databases only (run Streamlit from your venv instead):
+#   docker compose up -d postgres mysql
+services:
   postgres:
     image: postgres:16-alpine
     container_name: postgres_migration_source
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -11,11 +15,16 @@
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   mysql:
     image: mysql:8.0
     container_name: mysql_migration_target
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: migration_db
@@ -23,6 +32,41 @@
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Loads the dirty demo tables into PostgreSQL, then exits
+  seed:
+    build: .
+    command: ["python", "data/seed_postgres.py"]
+    environment: &app_env
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      PG_DATABASE: migration_db
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rootpassword
+      MYSQL_DATABASE: migration_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build: .
+    environment: *app_env
+    ports:
+      - "8501:8501"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:

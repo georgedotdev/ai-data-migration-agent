@@ -55,6 +55,8 @@ class MySQLConnector(BaseConnector):
         if self.host not in ("127.0.0.1", "localhost", "mysql"):
             import ssl
             ctx = ssl.create_default_context(cafile=os.environ.get("MYSQL_SSL_CA") or None)
+            if os.environ.get("MYSQL_SSL_CA_PEM"):   # CA certificate text, e.g. from Streamlit secrets
+                ctx.load_verify_locations(cadata=os.environ["MYSQL_SSL_CA_PEM"])
             if os.environ.get("MYSQL_SSL_VERIFY", "true").lower() == "false":
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE

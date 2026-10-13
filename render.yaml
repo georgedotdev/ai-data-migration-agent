@@ -3,8 +3,10 @@ services:
     name: ai-data-migration-agent
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
       - key: PG_HOST
         sync: false
       - key: PG_PORT
@@ -15,6 +17,8 @@ services:
         sync: false
       - key: PG_DATABASE
         sync: false
+      - key: PG_SSLMODE
+        value: require
       - key: MYSQL_HOST
         sync: false
       - key: MYSQL_PORT
