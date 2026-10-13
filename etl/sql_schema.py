@@ -88,6 +88,7 @@ class TableDef:
     primary_key: str | None
     indexes: list = field(default_factory=list)   # column names
     uniques: list = field(default_factory=list)   # column names
+    dependents: list = field(default_factory=list)  # columns moved out by normalization (FD on the lookup key)
 
     def create_sql(self, physical_name: str | None = None, ref_map: dict | None = None,
                    include_indexes: bool = True) -> str:
@@ -162,36 +163,56 @@ def design_table(df: pd.DataFrame, table: str, semantics: dict, primary_key: str
     return TableDef(name=table, columns=cols, primary_key=primary_key, indexes=list(index_columns))
 
 
-def normalize_lookup(df: pd.DataFrame, column: str, lookup_table: str):
+def functional_dependents(df: pd.DataFrame, column: str, semantics: dict) -> list:
     """
-    Extract a repeating categorical column into its own table (3NF).
+    Categorical columns C for which column -> C holds in the data (every value of
+    `column` maps to at most one value of C). These move into the lookup table
+    together with `column`, which removes the transitive dependency pk -> column -> C.
+    """
+    deps = []
+    keyed = df.dropna(subset=[column])
+    for c in df.columns:
+        if c == column or semantics.get(c) != "category" or keyed[c].isna().all():
+            continue
+        if (keyed.groupby(column)[c].nunique() <= 1).all():
+            deps.append(c)
+    return deps
 
-    Returns (lookup_df, main_df): lookup_df has (id, <column>) with one row per
-    distinct value; main_df has <column> replaced by <column>_id referencing it.
+
+def normalize_lookup(df: pd.DataFrame, column: str, lookup_table: str, dependents=()):
+    """
+    Extract a repeating column (plus the columns functionally dependent on it)
+    into its own table.
+
+    Returns (lookup_df, main_df, fk_col): lookup_df has (id, <column>, <dependents...>)
+    with one row per distinct value; main_df has those columns replaced by
+    <column>_id referencing lookup.id.
     """
     safe_ident(lookup_table)
-    values = sorted(df[column].dropna().unique())
+    dependents = list(dependents)
+    keyed = df.dropna(subset=[column])
+    values = sorted(keyed[column].unique())
     lookup_df = pd.DataFrame({"id": range(1, len(values) + 1), column: values})
+    for dep in dependents:
+        first = keyed.dropna(subset=[dep]).groupby(column)[dep].first()
+        lookup_df[dep] = lookup_df[column].map(first)
     id_for = dict(zip(values, lookup_df["id"]))
     main_df = df.copy()
     pos = list(main_df.columns).index(column)
     fk_col = f"{column}_id"
     main_df.insert(pos, fk_col, main_df[column].map(id_for).astype("Int64"))
-    main_df = main_df.drop(columns=[column])
+    main_df = main_df.drop(columns=[column, *dependents])
     return lookup_df, main_df, fk_col
 
 
 def design_normalized(df, table, semantics, primary_key, column, lookup_table, index_columns=()):
-    lookup_df, main_df, fk_col = normalize_lookup(df, column, lookup_table)
-    lookup_def = TableDef(
-        name=lookup_table,
-        columns=[
-            ColumnDef("id", "INT", False, "pk"),
-            ColumnDef(column, _varchar_for(lookup_df[column]), False, "category"),
-        ],
-        primary_key="id",
-        uniques=[column],
-    )
+    dependents = functional_dependents(df, column, semantics)
+    lookup_df, main_df, fk_col = normalize_lookup(df, column, lookup_table, dependents)
+    lookup_cols = [ColumnDef("id", "INT", False, "pk"),
+                   ColumnDef(column, _varchar_for(lookup_df[column]), False, "category")]
+    for dep in dependents:
+        lookup_cols.append(ColumnDef(dep, _varchar_for(lookup_df[dep]), bool(lookup_df[dep].isna().any()), "category"))
+    lookup_def = TableDef(name=lookup_table, columns=lookup_cols, primary_key="id", uniques=[column])
     sem = dict(semantics)
     sem[fk_col] = "int"
     main_def = design_table(main_df, table, sem, primary_key,
@@ -199,6 +220,7 @@ def design_normalized(df, table, semantics, primary_key, column, lookup_table, i
     for c in main_def.columns:
         if c.name == fk_col:
             c.references = (lookup_table, "id")
+    main_def.dependents = dependents
     return lookup_def, lookup_df, main_def, main_df
 
 

@@ -100,3 +100,16 @@ def test_failed_load_leaves_live_table_untouched(monkeypatch):
     with _engine().connect() as c:
         assert c.execute(text("SELECT COUNT(*) FROM `it_orders_safe`")).scalar() == before
         assert c.execute(text("SELECT status FROM migration_runs ORDER BY run_id DESC LIMIT 1")).scalar() == "failed"
+
+
+def test_orders_3nf_moves_category_into_products():
+    from migration_service import run_migration
+    res = run_migration("dirty_orders", "it_orders_3nf", PG, MY, normalize_column="product", lookup_table="it_products")
+    assert res["status"] == "success", [c for c in res["checks"] if not c["passed"]]
+    assert res["dependents"] == ["category"]
+    with _engine().connect() as c:
+        cols = [r[0] for r in c.execute(text(
+            "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'it_products'"))]
+        n = c.execute(text("SELECT COUNT(*) FROM it_orders_3nf o JOIN it_products p ON o.product_id = p.id")).scalar()
+    assert set(cols) == {"id", "product", "category"}
+    assert n == res["target_rows"]

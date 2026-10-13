@@ -167,6 +167,7 @@ def run_migration(
         "target_table": target_table,
         "lookup_table": lookup_table if normalize_column else None,
         "normalize_column": normalize_column,
+        "dependents": getattr(main_def, "dependents", []),
         "source_rows": cleaned.stats["source_rows"],
         "target_rows": len(main_df),
         "stats": cleaned.stats,

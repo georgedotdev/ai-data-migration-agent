@@ -54,3 +54,17 @@ def test_checksum_is_order_independent_and_type_canonical():
     if first[idx] is not None:
         first[idx] = Decimal(str(first[idx]))
     assert checksum_rows(td, [tuple(first)] + rows[1:]) == checksum_rows(td, rows)
+
+
+def test_functional_dependency_moves_dependent_column_into_lookup():
+    raw = pd.read_csv(os.path.join(DATA, "dirty_orders.csv"), dtype=str, keep_default_na=False)
+    r = clean_for_migration(raw)
+    lookup_def, lookup_df, main_def, main_df = design_normalized(
+        r.df, "orders", r.semantics, r.primary_key, "product", "products")
+    assert main_def.dependents == ["category"]          # product -> category holds in the data
+    assert list(lookup_df.columns) == ["id", "product", "category"]
+    assert "category" not in main_df.columns and "product" not in main_df.columns
+    # lossless: joining back reproduces the original product/category pairs
+    rejoined = main_df.merge(lookup_df, left_on="product_id", right_on="id")
+    original = r.df.set_index("order_id")[["product", "category"]]
+    assert (rejoined.set_index("order_id")[["product", "category"]].sort_index() == original.sort_index()).all().all()

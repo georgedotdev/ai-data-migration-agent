@@ -23,7 +23,7 @@ PRESETS = {
     },
     "🛒 Retail orders (dirty_orders)": {
         "source": "dirty_orders", "target": "orders",
-        "normalize_column": "category", "lookup_table": "categories",
+        "normalize_column": "product", "lookup_table": "products",
     },
 }
 
@@ -245,9 +245,20 @@ def _render_result(res, mysql_config):
 
     with t_schema:
         if res.get("lookup_table"):
-            st.markdown(f"**Normalized to 3NF:** `{res['normalize_column']}` repeated in every row, so it was moved into "
-                        f"`{res['lookup_table']}` and replaced by a foreign key `{res['normalize_column']}_id`. "
-                        "Each value is now stored once, which removes update anomalies.")
+            col, lk, deps = res["normalize_column"], res["lookup_table"], res.get("dependents") or []
+            if deps:
+                fd = ", ".join(f"`{col} → {d}`" for d in deps)
+                st.markdown(
+                    f"**3NF decomposition.** Functional dependencies detected in the data: {fd}. With "
+                    f"`{res['target_table']}`'s key → `{col}` → {', '.join(f'`{d}`' for d in deps)}, the flat table had a "
+                    f"*transitive dependency*: the same {', '.join(deps)} was repeated for every row with that {col}, so it could "
+                    f"be updated inconsistently. `{col}` and its dependents moved to `{lk}`; `{res['target_table']}` keeps only "
+                    f"the foreign key `{col}_id`.")
+            else:
+                st.markdown(
+                    f"**Reference table.** No other column depends on `{col}` in this data, so the flat table was already in 3NF. "
+                    f"Moving `{col}` into `{lk}` (UNIQUE) with a FOREIGN KEY stores each value once and makes MySQL reject "
+                    f"misspellings such as a new 'Markting' row. If {col}-level attributes are added later, they belong in `{lk}`.")
         st.graphviz_chart(_er_diagram(res))
         st.markdown("##### Source → target type mapping")
         st.dataframe(res["type_mapping"], hide_index=True, use_container_width=True)
