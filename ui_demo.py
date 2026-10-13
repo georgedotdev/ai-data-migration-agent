@@ -250,7 +250,7 @@ def _render_result(res, mysql_config):
                 fd = ", ".join(f"`{col} → {d}`" for d in deps)
                 st.markdown(
                     f"**3NF decomposition.** Functional dependencies detected in the data: {fd}. With "
-                    f"`{res['target_table']}`'s key → `{col}` → {', '.join(f'`{d}`' for d in deps)}, the flat table had a "
+                    f"primary key of `{res['target_table']}` → `{col}` → {', '.join(f'`{d}`' for d in deps)}, the flat table had a "
                     f"*transitive dependency*: the same {', '.join(deps)} was repeated for every row with that {col}, so it could "
                     f"be updated inconsistently. `{col}` and its dependents moved to `{lk}`; `{res['target_table']}` keeps only "
                     f"the foreign key `{col}_id`.")

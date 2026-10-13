@@ -37,7 +37,16 @@ pytestmark = pytest.mark.skipif(not _reachable(), reason="PostgreSQL/MySQL not r
 @pytest.fixture(scope="module", autouse=True)
 def seeded():
     from data.seed_postgres import seed_postgres
-    return seed_postgres(PG)
+    yield seed_postgres(PG)
+    # drop the it_* tables these tests created (FK checks off so order doesn't matter)
+    with _engine().connect() as c:
+        names = [r[0] for r in c.execute(text(
+            "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE 'it\_%'"))]
+        c.execute(text("SET FOREIGN_KEY_CHECKS = 0"))
+        for n in names:
+            c.execute(text(f"DROP TABLE `{n}`"))
+        c.execute(text("SET FOREIGN_KEY_CHECKS = 1"))
+        c.commit()
 
 
 def _engine():
