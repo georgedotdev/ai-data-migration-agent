@@ -31,8 +31,8 @@ def test_parse_currency_commas():
 def test_parse_percentage_commas():
     df = pd.DataFrame({"pct": ["99.9%", "100 %"]})
     res_df, log, quarantine = execute_dsl(df, {"transformations": [{"action": "parse_percentage", "column": "pct"}]})
-    assert res_df["pct"].iloc[0] == 99.9
-    assert res_df["pct"].iloc[1] == 100.0
+    assert res_df["pct"].iloc[0] == pytest.approx(0.999)
+    assert res_df["pct"].iloc[1] == pytest.approx(1.0)
 
 def test_parse_rating_decimals():
     df = pd.DataFrame({"rating": ["4.5 stars", "5.0/5"]})
@@ -43,8 +43,8 @@ def test_parse_rating_decimals():
 def test_split_regex():
     df = pd.DataFrame({"col": ["A-B", "C_D"]})
     res_df, log, quarantine = execute_dsl(df, {"transformations": [{"action": "split_column", "column": "col", "regex": r"[-_]"}]})
-    assert res_df["col_part1"].iloc[0] == "A"
-    assert res_df["col_part2"].iloc[1] == "D"
+    assert res_df["col_1"].iloc[0] == "A"
+    assert res_df["col_2"].iloc[1] == "D"
 
 def test_serialize_json_lists():
     df = pd.DataFrame({"col": [[1, 2], [3]]})

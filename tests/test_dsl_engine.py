@@ -398,6 +398,6 @@ class TestBackwardCompat:
         dsl = {"transformations": [
             {"action": "normalize_columns"},
         ]}
-        result_df, log = transform_data_dsl(sample_df, dsl)
+        result_df, log, _ = transform_data_dsl(sample_df, dsl)
         assert "customer_id" in result_df.columns
         assert log[0]["status"] == "success"

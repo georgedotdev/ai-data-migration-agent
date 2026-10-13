@@ -340,11 +340,11 @@ with tab_agentic:
                         source_config = {"file_path": file_path}
                 elif source_type == "PostgreSQL":
                     source_config = {
-                        "host": st.text_input("Host", os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "postgres.railway.internal"), key="s_pg_h"),
+                        "host": st.text_input("Host", os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "localhost"), key="s_pg_h"),
                         "port": st.number_input("Port", int(os.environ.get("PG_PORT") or os.environ.get("DB_PORT", "5432")), key="s_pg_p"),
-                        "database": st.text_input("Database", os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "railway"), key="s_pg_d"),
+                        "database": st.text_input("Database", os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "migration_db"), key="s_pg_d"),
                         "username": st.text_input("User", os.environ.get("PG_USER") or os.environ.get("DB_USER", "postgres"), key="s_pg_u"),
-                        "password": st.text_input("Password", os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", "xrmfThYabPbnYjqTEtsiyipXUGohdwFy"), type="password", key="s_pg_pw"),
+                        "password": st.text_input("Password", os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", ""), type="password", key="s_pg_pw"),
                         "table_name": st.text_input("Table", "enterprise", key="s_pg_t")
                     }
                 elif source_type == "MongoDB":
@@ -372,11 +372,11 @@ with tab_agentic:
                     target_config = {"db_path": "migration.duckdb", "table_name": table_name}
                 elif target_type == "PostgreSQL":
                     target_config = {
-                        "host": st.text_input("Host", os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "postgres.railway.internal"), key="t_pg_h"),
+                        "host": st.text_input("Host", os.environ.get("PG_HOST") or os.environ.get("DB_HOST", "localhost"), key="t_pg_h"),
                         "port": st.number_input("Port", int(os.environ.get("PG_PORT") or os.environ.get("DB_PORT", "5432")), key="t_pg_p"),
-                        "database": st.text_input("Database", os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "railway"), key="t_pg_d"),
+                        "database": st.text_input("Database", os.environ.get("PG_DATABASE") or os.environ.get("DB_DATABASE", "migration_db"), key="t_pg_d"),
                         "username": st.text_input("User", os.environ.get("PG_USER") or os.environ.get("DB_USER", "postgres"), key="t_pg_u"),
-                        "password": st.text_input("Password", os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", "xrmfThYabPbnYjqTEtsiyipXUGohdwFy"), type="password", key="t_pg_pw"),
+                        "password": st.text_input("Password", os.environ.get("PG_PASSWORD") or os.environ.get("DB_PASSWORD", ""), type="password", key="t_pg_pw"),
                         "table_name": table_name
                     }
                 elif target_type == "MySQL":

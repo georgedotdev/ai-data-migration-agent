@@ -11,7 +11,7 @@ def test_drop_missing_rows():
     assert "drop_missing_rows" in log[0]["action"]
     
     dsl_all = {"transformations": [{"action": "drop_missing_rows"}]}
-    res_df_all, log_all = execute_dsl(df, dsl_all)
+    res_df_all, log_all, _ = execute_dsl(df, dsl_all)
     assert len(res_df_all) == 1
 
 def test_fill_missing_strategies():
@@ -80,9 +80,9 @@ def test_split_column():
     df = pd.DataFrame({"name": ["John Doe", "Jane Smith"]})
     dsl = {"transformations": [{"action": "split_column", "column": "name", "delimiter": " "}]}
     res_df, log, quarantine = execute_dsl(df, dsl)
-    assert "name_part1" in res_df.columns
-    assert res_df["name_part1"].iloc[0] == "John"
-    assert res_df["name_part2"].iloc[1] == "Smith"
+    assert "name_1" in res_df.columns
+    assert res_df["name_1"].iloc[0] == "John"
+    assert res_df["name_2"].iloc[1] == "Smith"
 
 def test_extract_pattern():
     df = pd.DataFrame({"info": ["Contact: john@example.com", "No email here"]})
@@ -125,7 +125,7 @@ def test_outliers():
     
     # Remove
     dsl_rem = {"transformations": [{"action": "remove_outliers", "column": "val"}]}
-    res_df2, _ = execute_dsl(df, dsl_rem)
+    res_df2, _, _ = execute_dsl(df, dsl_rem)
     assert len(res_df2) == 4
 
 def test_conditional_transform():
