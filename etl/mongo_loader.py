@@ -276,12 +276,13 @@ def live_queries(endpoint, res):
     return queries
 
 
-def run_query(endpoint, spec):
+def run_query(endpoint, spec, limit=50):
     op, coll, arg = spec
     db = endpoint.mongo()
     if op == "find":
         proj = {"_id": 0, "steps": 0, "quarantine": 0} if coll == "migration_runs" else {"_id": 0}
-        docs = list(db[coll].find(arg, proj).limit(50))
+        cursor = db[coll].find(arg, proj)
+        docs = list(cursor.limit(limit) if limit else cursor)
     else:
         docs = list(db[coll].aggregate(arg))
     return pd.DataFrame([{k: (str(v) if isinstance(v, (Decimal128, dict, list)) else v) for k, v in d.items()} for d in docs])

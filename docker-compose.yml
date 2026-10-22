@@ -1,6 +1,6 @@
 # One-command local demo:
-#   docker compose up --build        -> http://localhost:8501
-# Databases only (run Streamlit from your venv instead):
+#   docker compose up --build        -> http://localhost:8000
+# Databases only (run the API + frontend from your machine instead):
 #   docker compose up -d postgres mysql mongodb
 services:
   postgres:
@@ -86,7 +86,7 @@ services:
         required: false
     environment: *app_env
     ports:
-      - "8501:8501"
+      - "8000:8000"
     depends_on:
       mysql:
         condition: service_healthy

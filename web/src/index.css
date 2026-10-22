@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, #2dd4bf14, transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, #6366f112, transparent 60%),
+    #070b14;
+  min-height: 100vh;
+}
+
+/* thin, unobtrusive scrollbars for tables and code */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3755 transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: #2a3755; border-radius: 8px; }
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-ink-600/70 bg-ink-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500
+           outline-none transition focus:border-accent/70 focus:ring-2 focus:ring-accent/20;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-400;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #131c2e 0px, #1c2740 120px, #131c2e 240px);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}

@@ -2,7 +2,7 @@
 
 Migrates **dirty legacy data between PostgreSQL, MySQL, DuckDB, SQLite and MongoDB** (CSV upload as an extra source) into a **clean, typed, constrained schema**, then **proves** the migration worked by querying both systems.
 
-The project has two parts:
+It is a **React + TypeScript** web app (dark dashboard UI) on top of a **FastAPI** backend. The project has two parts:
 
 1. **Database-to-database migration (deterministic, no API key needed).** This is the main DBMS demo. Any of the 5 systems can be the source or the target. It extracts, cleans and validates the data, designs an explicit schema for the target (types, primary keys, NOT NULL, CHECK, optional 3NF split with foreign keys), loads it atomically, records every run in metadata tables, and verifies the result with live queries.
 2. **Agentic LangGraph workflow (uses an LLM: Gemini, Groq or OpenAI).** The data is profiled, the LLM recommends a cleaning plan in a restricted JSON DSL, a human approves or rejects each step, and a deterministic engine executes the approved steps and writes to any of the 5 systems. The LLM never runs code or SQL. Without an API key a rule-based planner is used instead.
@@ -17,9 +17,9 @@ Requires Docker Desktop.
 docker compose up --build
 ```
 
-Open http://localhost:8501. This command starts PostgreSQL 16, MySQL 8 and MongoDB 7, seeds the dirty source tables into all three, and launches the app. DuckDB and SQLite are database files under `runtime/`; seed them with the 🌱 button in the app.
+Open http://localhost:8000. This command builds the React frontend inside Docker (no Node.js needed on the demo machine), starts PostgreSQL 16, MySQL 8 and MongoDB 7, seeds the dirty source tables into all three, and launches the app. DuckDB and SQLite are database files under `runtime/`; seed them with the **Seed demo data** button in the app. The header shows a live status light for each database and which AI keys are configured.
 
-**Developing in a virtualenv instead (Python 3.12):**
+**Developing locally (Python 3.12 + Node.js 20+):**
 
 ```bash
 docker compose up -d postgres mysql mongodb
@@ -28,8 +28,18 @@ venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env
 python data/seed_postgres.py postgresql mysql mongodb duckdb sqlite
-streamlit run app.py
+uvicorn api.main:app --reload --port 8000
 ```
+
+In a second terminal, run the frontend with hot reload on http://localhost:5173 (it proxies `/api` to port 8000):
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Or run `npm run build` once; the API then serves the built app itself at http://localhost:8000.
 
 You can open the databases directly during a demo:
 
@@ -104,11 +114,33 @@ The UI also shows the table definition and constraints read back from the target
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart LR
+    UI[React app<br/>web/] -->|JSON over /api| API[FastAPI<br/>api/main.py]
+    API --> MS[migration_service.py]
+    MS --> ETL[etl/: clean · design · load · verify]
+    MS --> G[graph.py: LangGraph agent]
+    G --> LLM[Gemini / Groq / OpenAI]
+    ETL --> DB[(PostgreSQL · MySQL · DuckDB<br/>SQLite · MongoDB)]
+```
+
+The UI has three pages:
+
+- **Migrate**: pick a dirty dataset, a source and a target, and flat or 3NF. Results include proof checks with their SQL, a live query runner, an ER diagram, type mapping, DDL and constraints from the database catalog, query plans before and after indexing, the cleaning log, quarantine, before/after data and CSV export.
+- **AI Agent**: a stepper (configure → AI plans → human review → execute and report). Each recommended step has an on/off toggle, a confidence score, the AI's reason and a before/after preview. You can approve, or re-plan with written feedback. Results include the execution log, JSON/Markdown reports, a database file download, and AI forensics (raw prompt and response).
+- **History**: the `migration_runs` table of any target.
+
+Security: database passwords stay on the server (the UI only sees whether one is configured), DuckDB/SQLite files are confined to `runtime/`, uploaded CSVs are referenced by ID, and API keys typed in the UI live only in that browser tab.
+
 ## Project structure
 
 ```text
-app.py                     Streamlit entry point (both tabs)
-ui_demo.py                 Migration tab: source/target pickers, results, proof, schema, history
+web/                       React + TypeScript + Tailwind frontend (Vite)
+  src/pages/               Migrate, AI Agent, History
+  src/components/          Endpoint picker, results view, ER diagram, UI kit
+api/main.py                FastAPI: REST endpoints + serves the built frontend
 migration_service.py       Orchestrates extract → clean → design → load → verify
 etl/
   endpoints.py             Sources/targets: PostgreSQL, MySQL, DuckDB, SQLite, MongoDB, CSV
@@ -123,14 +155,13 @@ connectors/                Connectors used by the agentic workflow (all 5 engine
 graph.py, ai_brain.py      LangGraph workflow and LLM providers (agentic tab)
 profiling/                 Data profiler used by the agentic workflow
 data/                      Dirty-data generator, manifest, seeder, sample CSVs
-pages/                     Benchmark runner page
 tests/                     Unit tests + end-to-end migration matrix across all engines
 docs/REPORT.md             DBMS project report
 ```
 
 ---
 
-## The AI workflow (agentic tab)
+## The AI workflow (AI Agent page)
 
 1. The source is profiled: types, missing values, placeholder values, outliers, key candidates.
 2. The LLM receives the profile and returns a plan in a **restricted JSON DSL** (structured output validated with Pydantic): actions such as `replace_with_null`, `parse_currency`, `parse_datetime`, `fill_missing`, `cast_type` and `remove_duplicates`, each with a confidence score and a reason.
@@ -153,7 +184,7 @@ RUN_LIVE_LLM=1 python -m pytest tests/test_live_llm.py -s
 python -m pytest tests -q
 ```
 
-`tests/test_migration_integration.py` migrates every source into every target (5×5) and checks that every verification passes. It also covers 3NF into each target, re-running over existing tables, a deliberately failing load on each engine that must leave the live table unchanged, and the agentic workflow (pause for review, then execute). DuckDB and SQLite always run; PostgreSQL, MySQL and MongoDB run when reachable (`docker compose up -d postgres mysql mongodb`). GitHub Actions (`.github/workflows/tests.yml`) runs the whole suite against PostgreSQL 16, MySQL 8 and MongoDB 7 service containers on every push.
+`tests/test_api.py` tests the REST API in-process: config without passwords, seeding, migration with proof queries and full CSV export, uploads, path and upload-ID confinement, and the agent's pause → approve → execute flow with a rejected step. `tests/test_migration_integration.py` migrates every source into every target (5×5) and checks that every verification passes. It also covers 3NF into each target, re-running over existing tables, a deliberately failing load on each engine that must leave the live table unchanged, and the agentic workflow (pause for review, then execute). DuckDB and SQLite always run; PostgreSQL, MySQL and MongoDB run when reachable (`docker compose up -d postgres mysql mongodb`). GitHub Actions (`.github/workflows/tests.yml`) runs the whole suite against PostgreSQL 16, MySQL 8 and MongoDB 7 service containers on every push.
 
 ---
 
@@ -169,7 +200,7 @@ Copy `.env.example` to `.env`. The defaults match `docker-compose.yml`.
 | `MYSQL_SSL_CA` / `MYSQL_SSL_CA_PEM` | Custom CA as a file path or as text (for example Aiven) |
 | `MONGO_URI`, `MONGO_DATABASE` | MongoDB source/target |
 | `RUNTIME_DIR` | Where DuckDB/SQLite database files are created (default `runtime/`) |
-| `GROQ_API_KEY`, `GOOGLE_API_KEY`, `OPENAI_API_KEY` | Optional, agentic tab only. Users can also enter keys in the sidebar; those stay in their browser session. |
+| `GROQ_API_KEY`, `GOOGLE_API_KEY`, `OPENAI_API_KEY` | Optional, AI Agent page only. Users can also enter keys on that page; they stay in that browser tab. |
 | `GROQ_MODEL`, `GEMINI_MODEL`, `OPENAI_MODEL` | Override default models when a provider retires one |
 
 ---
@@ -178,11 +209,13 @@ Copy `.env.example` to `.env`. The defaults match `docker-compose.yml`.
 
 The demo is designed to run locally. To get a public link:
 
-1. **App:** [Streamlit Community Cloud](https://streamlit.io/cloud). Deploy from this repo with `app.py` as the entry point and Python 3.12. Paste `.streamlit/secrets.toml.example`, with real values, into the app's Secrets.
+1. **App:** deploy the Docker image on [Render](https://render.com) using `render.yaml` (one web service that serves the frontend and the API), and set the database and API-key variables in the Render dashboard. Any Docker host works the same way.
 2. **Source PostgreSQL:** a free Neon project. Set `PG_SSLMODE=require`, then run `python data/seed_postgres.py` once from your machine with the Neon credentials in `.env`.
 3. **Target MySQL:** a real MySQL 8 such as Aiven's free tier. Paste its CA certificate into `MYSQL_SSL_CA_PEM`. *TiDB does not enforce CHECK constraints by default, so the constraint checks would fail there.*
 
-`render.yaml` deploys to Render as an alternative. The free tier there sleeps after 15 minutes and takes about a minute to wake up.
+4. **MongoDB (optional):** a free MongoDB Atlas cluster; set `MONGO_URI`.
+
+Render's free tier sleeps after 15 minutes idle and takes about a minute to wake up, so open the link before presenting.
 
 ---
 

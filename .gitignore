@@ -17,3 +17,8 @@ reports/
 generated/
 benchmark/runs/*.duckdb
 runtime/
+
+# Frontend
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo

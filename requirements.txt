@@ -1,8 +1,10 @@
 # Python 3.12 (see .python-version). Only direct dependencies are listed;
 # pip resolves their transitive packages.
 
-# UI
-streamlit==1.42.0
+# Web API (serves the React frontend in web/)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
 
 # Data processing
 pandas==2.2.3

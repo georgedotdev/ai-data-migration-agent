@@ -31,7 +31,7 @@ flowchart LR
     LD --> MY[(Target: any of the 5<br/>+ metadata)]
     MY --> VF[SQL verification]
     PG --> VF
-    UI[Streamlit UI] --- CL & LD & VF
+    UI[React UI + FastAPI] --- CL & LD & VF
 ```
 
 All steps are deterministic Python. No LLM is involved in this path. A separate agentic tab (LangGraph) lets an LLM *propose* cleaning steps in a restricted DSL, but those steps are executed by the same kind of deterministic engine, and the LLM never generates SQL.

@@ -57,17 +57,26 @@ Legend: ✅ done · 🙋 needs you
 - 🙋 Gemini's free tier often returns 503 "high demand". For a reliable demo, add a free Groq key (`GROQ_API_KEY`) as a backup, and run `RUN_LIVE_LLM=1 python -m pytest tests/test_live_llm.py -s` shortly before presenting.
 - 🙋 The Gemini key was pasted into chat. Consider regenerating it in Google AI Studio after the project.
 
+## Round 3 (2026-10-22): React + FastAPI rebuild
+
+- ✅ New UI: React + TypeScript + Tailwind dark dashboard (`web/`), served by a FastAPI backend (`api/main.py`). Streamlit removed.
+- ✅ Every Streamlit feature carried over, plus: live database status lights, a row-accounting bar, an ER diagram from the catalog, per-step toggles with confidence and preview on the AI page, report downloads, and AI forensics.
+- ✅ Fixed while porting: the plan-impact metrics never showed (the UI read `impact`, but the graph stores `preview_impact`); MongoDB CSV export was capped at 50 rows; uploads showed the internal file name.
+- ✅ Security: passwords never sent to the browser, database files confined to `runtime/`, uploads referenced by ID, agent responses exclude connection configs.
+- ✅ Verified in the browser: PostgreSQL → MySQL 3NF (16/16 checks), and a real Gemini plan with 2 steps rejected and 17/17 executed. 190 tests pass, including new API tests.
+- ✅ The Docker build compiles the frontend (multi-stage); `docker compose up --build` serves everything on http://localhost:8000.
+
 ## Hosting
 
 Recommendation: **demo locally** with `docker compose up --build`. Optional public link:
 
 - 🙋 Create free accounts: Neon (Postgres) and Aiven (MySQL 8; avoid TiDB, which doesn't enforce CHECK by default).
-- 🙋 Deploy on Streamlit Community Cloud with Python 3.12 and paste `.streamlit/secrets.toml.example` (filled in) into Secrets.
+- 🙋 Deploy the Docker image on Render (`render.yaml`) and set the database/API-key variables in its dashboard.
 - 🙋 Run `python data/seed_postgres.py` once against Neon.
 
 ## Demo-day runbook
 
-1. Start Docker Desktop, then run `docker compose up --build` and open http://localhost:8501.
+1. Start Docker Desktop, then run `docker compose up --build` and open http://localhost:8000.
 2. HR employees → Flat → Run. Walk through the Proof tab and the constraint probes.
 3. Retail orders → Normalized (3NF) → Run. Show the Schema tab: FD `product → category`, ER diagram, EXPLAIN.
 4. In a terminal: `docker exec -it mysql_migration_target mysql -uroot -prootpassword migration_db`, then `SELECT * FROM migration_runs;`.
