@@ -3,17 +3,12 @@ Test: PostgreSQL Connector
 
 Verifies CSV → PostgreSQL → Read Back.
 
-Requires a running PostgreSQL instance.
-Default: localhost:5432, db=migration_db, user=migration, password=migration123
-
-Docker setup:
-  docker run -d --name migration-pg \
-    -e POSTGRES_USER=migration \
-    -e POSTGRES_PASSWORD=migration123 \
-    -e POSTGRES_DB=migration_db \
-    -p 5432:5432 \
-    postgres:16
+Requires a running PostgreSQL instance. Connection settings come from the
+PG_* environment variables; the defaults match docker-compose.yml:
+  docker compose up -d postgres
 """
+
+import os
 
 import pytest
 from sqlalchemy import text
@@ -32,18 +27,18 @@ def test_csv_to_postgres():
 
     # Write to PostgreSQL
     target = PostgreSQLConnector(
-        host="127.0.0.1",
-        port=5432,
-        database="migration_db",
-        username="migration",
-        password="migration123",
+        host=os.environ.get("PG_HOST", "127.0.0.1"),
+        port=int(os.environ.get("PG_PORT", 5432)),
+        database=os.environ.get("PG_DATABASE", "migration_db"),
+        username=os.environ.get("PG_USER", "postgres"),
+        password=os.environ.get("PG_PASSWORD", "postgres"),
         table_name="enterprise_test"
     )
     try:
         with target.engine.connect() as conn:
             conn.execute(text("SELECT 1"))
     except OperationalError:
-        pytest.skip("PostgreSQL is not running on 127.0.0.1:5432")
+        pytest.skip("PostgreSQL is not reachable")
 
     target.write_data(source_df)
 
