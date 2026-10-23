@@ -201,3 +201,6 @@ def test_agentic_workflow_pauses_for_review_then_executes(src, tgt, files):
     assert final["success"] is True
     assert all(e["status"] == "success" for e in final["execution_log"])
     assert final["reconciliation"]["overall_success"] is True
+    schema = final["target_schema"]                              # designed schema + SQL verification
+    assert schema["passed"], [c for c in schema["checks"] if not c["passed"]]
+    assert len(schema["checks"]) >= 4

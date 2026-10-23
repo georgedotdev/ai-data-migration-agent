@@ -376,7 +376,7 @@ def history(spec: EndpointSpec):
 # ─────────────────────────────────────────────
 
 AGENT_KEYS = ["profile", "assessment", "transformation_dsl", "preview", "preview_impact", "risk", "executed_steps",
-              "timings", "reconciliation", "report", "execution_log", "quarantine_report", "execution_impact",
+              "timings", "target_schema", "reconciliation", "report", "execution_log", "quarantine_report", "execution_impact",
               "provider_used", "model_used", "fallback_used", "raw_prompt", "raw_ai_response", "success",
               "source_type", "target_type", "table_name", "human_feedback"]
 _AGENT_TARGETS: dict[str, dict] = {}

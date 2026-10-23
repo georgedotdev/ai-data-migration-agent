@@ -529,6 +529,8 @@ def _action_replace_with_null(df: pd.DataFrame, step: dict):
     # We replace exact matches of the strings with np.nan
     # pandas replace allows replacing a list of values with a single value
     df[column] = df[column].replace(values, np.nan)
+    if "" in values:   # a blank placeholder also covers whitespace-only values
+        df[column] = df[column].mask(df[column].map(lambda v: isinstance(v, str) and v.strip() == ""))
     
     return df, {"status": "success", "details": {"column": column, "replaced_values": values}}
 

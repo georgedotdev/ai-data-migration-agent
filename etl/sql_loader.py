@@ -350,7 +350,7 @@ def verify_migration(target, source, source_table, plan, load_result, stats):
             sql = f"SELECT COUNT(*) FROM {d.q(td.name)}"
             checks.append(_check(f"Rows in {target.label} `{td.name}`", sql, len(df), conn.execute(text(sql)).scalar()))
         target_count = conn.execute(text(f"SELECT COUNT(*) FROM {t}")).scalar()
-        checks.append(_check("Row accounting: source = loaded + duplicates removed + quarantined",
+        checks.append(_check(f"Row accounting: source = loaded + {stats.get('removed_label', 'duplicates removed')} + quarantined",
                              f"{source.count_sql(source_table)}  -- vs --  SELECT COUNT(*) FROM {t}", source_count,
                              target_count + stats["exact_duplicates_removed"] + stats["quarantined_rows"]))
         if pk:

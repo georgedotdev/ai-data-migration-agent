@@ -53,6 +53,7 @@ SEMANTIC_RULES = {
     "date": ("DATE", None),
     "datetime": ("DATETIME", None),
     "int": ("INT", None),
+    "bigint": ("BIGINT", None),
     "float": ("DOUBLE", None),
 }
 

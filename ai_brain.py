@@ -278,23 +278,23 @@ class BaseLLMProvider(AIProvider):
         # CORE DESIGN PRINCIPLE
         1. Preserve data whenever possible.
         2. Dropping columns should be a LAST RESORT.
-        3. Prefer cleansing actions like parse_currency, parse_datetime, fill_missing over drop_column.
-        4. CRITICAL: You MUST explicitly schedule a `fill_missing` action (with an appropriate strategy like mean, median, or mode) for EVERY SINGLE column that has missing values. Do not leave any missing values unresolved. NEVER use drop_missing_rows.
-        5. CRITICAL: If a column with missing values also requires parsing (e.g., `parse_currency`, `parse_datetime`, `standardize_boolean`), you MUST schedule the parsing action FIRST, and then explicitly schedule a separate `fill_missing` action for that SAME column afterwards.
+        3. Prefer cleansing actions like replace_with_null, parse_currency and parse_datetime over drop_column. A column that is entirely empty may be dropped.
+        4. CRITICAL: Missing values stay NULL. Do NOT schedule `fill_missing` (mean, median, mode, constant, forward_fill, backward_fill or a placeholder such as 'Unknown') unless the User Request explicitly asks to fill or impute values: an imputed value is a value that was never in the source, and the target database stores NULL natively. NEVER use drop_missing_rows.
+        5. CRITICAL: Empty and whitespace-only strings are missing values. Treat "" like any other placeholder and include it in the `values` of `replace_with_null` for every column that contains blanks.
         7. CRITICAL: If a column contains percentages (e.g., '84%', '12%'), you MUST use `parse_percentage`.
         8. CRITICAL: If a categorical column (like gender) has inconsistent casing or abbreviations (e.g., 'M', 'Male', 'm'), you MUST use `normalize_case` or `map_values`.
         9. CRITICAL: Schema mappings must preserve semantic meaning. Reject mappings that change data meaning (e.g. Age != Birth Year).
         10. CRITICAL: Duplicates in categorical/dimension columns (e.g., gender, skill, language) are NORMAL. DO NOT use remove_duplicates on them just because their duplicate_count is high. ONLY use remove_duplicates on unique identifiers (e.g., ID, Email).
-        11. CRITICAL: When using `fill_missing`, you MUST specify either the `strategy` field (e.g., mean, median, mode) OR the `value` field if using a constant.
+        11. CRITICAL: If the User Request asks for `fill_missing`, you MUST specify either the `strategy` field (e.g., mean, median, mode) OR the `value` field if using a constant.
         12. CRITICAL: When using `cast_type`, you MUST specify the `target_type` field (e.g., int64, float64, str, bool, datetime, category).
-        13. CRITICAL SEQUENCING RULE: You MUST schedule `fill_missing` BEFORE `cast_type: int64` on the same column. Pandas int64 cannot hold NaN values. If you cast before filling, the step will crash. The correct order is: parse → fill_missing → cast_type.
+        13. CRITICAL SEQUENCING RULE: Schedule parsing actions before `cast_type` on the same column. `cast_type: int64` keeps NULLs (nullable integers), so no fill is needed before it. The correct order is: replace_with_null → parse → cast_type.
         14. CRITICAL: When using `keep_latest_duplicate`, you MUST provide both `column` (the dedup key) AND `timestamp_column` (the datetime column used to determine which record is "latest").
         15. CRITICAL: If a categorical column has inconsistent casing across its values (e.g., "Electronics", "ELECTRONICS", "electronic"), you MUST schedule `normalize_case` for that column. Check the sample_values carefully for mixed casing.
         16. CRITICAL: When `parse_currency` or `cast_type` converts unparseable text values (like "abd" or "four hundred") to NaN, be aware this is DATA LOSS. Flag it in your identified_issues.
         17. CRITICAL: If the data profile identifies `suspected_sentinels` for a column (e.g., "ERROR", "UNKNOWN"), you MUST schedule `replace_with_null` for that column passing those values in a `values` array as your VERY FIRST step before parsing or filling.
 
         Available DSL Actions include:
-        - Cat 1: replace_with_null, fill_missing (strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
+        - Cat 1: replace_with_null, fill_missing (only when the user asks; strategies: mean, median, mode, constant, forward_fill, backward_fill), drop_missing_rows
         - Cat 2: remove_duplicates, keep_latest_duplicate
         - Cat 3: cast_type (int64, float64, str, datetime, bool, category)
         - Cat 4: parse_datetime, extract_year, extract_month, extract_day
@@ -427,8 +427,28 @@ class DeterministicProvider(AIProvider):
             )
 
         for column_name, col_profile in columns.items():
+            sentinels = col_profile.get("suspected_sentinels") or []
+            if sentinels and col_profile.get("structural_type", "flat") == "flat":
+                self._append_step(
+                    transformations,
+                    reasoning,
+                    {
+                        "action": "replace_with_null",
+                        "column": effective_name(column_name),
+                        "values": sentinels,
+                    },
+                    (
+                        f"Column '{column_name}' uses placeholders ({', '.join(repr(v) for v in sentinels)}) "
+                        "for missing values; they become NULL."
+                    ),
+                )
+
+        # Missing values stay NULL: filling only runs when the user explicitly asks for it,
+        # because an imputed value was never in the source.
+        wants_fill = any(word in request for word in ("fill", "impute"))
+        for column_name, col_profile in columns.items():
             missing_count = col_profile.get("missing_count", 0)
-            if missing_count <= 0:
+            if missing_count <= 0 or not wants_fill:
                 continue
 
             if col_profile.get("structural_type") != "flat":
@@ -449,7 +469,7 @@ class DeterministicProvider(AIProvider):
                 },
                 (
                     f"Column '{column_name}' has {missing_count} missing values; "
-                    f"using a type-aware default preserves row count for validation."
+                    f"filled with a type-aware default because the request asks for filling."
                 ),
             )
 

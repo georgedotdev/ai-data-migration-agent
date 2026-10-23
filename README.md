@@ -163,10 +163,10 @@ docs/REPORT.md             DBMS project report
 
 ## The AI workflow (AI Agent page)
 
-1. The source is profiled: types, missing values, placeholder values, outliers, key candidates.
-2. The LLM receives the profile and returns a plan in a **restricted JSON DSL** (structured output validated with Pydantic): actions such as `replace_with_null`, `parse_currency`, `parse_datetime`, `fill_missing`, `cast_type` and `remove_duplicates`, each with a confidence score and a reason.
+1. The source is profiled: types, missing values, placeholder values (including blank strings), outliers, key candidates.
+2. The LLM receives the profile and returns a plan in a **restricted JSON DSL** (structured output validated with Pydantic): actions such as `replace_with_null`, `parse_currency`, `parse_datetime`, `cast_type` and `remove_duplicates`, each with a confidence score and a reason. Missing values stay NULL: the prompt only allows `fill_missing` when your request asks for filling, and any `fill_missing` step is flagged "invents values" and starts unticked.
 3. LangGraph **pauses before execution**. You see the plan and its previewed impact, and can reject individual steps or send feedback, which re-plans.
-4. The deterministic DSL engine executes only the approved steps, writes to the chosen target, and reconciles the row counts.
+4. The deterministic DSL engine executes only the approved steps. The result goes through the **same pipeline as the Migrate page** (`etl/agent_load.py`): an explicit schema derived from the cleaned data (types, primary key, NOT NULL, CHECK, index), an atomic load, a `migration_runs` record, and the SQL verification checks.
 
 The LLM never executes code or SQL. If the chosen model is unavailable (for example Gemini 503 "high demand"), the app tries the provider's other models, then other providers that have a key, and finally the rule-based planner. The review screen states which model produced the plan, or exactly why no LLM was used.
 

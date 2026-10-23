@@ -180,7 +180,7 @@ def verify_migration(target, source, source_table, plan, load_result, stats):
         checks.append(_check(f"Documents in MongoDB `{td.name}`", f"db.{td.name}.countDocuments({{}})",
                              len(df), db[td.name].count_documents({})))
     target_count = db[t].count_documents({})
-    checks.append(_check("Row accounting: source = loaded + duplicates removed + quarantined",
+    checks.append(_check(f"Row accounting: source = loaded + {stats.get('removed_label', 'duplicates removed')} + quarantined",
                          f"{source.count_sql(source_table)}  -- vs --  db.{t}.countDocuments({{}})", source_count,
                          target_count + stats["exact_duplicates_removed"] + stats["quarantined_rows"]))
     if pk:

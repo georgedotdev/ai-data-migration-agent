@@ -119,6 +119,7 @@ export interface AgentState {
   execution_log?: { action: string; status: string; details?: any; reason?: string }[];
   quarantine_report?: { column: string; action: string; rows_affected: number; sample_indices?: number[] }[];
   execution_impact?: Record<string, number>;
+  target_schema?: { table: string; primary_key: string | null; ddl: string; ddl_from_catalog?: string; protocol: string; checks: Check[]; passed: boolean; run_id: number };
   provider_used?: string;
   model_used?: string;
   fallback_used?: boolean;

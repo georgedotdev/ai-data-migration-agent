@@ -157,6 +157,12 @@ def clean_for_migration(raw: pd.DataFrame) -> CleanResult:
             note(col, "sentinel_to_null", f"Replaced {n_sent} placeholder values (blank, N/A, UNKNOWN, -, ?) with NULL", n_sent)
         df[col] = stripped
 
+    # Columns with no value in any row (e.g. trailing commas in a CSV export) carry no data
+    empty = [c for c in df.columns if len(df) and df[c].isna().all()]
+    for col in empty:
+        note(col, "drop_empty_column", f"Dropped '{col}': no row has a value", len(df))
+    df = df.drop(columns=empty)
+
     # 3. Primary key detection: an id-like column that is mostly unique
     pk = None
     for col in df.columns:

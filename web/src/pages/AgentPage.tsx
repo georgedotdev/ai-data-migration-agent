@@ -7,6 +7,11 @@ import { Alert, Badge, Button, Card, CodeBlock, Collapsible, DataTable, Field, M
 
 const STEPS = ["Configure", "AI plans", "Human review", "Execute & report"];
 
+// fill_missing writes values that were never in the source, so those steps start unticked
+const imputes = (st: DslStep) => st.action === "fill_missing";
+const imputingSteps = (v: AgentView) =>
+  new Set((v.state.transformation_dsl?.transformations ?? []).flatMap((st, i) => (imputes(st) ? [i] : [])));
+
 export function AgentPage({ config }: { config: AppConfig }) {
   const preset = config.presets[0];
   const [source, setSource] = usePersistentState<EndpointSpec>("ag.source", { kind: "csv", config: { preset: preset.id }, table: null });
@@ -37,7 +42,9 @@ export function AgentPage({ config }: { config: AppConfig }) {
   const start = async () => {
     setBusy("start"); setError(""); setView(null); setRejected(new Set()); setFeedback("");
     try {
-      setView(await api.agentStart({ source, target, provider, model: provider === "Auto" || provider === "Deterministic" ? "" : model, goal, api_keys: keys }));
+      const v = await api.agentStart({ source, target, provider, model: provider === "Auto" || provider === "Deterministic" ? "" : model, goal, api_keys: keys });
+      setView(v);
+      setRejected(imputingSteps(v));
     } catch (e: any) { setError(e.message); } finally { setBusy(""); }
   };
   const resume = async (approved: boolean) => {
@@ -46,7 +53,7 @@ export function AgentPage({ config }: { config: AppConfig }) {
     try {
       const v = await api.agentResume(view.thread_id, { approved, feedback, rejected_steps: Array.from(rejected), api_keys: keys });
       setView(v);
-      if (!approved) setRejected(new Set());
+      if (!approved) setRejected(imputingSteps(v));
     } catch (e: any) { setError(e.message); } finally { setBusy(""); }
   };
 
@@ -197,7 +204,7 @@ function AgentRun({ view, rejected, setRejected, feedback, setFeedback, busy, el
         </div>
       )}
 
-      <Card title={`Recommended plan · ${steps.length} steps`} subtitle={paused ? `${steps.length - rejected.size} approved · ${rejected.size} rejected. Untick anything you disagree with.` : "Plan as executed"}
+      <Card title={`Recommended plan · ${steps.length} steps`} subtitle={paused ? `${steps.length - rejected.size} approved · ${rejected.size} rejected. Untick anything you disagree with; steps that invent values start unticked.` : "Plan as executed"}
         action={s.risk?.overall_confidence !== undefined && <Badge tone="info">confidence {s.risk.overall_confidence}%</Badge>}>
         <ol className="space-y-2">
           {steps.map((st, i) => (
@@ -246,6 +253,7 @@ function StepRow({ i, step, reason, samples, included, editable, toggle }: {
         {step.column && <code className="text-xs text-slate-300">{step.column}</code>}
         {params.map(([k, v]) => <span key={k} className="text-xs text-slate-500">{k}=<span className="text-slate-300">{typeof v === "object" ? JSON.stringify(v) : String(v)}</span></span>)}
         <span className="flex-1" />
+        {imputes(step) && <span title="Fills missing values with values that were never in the source"><Badge tone="warn">invents values</Badge></span>}
         {!included && <Badge tone="bad">rejected</Badge>}
         {conf !== undefined && <Badge tone={conf < 70 ? "bad" : conf < 90 ? "warn" : "good"}>{conf}%</Badge>}
         {samples && samples.length > 0 && <button onClick={() => setOpen(!open)} className="text-xs text-accent hover:underline">{open ? "hide" : "preview"}</button>}
@@ -304,6 +312,23 @@ function Finished({ view, onReset }: { view: AgentView; onReset: () => void }) {
           <Metric label="Quality" value={`${impact.quality_score_after ?? "–"}%`} hint={impact.quality_score_before !== undefined ? `from ${impact.quality_score_before}%` : undefined} />
         </div>
       </div>
+
+      {s.target_schema && (
+        <Card title={`Target schema · ${s.target_schema.checks.filter((c) => c.passed).length}/${s.target_schema.checks.length} checks passed`}
+          subtitle="Designed from the cleaned data (types, primary key, NOT NULL, CHECK, index), loaded atomically, then verified with queries against both databases">
+          <ul className="space-y-1.5">
+            {s.target_schema.checks.map((c, i) => (
+              <li key={i} className="flex flex-wrap items-center gap-2 text-sm" title={c.sql}>
+                {c.passed ? <CheckCircle2 className="h-4 w-4 text-emerald-300" /> : <XCircle className="h-4 w-4 text-rose-300" />}
+                <span className="text-slate-200">{c.check}</span>
+                <span className="font-mono text-xs text-slate-500">{typeof c.actual === "object" ? JSON.stringify(c.actual) : String(c.actual)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-xs text-slate-400">{s.target_schema.protocol}</p>
+          <div className="mt-3"><CodeBlock code={s.target_schema.ddl_from_catalog ?? s.target_schema.ddl} /></div>
+        </Card>
+      )}
 
       <Card title="Execution log" subtitle={(s.executed_steps ?? []).join(" → ")}>
         <ul className="space-y-1.5">

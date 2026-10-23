@@ -251,6 +251,9 @@ def _detect_sentinels(series: pd.Series) -> list:
         for val in unique_vals:
             if isinstance(val, str) and val.strip().upper() in COMMON_SENTINELS:
                 found_sentinels.append(val)
+        # Legacy text tables store "no value" as a blank string: report it as a placeholder too
+        if any(isinstance(val, str) and val.strip() == "" for val in unique_vals):
+            found_sentinels.append("")
         return found_sentinels
     except TypeError:
         return []

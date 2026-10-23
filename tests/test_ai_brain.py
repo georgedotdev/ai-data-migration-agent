@@ -88,8 +88,10 @@ def test_deterministic_provider_logic(sample_profile):
     # Check for remove_duplicates due to duplicate_rows=2
     assert "remove_duplicates" in actions
     
-    # Check for fill_missing for First Name
-    assert "fill_missing" in actions
+    # Missing values stay NULL unless the user asks for filling
+    assert "fill_missing" not in actions
+    filled = provider.generate_plan(sample_profile, user_request="Fill missing values", normalize_columns=True)
+    assert "fill_missing" in [step["action"] for step in filled["transformations"]]
 
     # Reasoning should match steps
     assert len(dsl["reasoning"]) == len(dsl["transformations"])

@@ -66,6 +66,17 @@ Legend: ✅ done · 🙋 needs you
 - ✅ Verified in the browser: PostgreSQL → MySQL 3NF (16/16 checks), and a real Gemini plan with 2 steps rejected and 17/17 executed. 190 tests pass, including new API tests.
 - ✅ The Docker build compiles the frontend (multi-stage); `docker compose up --build` serves everything on http://localhost:8000.
 
+## Round 4 (2026-10-23): real-world dirty data test
+
+Tested with the public "Cafe Sales: Dirty Data for Cleaning Training" dataset (10,000 rows, ~15,000 bad cells, 8 empty columns): PostgreSQL → MySQL through the AI Agent with Gemini, verified cell by cell against the raw CSV (0 mismatches).
+
+- ✅ AI Agent writes through the same schema design, atomic load and verification as the Migrate page (was pandas `to_sql`: TEXT/DOUBLE, no PK, no constraints). 11/11 checks on the cafe data.
+- ✅ The prompt no longer forces `fill_missing` on every column; missing values stay NULL unless the request asks for filling. `fill_missing` steps are flagged "invents values", start unticked, and count as high risk. Same for the rule-based planner.
+- ✅ Blank strings are reported as placeholders by the profiler, and `replace_with_null` with `""` also nulls whitespace-only values.
+- ✅ The deterministic cleaner drops columns with no value in any row.
+- ✅ Impact summary fixed: dropped/renamed/added columns are counted, and cells in dropped columns are no longer counted as "filled".
+- ✅ Old PostgreSQL connector test reads `PG_*` env vars (was skipping on a stale login).
+
 ## Hosting
 
 Recommendation: **demo locally** with `docker compose up --build`. Optional public link:

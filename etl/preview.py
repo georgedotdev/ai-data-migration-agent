@@ -5,6 +5,8 @@ Generates step-by-step previews of data transformations and computes
 the overall migration impact and risk assessment.
 """
 
+import re
+
 import pandas as pd
 from etl.dsl_engine import execute_dsl
 from profiling.data_profiler import profile_dataframe
@@ -86,64 +88,78 @@ def generate_preview(df: pd.DataFrame, dsl: dict) -> list:
 
     return previews, df_current
 
+def _normalized_name(col) -> str:
+    """Same rule as the DSL's normalize_columns, to follow a column through a rename."""
+    n = re.sub(r"[^a-z0-9_]", "_", str(col).strip().lower())
+    return re.sub(r"_+", "_", n).strip("_")
+
+
+def _column_lineage(before_cols, after_cols, dsl: dict) -> dict:
+    """Map each column of the source frame to its name in the result (None if dropped)."""
+    renames = {}
+    for step in dsl.get("transformations", []):
+        if step.get("action") == "rename_column" and step.get("column") and step.get("new_name"):
+            renames[step["column"]] = step["new_name"]
+    after = set(after_cols)
+    lineage = {}
+    for col in before_cols:
+        candidates = [col, _normalized_name(col)]
+        candidates += [renames[c] for c in candidates if c in renames]
+        lineage[col] = next((c for c in candidates if c in after), None)
+    return lineage
+
+
 def generate_impact_summary(df_before: pd.DataFrame, df_after: pd.DataFrame, dsl: dict) -> dict:
     """
     Computes the Migration Impact Report including Data Quality metrics.
+    Missing values are compared per surviving column, so cells that disappear
+    with a dropped column are not counted as "filled".
     """
-    
     profile_before = profile_dataframe(df_before)
     profile_after = profile_dataframe(df_after)
-    
+    missing_b = {c: v.get("missing_count", 0) for c, v in profile_before.get("columns", {}).items()}
+    missing_a = {c: v.get("missing_count", 0) for c, v in profile_after.get("columns", {}).items()}
+
     score_before = profile_before.get("data_quality_score", 0)
     score_after = profile_after.get("data_quality_score", 0)
-    
-    duplicates_removed = 0
-    cols_renamed = 0
-    cols_dropped = 0
-    cols_added = 0
-    # We must use the execution log from execute_dsl, but generate_preview calls it step-by-step
-    # To fix this, we should actually compute missing_filled by comparing column before/after
-    
-    missing_filled = 0
-    datetime_standardized = 0
-    currency_parsed = 0
-    fields_normalized = 0
-    
-    transformations = dsl.get("transformations", [])
-    # We don't have the execution log here, so we infer success by actual column changes
-    # But wait, we can just look at the delta of missing values to be accurate!
-    
-    # Calculate duplicates removed correctly
-    row_delta = len(df_before) - len(df_after)
-    actual_dups_removed = row_delta if row_delta > 0 else 0
 
-    # Extract exact counts for forensics
-    missing_before = sum(col.get("missing_count", 0) for col in profile_before.get("columns", {}).values())
-    missing_after = sum(col.get("missing_count", 0) for col in profile_after.get("columns", {}).values())
-    
-    # Phase 5: Honest Impact Reporting (remove silent clamping)
-    parsing_induced_nulls = 0
-    if missing_after > missing_before:
-        parsing_induced_nulls = missing_after - missing_before
-        
-    actual_missing_filled = missing_before - missing_after
-    if actual_missing_filled < 0:
-        actual_missing_filled = 0
+    lineage = _column_lineage(df_before.columns, df_after.columns, dsl)
+    kept = {b: a for b, a in lineage.items() if a is not None}
+    dropped = [b for b, a in lineage.items() if a is None]
+    added = [c for c in df_after.columns if c not in set(kept.values())]
+
+    missing_filled = sum(max(0, missing_b.get(b, 0) - missing_a.get(a, 0)) for b, a in kept.items())
+    set_to_null = sum(max(0, missing_a.get(a, 0) - missing_b.get(b, 0)) for b, a in kept.items())
+
+    currency_cols = {step.get("column") for step in dsl.get("transformations", []) if step.get("action") == "parse_currency"}
+    datetime_standardized = currency_parsed = fields_normalized = 0
+    for b, a in kept.items():
+        before, after = df_before[b], df_after[a]
+        if pd.api.types.is_datetime64_any_dtype(after) and not pd.api.types.is_datetime64_any_dtype(before):
+            datetime_standardized += int(after.notna().sum())
+        elif a in currency_cols or b in currency_cols:
+            currency_parsed += int(after.notna().sum())
+        elif after.dtype == object and before.dtype == object and len(before) == len(after):
+            both = before.notna().values & after.notna().values
+            fields_normalized += int((before.astype(str).values != after.astype(str).values)[both].sum())
+
+    row_delta = len(df_before) - len(df_after)
 
     return {
         "rows_before": len(df_before),
         "rows_after": len(df_after),
-        "duplicates_removed": actual_dups_removed,
-        "columns_renamed": cols_renamed,
-        "columns_dropped": cols_dropped,
-        "columns_added": cols_added,
-        "missing_filled": actual_missing_filled,
+        "duplicates_removed": max(row_delta, 0),
+        "columns_renamed": sum(1 for b, a in kept.items() if b != a),
+        "columns_dropped": len(dropped),
+        "columns_added": len(added),
+        "missing_filled": missing_filled,
         "datetime_standardized": datetime_standardized,
         "currency_parsed": currency_parsed,
         "fields_normalized": fields_normalized,
-        "missing_before": missing_before,
-        "missing_after": missing_after,
-        "parsing_induced_nulls": parsing_induced_nulls,
+        "missing_before": sum(missing_b.values()),
+        "missing_after": sum(missing_a.values()),
+        "missing_in_dropped_columns": sum(missing_b.get(b, 0) for b in dropped),
+        "parsing_induced_nulls": set_to_null,
         "quality_score_before": score_before,
         "quality_score_after": score_after,
         "improvement_pct": round(score_after - score_before, 2)
@@ -165,7 +181,9 @@ def generate_risk_assessment(dsl: dict) -> dict:
         conf = t.get("confidence", 100)
         total_confidence += conf
         
-        if conf >= 90:
+        if action == "fill_missing":   # writes values that were never in the source
+            high_risk.append(action)
+        elif conf >= 90:
             low_risk.append(action)
         elif conf >= 70:
             medium_risk.append(action)

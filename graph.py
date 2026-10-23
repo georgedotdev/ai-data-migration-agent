@@ -17,6 +17,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.runnables import RunnableConfig
 
 from connectors.connector_factory import get_connector
+from etl.agent_load import load_and_verify
 from etl.transform import transform_data_dsl, transform_data
 from etl.rollback import rollback_migration
 from etl.schema import discover_schema
@@ -76,6 +77,7 @@ class AgentState(TypedDict):
     output_file_path: str
     
     # Post-Execution (Reconciliation)
+    target_schema: dict
     reconciliation: dict
     report: dict
 
@@ -302,23 +304,13 @@ def migration_executor(state: AgentState):
     print("TABLE_CREATE_START")
     print(f"ROWS_TO_INSERT: {len(transformed_df)}")
 
-    max_retries = 3
-    success = False
-    for attempt in range(max_retries):
-        try:
-            target.write_data(transformed_df)
-            print("TABLE_CREATE_SUCCESS")
-            print(f"ROWS_INSERTED: {len(transformed_df)}")
-            print("COMMIT_START")
-            print("COMMIT_SUCCESS")
-            success = True
-            break
-        except Exception as e:
-            print(f"[LOAD] Attempt {attempt + 1} failed: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(2)
-            else:
-                raise e
+    # Same schema design, atomic load and SQL verification as the deterministic migration
+    # (instead of letting pandas.to_sql guess TEXT/DOUBLE columns with no keys or constraints)
+    target_schema = load_and_verify(state["source_type"], state["source_config"], state["target_type"],
+                                    state["target_config"], len(df), transformed_df, execution_log,
+                                    label=f"AI plan ({state.get('model_used') or state.get('provider_used') or 'rule-based'})")
+    print(f"ROWS_INSERTED: {len(transformed_df)}")
+    print(f"VERIFICATION: {sum(c['passed'] for c in target_schema['checks'])}/{len(target_schema['checks'])} checks passed")
 
     print("EXECUTOR_COMPLETE")
     
@@ -338,6 +330,7 @@ def migration_executor(state: AgentState):
         "execution_impact": execution_impact,
         "execution_log": execution_log,
         "quarantine_report": quarantine_report,
+        "target_schema": target_schema,
         "executed_steps": state["executed_steps"] + ["migration_executor"],
         "timings": timings
     }
@@ -370,7 +363,9 @@ def reconciler(state: AgentState):
         target_reachable = False
 
     table_created = rows_written > 0
-    success = table_created and target_reachable
+    checks = (state.get("target_schema") or {}).get("checks", [])
+    checks_passed = sum(c["passed"] for c in checks)
+    success = table_created and target_reachable and checks_passed == len(checks)
     print(f"RECONCILIATION_SUCCESS: {success}")
     
     execution_impact = state.get("execution_impact", {})
@@ -384,10 +379,12 @@ def reconciler(state: AgentState):
         "rows_skipped": duplicates_removed,
         "target_reachable": target_reachable,
         "table_created": table_created,
+        "verification_checks": f"{checks_passed}/{len(checks)} passed" if checks else "not run",
         "overall_success": success
     }
     
-    if not success:
+    # A failed verification check keeps the table for inspection, like the deterministic migration
+    if not (table_created and target_reachable):
         print("[RECONCILER] Target unreachable or empty. Triggering rollback.")
         rollback_migration(target)
         
@@ -418,6 +415,7 @@ def reporter(state: AgentState):
         "transformation_provider": state.get("transformation_provider", "Unknown"),
         "reconciliation_results": state.get("reconciliation"),
         "quarantine_report": state.get("quarantine_report", []),
+        "target_schema": state.get("target_schema"),
         "preview_impact": state.get("preview_impact"),
         "execution_impact": state.get("execution_impact"),
         "impact": state.get("execution_impact") or state.get("preview_impact"),

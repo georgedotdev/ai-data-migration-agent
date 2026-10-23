@@ -82,3 +82,11 @@ def test_safe_ident_rejects_unsafe_names(bad):
     from etl.sql_schema import safe_ident
     with pytest.raises(ValueError):
         safe_ident(bad)
+
+
+def test_columns_without_any_value_are_dropped():
+    r = clean_for_migration(_raw(order_id=["1", "2", "3"], amount=["5", "6", "7"],
+                                 unnamed_8=["", "", ""], notes=["N/A", "", "ok"]))
+    assert "unnamed_8" not in r.df.columns
+    assert "notes" in r.df.columns
+    assert any(e["action"] == "drop_empty_column" and e["column"] == "unnamed_8" for e in r.log)
